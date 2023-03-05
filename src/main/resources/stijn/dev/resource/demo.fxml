@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stijn.dev.resource.controllers.DemoController">
+   <children>
+      <Button fx:id="playButton" contentDisplay="CENTER" layoutX="171.0" layoutY="210.0" mnemonicParsing="false" onAction="#playGame" prefHeight="30.0" prefWidth="258.0" text="Launch Super Mario World" wrapText="true">
+         <font>
+            <Font name="Bradley Hand ITC" size="21.0" />
+         </font></Button>
+      <Text fx:id="demoText" layoutY="178.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Front End Demo" textAlignment="CENTER" wrappingWidth="600.0" />
+      <Button fx:id="importGames" layoutX="251.0" layoutY="273.0" mnemonicParsing="false" onAction="#switchToImportScreen" text="Import Games" />
+   </children>
+</AnchorPane>
