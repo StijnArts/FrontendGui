@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import org.controlsfx.control.PrefixSelectionChoiceBox?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="stijn.dev.resource.controllers.ImportPlatformSelectionController"
-            prefHeight="400.0" prefWidth="600.0">
+<?import org.controlsfx.control.PrefixSelectionComboBox?>
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stijn.dev.resource.controllers.ImportPlatformSelectionController">
+   <children>
+      <PrefixSelectionComboBox fx:id="platformComboBox" layoutX="55.0" layoutY="96.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="249.0" />
+      <PrefixSelectionComboBox fx:id="scrapeAsPlatformComboBox" layoutX="55.0" layoutY="240.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="249.0" />
+      <TextField fx:id="customPlatformBox" layoutX="55.0" layoutY="175.0" prefHeight="25.0" prefWidth="249.0" />
+      <Label layoutX="55.0" layoutY="69.0" text="Select Platform to import as:" />
+      <Label layoutX="55.0" layoutY="149.0" text="If the platform isn't in the list, fill it in here:" />
+      <Label layoutX="55.0" layoutY="217.0" text="Scrape as:" />
+      <Button fx:id="nextButton" layoutX="534.0" layoutY="361.0" mnemonicParsing="false" onAction="#importRoms" text="Next" />
+   </children>
 </AnchorPane>

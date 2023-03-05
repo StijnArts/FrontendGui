@@ -4,6 +4,7 @@ import javafx.event.*;
 import javafx.fxml.*;
 import javafx.scene.*;
 import javafx.stage.*;
+import stijn.dev.resource.*;
 
 import java.io.*;
 
@@ -13,7 +14,7 @@ public class SceneController {
     private Parent root;
 
     public void switchToDemo(ActionEvent event) throws IOException {
-        root = FXMLLoader.load(getClass().getResource("demo.fxml"));
+        root = FXMLLoader.load(FrontEndApplication.class.getResource("../demo.fxml"));
         stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         scene = new Scene(root);
         stage.setScene(scene);
@@ -22,7 +23,7 @@ public class SceneController {
 
     public void switchToImport(ActionEvent event) throws IOException {
         System.out.println("switching to import scene");
-        root = FXMLLoader.load(getClass().getResource("import.fxml"));
+        root = FXMLLoader.load(FrontEndApplication.class.getResource("importPlatformSelection.fxml"));
         stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         scene = new Scene(root);
         stage.setScene(scene);

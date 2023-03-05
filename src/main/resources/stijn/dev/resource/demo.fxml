@@ -12,6 +12,6 @@
             <Font name="Bradley Hand ITC" size="21.0" />
          </font></Button>
       <Text fx:id="demoText" layoutY="178.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Front End Demo" textAlignment="CENTER" wrappingWidth="600.0" />
-      <Button fx:id="importGames" layoutX="251.0" layoutY="273.0" mnemonicParsing="false" onAction="#switchToImportScreen" text="Import Games" />
+      <Button fx:id="importGames" disable="true" layoutX="251.0" layoutY="273.0" mnemonicParsing="false" onAction="#switchToImportScreen" text="Import Games" />
    </children>
 </AnchorPane>

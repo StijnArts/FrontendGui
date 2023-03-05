@@ -16,6 +16,11 @@ public class FilenameService {
         return fileExtensions;
     }
 
+    public static String extractFileExtension(File file) {
+            int pos = file.getName().lastIndexOf('.');
+            return file.getName().substring(pos+1);
+    }
+
     public static String cleanFilename(String rawFilename) {
         System.out.println(rawFilename);
         String cleanFilename = rawFilename;
