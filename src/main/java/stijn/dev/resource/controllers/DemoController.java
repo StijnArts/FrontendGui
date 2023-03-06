@@ -3,6 +3,8 @@ package stijn.dev.resource.controllers;
 import javafx.event.*;
 import javafx.fxml.*;
 import javafx.scene.layout.*;
+import stijn.dev.data.database.*;
+import stijn.dev.records.*;
 import stijn.dev.service.*;
 import stijn.dev.data.objects.items.*;
 

@@ -120,8 +120,6 @@ public class ImportPlatformSelectionController implements Initializable {
             String filename = file.getName();
             String cleanFilename = FilenameService.cleanFilename(filename);
             String region = getFileRegion(filename);
-            //TODO region finding
-            //String region = "(USA)";
             romImportRecords.add(new RomImportRecord(new SimpleStringProperty(file.getPath()),
                     new SimpleStringProperty(FilenameService.extractFileExtension(file)), new SimpleStringProperty(cleanFilename),
                     new SimpleStringProperty(region), new SimpleStringProperty(platform), new SimpleStringProperty(scrapeAsPlatform)));

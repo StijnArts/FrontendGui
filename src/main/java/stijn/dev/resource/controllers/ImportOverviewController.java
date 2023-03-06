@@ -5,8 +5,10 @@ import javafx.collections.transformation.*;
 import javafx.event.*;
 import javafx.fxml.*;
 import javafx.scene.control.*;
+import javafx.stage.*;
 import org.controlsfx.control.tableview2.*;
 import org.controlsfx.control.tableview2.cell.*;
+import stijn.dev.data.database.*;
 import stijn.dev.records.*;
 
 import java.net.*;
@@ -37,6 +39,10 @@ public class ImportOverviewController implements Initializable{
         roms.forEach(record->{
             System.out.println(record.toString());
         });
+        DatabaseHelper.importRoms(roms.stream().toList());
+//        Stage stage = (Stage) nextButton.getScene().getWindow();
+//        stage.close();
+        //TODO Make it close the diaglogue box and run the import sequence
     }
 
 
@@ -47,6 +53,7 @@ public class ImportOverviewController implements Initializable{
 
     private void setTable() {
         overviewTable.setItems(roms);
+        overviewTable.setEditable(true);
         TableColumn2<RomImportRecord, String> filenameColumn = new FilteredTableColumn<>("Filename:");
         filenameColumn.setCellValueFactory(p->p.getValue().fullFilename());
         filenameColumn.setEditable(false);
@@ -55,18 +62,22 @@ public class ImportOverviewController implements Initializable{
         fileExtensionColumn.setEditable(false);
         TableColumn2<RomImportRecord, String> titleColumn = new FilteredTableColumn<>("Title:");
         titleColumn.setCellValueFactory(p->p.getValue().title());
+        titleColumn.setCellFactory(TextField2TableCell.forTableColumn());
         titleColumn.setEditable(true);
         TableColumn2<RomImportRecord, String> platformColumn = new FilteredTableColumn<>("Platform:");
         platformColumn.setCellValueFactory(p->p.getValue().platform());
+        platformColumn.setCellFactory(TextField2TableCell.forTableColumn());
         platformColumn.setEditable(true);
         TableColumn2<RomImportRecord, String> regionColumn = new FilteredTableColumn<>("Region:");
         regionColumn.setCellValueFactory(p->p.getValue().region());
+        regionColumn.setCellFactory(TextField2TableCell.forTableColumn());
         regionColumn.setEditable(true);
         overviewTable.getColumns().setAll(filenameColumn,fileExtensionColumn,titleColumn,platformColumn,regionColumn);
         if(!roms.get(0).platform().getValue().equals(roms.get(0).scrapeAsPlatform().getValue())) {
             TableColumn2<RomImportRecord, String> scrapeAsColumn = new FilteredTableColumn<>("Scrape As Platform:");
             scrapeAsColumn.setCellValueFactory(p -> p.getValue().scrapeAsPlatform());
             scrapeAsColumn.setEditable(true);
+            scrapeAsColumn.setCellFactory(TextField2TableCell.forTableColumn());
             overviewTable.getColumns().add(scrapeAsColumn);
         }
         overviewTable.setRowHeaderVisible(true);

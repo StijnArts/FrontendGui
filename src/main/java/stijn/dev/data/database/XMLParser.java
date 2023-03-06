@@ -1,6 +1,7 @@
 package stijn.dev.data.database;
 
 import java.io.*;
+import java.time.*;
 import java.util.*;
 
 import com.google.common.base.*;
@@ -8,6 +9,7 @@ import com.google.common.collect.*;
 import javafx.util.*;
 import nu.xom.*;
 import nu.xom.Builder;
+import stijn.dev.data.objects.items.*;
 import stijn.dev.records.*;
 import stijn.dev.service.*;
 
@@ -19,8 +21,8 @@ public class XMLParser {
     private static File gamesAndPlatforms = new File(metadataFolder+"\\Files.xml");
     private static File gameControllers = new File(metadataFolder+"\\GameControllers.xml");
 
-    public static LinkedHashMultimap<String, Pair<String, String>> parseGames(String[] searchTerms){
-        LinkedHashMultimap<String, Pair<String, String>> results = LinkedHashMultimap.create();
+    public static ArrayList<Game> parseGames(List<RomImportRecord> romImportRecords){
+        ArrayList<Game> results = new ArrayList<>();
         try{
             Builder parser = new Builder();
             Document doc = parser.build(gamesAndPlatforms);
@@ -39,7 +41,7 @@ public class XMLParser {
         } catch (IOException e) {
             System.out.println("Document not found!");
         }
-        //readResults(results);
+        results.forEach(game-> System.out.println(game.toString()));
         return results;
     }
 
@@ -124,5 +126,39 @@ public class XMLParser {
         List<String> results = platformList.stream().sorted().toList();
         results.forEach(string-> System.out.println(string));
         return results;
+    }
+
+    public static Platform parsePlatform(String platform) {
+        Platform platformObject = null;
+        try{
+            Builder parser = new Builder();
+            Document doc = parser.build(platforms);
+            Elements files = doc.getRootElement().getChildElements("Platform");
+            for (Element element : files) {
+                if(platform.equals(element.getFirstChildElement("Name").getValue())){
+                    HashMap<String, LocalDate> releaseDate = new HashMap<>();
+                    releaseDate.put("USA", LocalDate.parse(element.getFirstChildElement("ReleaseDate").getValue().substring(0,10)));
+                    HashMap<String, String> specs = new HashMap<>();
+                    specs.put("Cpu",element.getFirstChildElement("Cpu").getValue());
+                    specs.put("Memory",element.getFirstChildElement("Memory").getValue());
+                    specs.put("Graphics",element.getFirstChildElement("Graphics").getValue());
+                    specs.put("Sound",element.getFirstChildElement("Sound").getValue());
+                    specs.put("Display",element.getFirstChildElement("Display").getValue());
+                    specs.put("MediaType",element.getFirstChildElement("Media").getValue());
+
+                    platformObject = new Platform(element.getFirstChildElement("Name").getValue(),releaseDate,
+                            element.getFirstChildElement("Developer").getValue(),element.getFirstChildElement("Notes").getValue(),
+                            specs, Integer.valueOf(element.getFirstChildElement("MaxControllers").getValue()),element.getFirstChildElement("Category").getValue()
+                    );
+                }
+            }
+        } catch (ParsingException e) {
+            System.out.println("Something went wrong parsing the document");
+        } catch (IOException e) {
+            System.out.println("Document not found!");
+        }
+        System.out.println("Platforms Found during parsing: ");
+        System.out.println(platformObject.toString());
+        return platformObject;
     }
 }

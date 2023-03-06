@@ -22,4 +22,13 @@ public class Neo4JDatabaseHelper implements AutoCloseable{
         Session session = driver.session();
           return session.run(new Query(query));
     }
+
+    public Result runQuery(Query query){
+        Session session = driver.session();
+        return session.run(query);
+    }
+
+    public Result wipeDatabase(){
+        return runQuery("Match (n) Detach Delete (n)");
+    }
 }
