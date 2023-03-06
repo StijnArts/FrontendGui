@@ -56,6 +56,7 @@ public class ImportPlatformSelectionController implements Initializable {
             root = loader.load();
             ImportOverviewController importOverviewController = loader.getController();
             importOverviewController.setRoms(roms);
+            importOverviewController.setStage(stage);
             Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.show();

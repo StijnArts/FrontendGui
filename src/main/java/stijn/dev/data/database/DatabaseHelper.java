@@ -20,8 +20,8 @@ public class DatabaseHelper {
         romImportRecords = romImportRecordsIn;
     }
 
-    public static void importRoms(List<RomImportRecord> romImportRecordsIn){
-        setRomImportRecords(romImportRecordsIn);
+    public static void importRoms(List<RomDatabaseRecord> romImportRecordsIn){
+        //setRomImportRecords(romImportRecordsIn);
         String platform = romImportRecords.get(0).platform().getValue();
         String query = "Match (platform:Platform {PlatformName:'"+platform+"'}) RETURN platform.PlatformName";
         System.out.println("Running Query: "+ query);
@@ -31,12 +31,16 @@ public class DatabaseHelper {
         if(!systemExistsInDatabase){
             importSystem(platform);
         }
-        ArrayList<Game> games = XMLParser.parseGames(romImportRecords);
-        importGame(games);
+        //ArrayList<Game> games =
+        //importGame(games);
     }
 
     private static void importGame(ArrayList<Game> games) {
         //TODO add image scrapers
+        //TODO add relationship 'GAME_ON_PLATFORM' with Platform
+        //TODO add relationship 'GAME_PUBLISHED_BY' with Publisher
+        //TODO add relationship 'RELEASE_DATE_OF' with DATE and relationship DATE - 'RELEASED_IN' - TERRITORY
+        //TODO add relationship 'STAFF_WORKED_ON' with STAFF
     }
 
     private static void importSystem(String platform) {

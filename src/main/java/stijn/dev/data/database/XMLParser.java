@@ -6,6 +6,7 @@ import java.util.*;
 
 import com.google.common.base.*;
 import com.google.common.collect.*;
+import javafx.beans.property.*;
 import javafx.util.*;
 import nu.xom.*;
 import nu.xom.Builder;
@@ -21,20 +22,24 @@ public class XMLParser {
     private static File gamesAndPlatforms = new File(metadataFolder+"\\Files.xml");
     private static File gameControllers = new File(metadataFolder+"\\GameControllers.xml");
 
-    public static ArrayList<Game> parseGames(List<RomImportRecord> romImportRecords){
-        ArrayList<Game> results = new ArrayList<>();
+    public static ArrayList<RomDatabaseComparingRecord> parseGames(List<RomImportRecord> romImportRecords){
+        ArrayList<RomDatabaseComparingRecord> results = new ArrayList<>();
         try{
             Builder parser = new Builder();
             Document doc = parser.build(gamesAndPlatforms);
-            Elements files = doc.getRootElement().getChildElements("File");
-            for (Element file : files) {
-                for (String searchTerm : searchTerms) {
-                    String gameTitle = file.getFirstChildElement("GameName").getValue();
-                    if(gameTitle.toLowerCase().contains(searchTerm)||gameTitle.toLowerCase().matches(searchTerm)){
-                        String platform = file.getFirstChildElement("Platform").getValue();
-                        results.put(searchTerm,new Pair<>(platform,gameTitle));
+            Elements files = doc.getRootElement().getChildElements("Game");
+            for (RomImportRecord rom : romImportRecords) {
+                HashMap<StringProperty, StringProperty> databaseId = new HashMap<>();
+                for (Element file : files) {
+                    String gameTitle = file.getFirstChildElement("Name").getValue();
+                    if(gameTitle.toLowerCase().contains(rom.title().getValue())||gameTitle.toLowerCase().matches(rom.title().getValue())){
+                        databaseId.put(new SimpleStringProperty(file.getFirstChildElement("DatabaseID").getValue()),new SimpleStringProperty(gameTitle));
                     }
                 }
+                if(databaseId.isEmpty()){
+                    databaseId.put(new SimpleStringProperty("Not Found"),new SimpleStringProperty("Not Found"));
+                }
+                results.add(new RomDatabaseComparingRecord(rom, databaseId));
             }
         } catch (ParsingException e) {
             System.out.println("Something went wrong parsing the document");

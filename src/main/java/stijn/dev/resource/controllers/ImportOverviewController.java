@@ -4,13 +4,16 @@ import javafx.collections.*;
 import javafx.collections.transformation.*;
 import javafx.event.*;
 import javafx.fxml.*;
+import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.stage.*;
 import org.controlsfx.control.tableview2.*;
 import org.controlsfx.control.tableview2.cell.*;
 import stijn.dev.data.database.*;
 import stijn.dev.records.*;
+import stijn.dev.resource.*;
 
+import java.io.*;
 import java.net.*;
 import java.util.*;
 
@@ -22,7 +25,8 @@ public class ImportOverviewController implements Initializable{
     private Button nextButton;
     @FXML
     private Button backButton;
-
+    private static Stage stage;
+    private static Parent root;
     ObservableList<RomImportRecord> roms;
 
 
@@ -36,12 +40,22 @@ public class ImportOverviewController implements Initializable{
     }
 
     public void onNext(ActionEvent event){
-        roms.forEach(record->{
-            System.out.println(record.toString());
-        });
-        DatabaseHelper.importRoms(roms.stream().toList());
-//        Stage stage = (Stage) nextButton.getScene().getWindow();
-//        stage.close();
+//        roms.forEach(record->{
+//            System.out.println(record.toString());
+//        });
+        List<RomDatabaseComparingRecord> databaseComparingRecords = XMLParser.parseGames(roms);
+        System.out.println("switching to ImportDatabaseComparison scene");
+        try {
+            FXMLLoader loader = new FXMLLoader(FrontEndApplication.class.getResource("importDatabaseSelection.fxml"));
+            root = loader.load();
+            ImportDatabaseSelectionController importDatabaseSelectionController = loader.getController();
+            importDatabaseSelectionController.setRomDatabaseComparingRecords(FXCollections.observableList(databaseComparingRecords));
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         //TODO Make it close the diaglogue box and run the import sequence
     }
 
@@ -81,5 +95,21 @@ public class ImportOverviewController implements Initializable{
             overviewTable.getColumns().add(scrapeAsColumn);
         }
         overviewTable.setRowHeaderVisible(true);
+    }
+
+    public static Stage getStage() {
+        return stage;
+    }
+
+    public static void setStage(Stage stage) {
+        ImportOverviewController.stage = stage;
+    }
+
+    public static Parent getRoot() {
+        return root;
+    }
+
+    public static void setRoot(Parent root) {
+        ImportOverviewController.root = root;
     }
 }

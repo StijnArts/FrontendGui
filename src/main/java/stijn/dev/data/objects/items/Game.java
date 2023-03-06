@@ -24,4 +24,36 @@ public class Game extends Item{
             this.path = path;
         }
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public int getGameId() {
+        return GameId;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public HowLongToBeatData getHLTBData() {
+        return HLTBData;
+    }
+
+    public String getLaunchParameters() {
+        return launchParameters;
+    }
+
+    public double getPriority() {
+        return priority;
+    }
+
+    public Emulator getEmulator() {
+        return emulator;
+    }
 }
