@@ -36,6 +36,7 @@ public class ImportPlatformSelectionController implements Initializable {
     private String importingAsPlatform = "";
     private String scrapeAsPlatform = "";
     private HashMap<String,String> extensionsForPlatforms = new HashMap<>();
+    private HashMap<String,String> regionMarkers = new HashMap<>();
     public void setFiles(List<File> files) {
         this.files = files;
     }
@@ -118,9 +119,9 @@ public class ImportPlatformSelectionController implements Initializable {
         for (File file: files){
             String filename = file.getName();
             String cleanFilename = FilenameService.cleanFilename(filename);
-            //String region = getFileRegion(filename.getKey());
+            String region = getFileRegion(filename);
             //TODO region finding
-            String region = "(USA)";
+            //String region = "(USA)";
             romImportRecords.add(new RomImportRecord(new SimpleStringProperty(file.getPath()),
                     new SimpleStringProperty(FilenameService.extractFileExtension(file)), new SimpleStringProperty(cleanFilename),
                     new SimpleStringProperty(region), new SimpleStringProperty(platform), new SimpleStringProperty(scrapeAsPlatform)));
@@ -232,6 +233,30 @@ public class ImportPlatformSelectionController implements Initializable {
         extensionsForPlatforms.put("lnk","Windows");
         extensionsForPlatforms.put("url","Windows");
         extensionsForPlatforms.put("cda","Windows");
+    }
+
+    private void fillRegionSignifiersList(){
+        regionMarkers.put("J","Japan");
+        regionMarkers.put("Japan","Japan");
+        regionMarkers.put("USA","USA");
+    }
+
+    private static String getFileRegion(String filename) {
+        List<String> segments = Arrays.stream(filename.split("\\(|\\)")).toList();
+        String returnRegion ="";
+        for (String region : segments) {
+            region = region.toLowerCase().replace('(',' ').replace(')',' ').trim();
+            System.out.println("Trying segment: "+region);
+            if (region.equals("j") || region.equals("japan")) {
+                returnRegion = "Japan";
+            } else if (region.equals("usa")) {
+                returnRegion = "USA";
+            }
+        }
+        if(returnRegion.isEmpty()||returnRegion==null){
+            return "N.A";
+        }
+        return returnRegion;
     }
 
     public Stage getStage() {
