@@ -10,19 +10,19 @@ import static org.neo4j.driver.Values.parameters;
 
 public class DatabaseHelper {
     private static Neo4JDatabaseHelper neo4JDatabaseHelper = new Neo4JDatabaseHelper();
-    private static List<RomImportRecord> romImportRecords;
+    private static List<RomDatabaseRecord> romImportRecords;
 
-    public static List<RomImportRecord> getRomImportRecords() {
+    public static List<RomDatabaseRecord> getRomImportRecords() {
         return romImportRecords;
     }
 
-    private static void setRomImportRecords(List<RomImportRecord> romImportRecordsIn) {
+    private static void setRomImportRecords(List<RomDatabaseRecord> romImportRecordsIn) {
         romImportRecords = romImportRecordsIn;
     }
 
-    public static void importRoms(List<RomDatabaseRecord> romImportRecordsIn){
-        //setRomImportRecords(romImportRecordsIn);
-        String platform = romImportRecords.get(0).platform().getValue();
+    public static void importRoms(List<RomDatabaseRecord> romDatabaseRecords){
+        setRomImportRecords(romDatabaseRecords);
+        String platform = romImportRecords.get(0).platform();
         String query = "Match (platform:Platform {PlatformName:'"+platform+"'}) RETURN platform.PlatformName";
         System.out.println("Running Query: "+ query);
         Result systemExistsCheckResult = neo4JDatabaseHelper.runQuery(query);

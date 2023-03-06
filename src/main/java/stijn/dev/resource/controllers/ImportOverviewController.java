@@ -43,19 +43,10 @@ public class ImportOverviewController implements Initializable{
 //        roms.forEach(record->{
 //            System.out.println(record.toString());
 //        });
-        List<RomDatabaseComparingRecord> databaseComparingRecords = XMLParser.parseGames(roms);
+        List<RomDatabaseRecord> databaseRecords = XMLParser.parseGames(roms);
+        DatabaseHelper.importRoms(databaseRecords);
         System.out.println("switching to ImportDatabaseComparison scene");
-        try {
-            FXMLLoader loader = new FXMLLoader(FrontEndApplication.class.getResource("importDatabaseSelection.fxml"));
-            root = loader.load();
-            ImportDatabaseSelectionController importDatabaseSelectionController = loader.getController();
-            importDatabaseSelectionController.setRomDatabaseComparingRecords(FXCollections.observableList(databaseComparingRecords));
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+
         //TODO Make it close the diaglogue box and run the import sequence
     }
 

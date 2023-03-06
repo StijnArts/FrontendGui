@@ -10,6 +10,7 @@ import javafx.beans.property.*;
 import javafx.util.*;
 import nu.xom.*;
 import nu.xom.Builder;
+import org.apache.commons.lang3.*;
 import stijn.dev.data.objects.items.*;
 import stijn.dev.records.*;
 import stijn.dev.service.*;
@@ -21,35 +22,102 @@ public class XMLParser {
     private static File platforms = new File(metadataFolder+"\\Platforms.xml");
     private static File gamesAndPlatforms = new File(metadataFolder+"\\Files.xml");
     private static File gameControllers = new File(metadataFolder+"\\GameControllers.xml");
-
-    public static ArrayList<RomDatabaseComparingRecord> parseGames(List<RomImportRecord> romImportRecords){
-        ArrayList<RomDatabaseComparingRecord> results = new ArrayList<>();
+    private static boolean noMatchFound = true;
+    private static int lowestDatabaseID = 0;
+    public static ArrayList<RomDatabaseRecord> parseGames(List<RomImportRecord> romImportRecords){
+        ArrayList<RomDatabaseRecord> results = new ArrayList<>();
         try{
             Builder parser = new Builder();
-            Document doc = parser.build(gamesAndPlatforms);
+            Document doc = parser.build(metadata);
             Elements files = doc.getRootElement().getChildElements("Game");
             for (RomImportRecord rom : romImportRecords) {
-                HashMap<StringProperty, StringProperty> databaseId = new HashMap<>();
-                for (Element file : files) {
-                    String gameTitle = file.getFirstChildElement("Name").getValue();
-                    if(gameTitle.toLowerCase().contains(rom.title().getValue())||gameTitle.toLowerCase().matches(rom.title().getValue())){
-                        databaseId.put(new SimpleStringProperty(file.getFirstChildElement("DatabaseID").getValue()),new SimpleStringProperty(gameTitle));
-                    }
-                }
-                if(databaseId.isEmpty()){
-                    databaseId.put(new SimpleStringProperty("Not Found"),new SimpleStringProperty("Not Found"));
-                }
-                results.add(new RomDatabaseComparingRecord(rom, databaseId));
+                results.add(checkRomToDatabase(rom, files));
             }
+
         } catch (ParsingException e) {
             System.out.println("Something went wrong parsing the document");
         } catch (IOException e) {
             System.out.println("Document not found!");
         }
-        results.forEach(game-> System.out.println(game.toString()));
+        //results.forEach(game-> System.out.println(game.toString()));
         return results;
     }
 
+    public static RomDatabaseRecord checkRomToDatabase(RomImportRecord rom, Elements files){
+        noMatchFound = true;
+        lowestDatabaseID = 0;
+        HashMap<String, String> databaseId = new HashMap<>();
+        System.out.println( rom.title().getValue());
+
+
+        String mostMatchingContainingDatabaseId = null;
+        String mostMatchingContainingGameTitle =null;
+        for (Element file : files) {
+            String gameTitle = file.getFirstChildElement("Name").getValue();
+            String platform = file.getFirstChildElement("Platform").getValue();
+            if (platform.equals(rom.scrapeAsPlatform().getValue())) {
+                if (StringUtils.stripAccents(gameTitle).toLowerCase().matches(rom.title().getValue().toLowerCase())) {
+                    return new RomDatabaseRecord(rom.fullFilename().getValue(),gameTitle,rom.region().getValue(),
+                            rom.platform().getValue(),file.getFirstChildElement("DatabaseID").getValue());
+                }
+                if (StringUtils.stripAccents(gameTitle).toLowerCase().contains(rom.title().getValue().toLowerCase())) {
+                    if (Integer.valueOf(file.getFirstChildElement("DatabaseID").getValue()) < lowestDatabaseID || lowestDatabaseID == 0) {
+                        lowestDatabaseID = Integer.valueOf(file.getFirstChildElement("DatabaseID").getValue());
+                        mostMatchingContainingDatabaseId = file.getFirstChildElement("DatabaseID").getValue();
+                        mostMatchingContainingGameTitle = gameTitle;
+                    }
+                }
+            }
+        }
+        if(null!=mostMatchingContainingDatabaseId){
+            return new RomDatabaseRecord(rom.fullFilename().getValue(),mostMatchingContainingGameTitle,rom.region().getValue(),
+                    rom.platform().getValue(),mostMatchingContainingDatabaseId);
+        }
+        int highestMatchRating = 0;
+
+        String mostMatchingDatabaseID ="0";
+        String mostMatchingGameTitle = "";
+        for (Element file : files){
+
+            int matchRating = 0;
+            String gameTitle = file.getFirstChildElement("Name").getValue();
+            String platform = file.getFirstChildElement("Platform").getValue();
+            if(noMatchFound) {
+                int gameTitleSegments= gameTitle.split(" ").length;
+                for (String segment : rom.title().getValue().split(" ")) {
+                    if(StringUtils.stripAccents(gameTitle).toLowerCase().contains(segment.toLowerCase())
+                            &&platform.equals(rom.scrapeAsPlatform().getValue())){
+                        matchRating++;
+                    }
+                    if(matchRating>highestMatchRating && matchRating>=gameTitleSegments/2){
+                        mostMatchingDatabaseID= file.getFirstChildElement("DatabaseID").getValue();
+                        mostMatchingGameTitle=gameTitle;
+                        highestMatchRating=matchRating;
+                        if(Integer.valueOf(mostMatchingDatabaseID)<lowestDatabaseID){
+                            lowestDatabaseID = Integer.valueOf(mostMatchingDatabaseID);
+                        }
+                    } else if(matchRating==highestMatchRating&&Integer.valueOf(file.getFirstChildElement("DatabaseID").getValue())<lowestDatabaseID){
+                        mostMatchingDatabaseID= file.getFirstChildElement("DatabaseID").getValue();
+                        mostMatchingGameTitle=gameTitle;
+                        highestMatchRating=matchRating;
+                    }
+
+                }
+            }
+        }
+        if(noMatchFound && highestMatchRating>=2){
+            return new RomDatabaseRecord(rom.fullFilename().getValue(),mostMatchingGameTitle,rom.region().getValue(),
+                    rom.platform().getValue(),mostMatchingDatabaseID);
+        } else{
+            return new RomDatabaseRecord(rom.fullFilename().getValue(),rom.title().getValue(),rom.region().getValue(),
+                    rom.platform().getValue(),"Not Found");
+        }
+    }
+
+    private Pair<String, String> checkFullName(RomImportRecord rom,Elements files){
+
+        return null;
+    }
 
 
 //    try{

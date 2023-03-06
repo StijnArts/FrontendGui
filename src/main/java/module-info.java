@@ -6,6 +6,7 @@ module stijn.dev.frontendgui {
     requires nu.xom;
     requires com.google.common;
     requires org.controlsfx.controls;
+    requires org.apache.commons.lang3;
 
     opens stijn.dev.resource to javafx.fxml;
     exports stijn.dev.resource;

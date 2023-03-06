@@ -105,6 +105,7 @@ public class ImportPlatformSelectionController implements Initializable {
         ArrayList<String> fileExtensions = FilenameService.extractFileExtensions(files);
         ArrayList<String> platforms = platformFromExtension(fileExtensions);
         if (platforms.size() < 1 || !platforms.contains(MULTIPLE) || !platforms.contains(NOT_RECOGNIZED)) {
+            //TODO Check the folder name when multiple platforms are detected
             platformComboBox.setValue(platforms.get(0));
             scrapeAsPlatformComboBox.setValue(platforms.get(0));
         }
