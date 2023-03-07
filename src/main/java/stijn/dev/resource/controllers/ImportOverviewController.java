@@ -43,7 +43,8 @@ public class ImportOverviewController implements Initializable{
 //        roms.forEach(record->{
 //            System.out.println(record.toString());
 //        });
-        List<RomDatabaseRecord> databaseRecords = XMLParser.parseGames(roms);
+        XMLParser parser = new XMLParser();
+        List<RomDatabaseRecord> databaseRecords = parser.parseGames(roms);//TODO change it to return games instead
         DatabaseHelper.importRoms(databaseRecords);
         System.out.println("switching to ImportDatabaseComparison scene");
 

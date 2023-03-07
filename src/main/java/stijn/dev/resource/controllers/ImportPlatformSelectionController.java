@@ -101,7 +101,7 @@ public class ImportPlatformSelectionController implements Initializable {
         });
     }
 
-    public void processRoms() {
+    public void processPlatforms() {
         ArrayList<String> fileExtensions = FilenameService.extractFileExtensions(files);
         ArrayList<String> platforms = platformFromExtension(fileExtensions);
         if (platforms.size() < 1 || !platforms.contains(MULTIPLE) || !platforms.contains(NOT_RECOGNIZED)) {
@@ -112,8 +112,6 @@ public class ImportPlatformSelectionController implements Initializable {
         List<String> platformList = XMLParser.getPlatforms();
         platformComboBox.getItems().addAll(platformList);
         scrapeAsPlatformComboBox.getItems().addAll(platformList);
-
-
     }
 
     public static List<RomImportRecord> parseRoms(List<File> files, String platform, String scrapeAsPlatform){

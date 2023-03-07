@@ -1,6 +1,5 @@
 package stijn.dev.service;
 
-import javafx.event.*;
 import javafx.fxml.*;
 import javafx.scene.*;
 import javafx.scene.input.*;
@@ -38,7 +37,7 @@ public class RomImportDragAndDroppable {
 
             importPlatformSelectionController.setFiles(files);
 
-            importPlatformSelectionController.processRoms();
+            importPlatformSelectionController.processPlatforms();
             Stage stage = new Stage();
             Stage mainWindow = (Stage) pane.getScene().getWindow();
             stage.initOwner(mainWindow);
