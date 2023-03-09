@@ -14,51 +14,30 @@ import java.util.*;
 import static stijn.dev.resource.FrontEndApplication.importProcessIsRunning;
 
 public class RomImportDragAndDroppable {
-    private static Parent root;
-    public static void createDragAndDropBehavior(Node pane) {
-        pane.setOnDragOver(dragEvent -> {
-            if (dragEvent.getGestureSource() != pane && dragEvent.getDragboard().hasFiles()){
+    public void createDragAndDropBehavior(Node node) {
+        setOnDragOver(node);
+        setOnDragDropped(node);
+    }
+
+    private void setOnDragOver(Node node){
+        node.setOnDragOver(dragEvent -> {
+            if (dragEvent.getGestureSource() != node && dragEvent.getDragboard().hasFiles()){
                 dragEvent.acceptTransferModes(TransferMode.LINK);
             }
             dragEvent.consume();
         });
-        pane.setOnDragDropped(dragEvent -> {
+    }
+
+    private void setOnDragDropped(Node node){
+        node.setOnDragDropped(dragEvent -> {
             Dragboard dragboard = dragEvent.getDragboard();
             boolean success = dragboard.hasFiles();
-
-            //Code Execution here
             if(!importProcessIsRunning){
-                List<File> files = dragboard.getFiles();
-                ImportProcess importProcess = new ImportProcess(files, pane);
-                Thread thread = new Thread(importProcess);
+                Thread thread = ImportProcess.createImportProcess(dragboard, node);
                 thread.run();
-                importProcessIsRunning =true;
             }
-
-//            FXMLLoader loader = new FXMLLoader(FrontEndApplication.class.getResource("importPlatformSelection.fxml"));
-//
-//            try {
-//                root = loader.load();
-//            } catch (IOException e) {
-//                throw new RuntimeException(e);
-//            }
-//            ImportPlatformSelectionController importPlatformSelectionController = loader.getController();
-//
-//
-//            importPlatformSelectionController.setFiles(files);
-//
-//            importPlatformSelectionController.processPlatforms();
-//            Stage stage = new Stage();
-//            Stage mainWindow = (Stage) pane.getScene().getWindow();
-//            stage.initOwner(mainWindow);
-//            importPlatformSelectionController.setStage(stage);
-//            Scene scene = new Scene(root);
-//            stage.setScene(scene);
-//            stage.show();
             dragEvent.setDropCompleted(success);
             dragEvent.consume();
         });
     }
-
-
 }

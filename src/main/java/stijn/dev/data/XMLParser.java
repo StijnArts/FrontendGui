@@ -1,9 +1,11 @@
-package stijn.dev.data.database;
+package stijn.dev.data;
 
 import java.io.*;
 import java.time.*;
 import java.util.*;
 
+import javafx.beans.property.*;
+import javafx.collections.*;
 import javafx.util.*;
 import nu.xom.*;
 import nu.xom.Builder;
@@ -11,6 +13,7 @@ import org.apache.commons.lang3.*;
 import stijn.dev.data.*;
 import stijn.dev.data.objects.items.*;
 import stijn.dev.records.*;
+import stijn.dev.service.*;
 
 
 public class XMLParser {
@@ -21,6 +24,11 @@ public class XMLParser {
     private static File gameControllers = new File(metadataFolder+"\\GameControllers.xml");
     private static boolean noMatchFound = true;
     private static int lowestDatabaseID = 0;
+
+    public static String importingAsPlatform = "";
+    public static String scrapeAsPlatform = "";
+
+
     public ArrayList<Game> parseGames(List<RomImportRecord> romImportRecords){
         double startTime = System.currentTimeMillis();
         ArrayList<Game> results = new ArrayList<>();
@@ -230,6 +238,24 @@ public class XMLParser {
         for (int i = 0; i < n; i++) {
             System.out.println(' ');
         }
+    }
+
+    public static ObservableList<RomImportRecord> parseRoms(List<File> files){
+        List<RomImportRecord> romImportRecords=new ArrayList<>();
+        for (File file: files){
+            String filename = file.getName();
+            String cleanFilename = FilenameUtil.cleanFilename(filename);
+            String region = RegionUtil.getFileRegion(filename);
+            romImportRecords.add(new RomImportRecord(new SimpleStringProperty(file.getPath()),
+                    new SimpleStringProperty(FilenameUtil.extractFileExtension(file)), new SimpleStringProperty(cleanFilename),
+                    new SimpleStringProperty(region), new SimpleStringProperty(importingAsPlatform), new SimpleStringProperty(scrapeAsPlatform)));
+        }
+        readResults(romImportRecords);
+        return FXCollections.observableList(romImportRecords);
+    }
+
+    private static void readResults(List<RomImportRecord> romImportRecords) {
+        romImportRecords.stream().forEach(romImportRecord -> System.out.println(romImportRecord));
     }
 
     public static List<String> getPlatforms() {

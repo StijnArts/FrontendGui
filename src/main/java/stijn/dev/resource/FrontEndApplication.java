@@ -19,15 +19,6 @@ public class FrontEndApplication extends Application {
         Scene scene = new Scene(root);
         String css = this.getClass().getResource("demo.css").toExternalForm();
         scene.getStylesheets().add(css);
-        Text text = new Text();
-        text.setText("Text");
-        text.setX(50);
-        text.setY(50);
-
-        Image icon = new Image("C:\\Users\\stijn\\Desktop\\Front End project\\FrontendGui\\src\\main\\resources\\icons\\library-icon.png");
-        ImageView imageView = new ImageView(icon);
-        imageView.setX(100);
-        imageView.setY(100);
         primaryStage.setScene(scene);
         primaryStage.show();
     }

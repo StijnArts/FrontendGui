@@ -1,6 +1,7 @@
 package stijn.dev.data.database;
 
 import org.neo4j.driver.*;
+import stijn.dev.data.*;
 import stijn.dev.data.objects.items.*;
 import stijn.dev.resource.*;
 

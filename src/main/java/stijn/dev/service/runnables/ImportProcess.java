@@ -6,9 +6,12 @@ import javafx.scene.input.*;
 import javafx.stage.*;
 import stijn.dev.resource.*;
 import stijn.dev.resource.controllers.*;
+import stijn.dev.service.javafx.*;
 
 import java.io.*;
 import java.util.*;
+
+import static stijn.dev.resource.FrontEndApplication.importProcessIsRunning;
 
 public class ImportProcess implements Runnable{
     private List<File> files;
@@ -20,31 +23,21 @@ public class ImportProcess implements Runnable{
     }
     @Override
     public void run() {
-        FXMLLoader loader = new FXMLLoader(FrontEndApplication.class.getResource("importPlatformSelection.fxml"));
-
-        try {
-            root = loader.load();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        ImportPlatformSelectionController importPlatformSelectionController = loader.getController();
-
-
-        importPlatformSelectionController.setFiles(files);
-
-        importPlatformSelectionController.processPlatforms();
-        Stage stage = new Stage();
-        Stage mainWindow = (Stage) node.getScene().getWindow();
-        stage.initOwner(mainWindow);
-        importPlatformSelectionController.setStage(stage);
+        FXMLLoader loader = FXMLLoaderUtil.createFMXLLoader("importPlatformSelection.fxml");
+        root = RootUtil.createRoot(loader);
+        Stage stage = StageUtil.createStageFromExistingNode(node);
         Scene scene = new Scene(root);
-
-        importPlatformSelectionController.setScene(scene);
-        importPlatformSelectionController.setKeyBehavior();
+        ImportPlatformSelectionController.create(loader, files, stage, scene); loader.getController();
         stage.setScene(scene);
-        stage.setOnCloseRequest(event->{
-            FrontEndApplication.importProcessIsRunning = false;
-        });
+        stage.setOnHidden(event->{FrontEndApplication.importProcessIsRunning = false;});
         stage.show();
+    }
+
+    public static Thread createImportProcess(Dragboard dragboard, Node node){
+        List<File> files = dragboard.getFiles();
+        ImportProcess importProcess = new ImportProcess(files, node);
+        Thread thread = new Thread(importProcess);
+        importProcessIsRunning =true;
+        return thread;
     }
 }

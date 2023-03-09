@@ -1,7 +1,6 @@
 package stijn.dev.resource.controllers;
 
 import javafx.collections.*;
-import javafx.collections.transformation.*;
 import javafx.event.*;
 import javafx.fxml.*;
 import javafx.scene.*;
@@ -10,16 +9,17 @@ import javafx.scene.input.*;
 import javafx.stage.*;
 import org.controlsfx.control.tableview2.*;
 import org.controlsfx.control.tableview2.cell.*;
+import stijn.dev.data.*;
 import stijn.dev.data.database.*;
 import stijn.dev.data.objects.items.*;
 import stijn.dev.records.*;
-import stijn.dev.resource.*;
+import stijn.dev.service.javafx.*;
 
 import java.io.*;
 import java.net.*;
 import java.util.*;
 
-public class ImportOverviewController implements Initializable{
+public class ImportOverviewController{
 
     @FXML
     private FilteredTableView<RomImportRecord> overviewTable;
@@ -27,25 +27,33 @@ public class ImportOverviewController implements Initializable{
     private Button nextButton;
     @FXML
     private Button backButton;
-    private static Stage stage;
-    private static Parent root;
-    private static Scene scene;
-    ObservableList<RomImportRecord> roms;
+    private Stage stage;
+    private Parent root;
+    private Scene scene;
+    private List<File> files;
+
+    private ObservableList<RomImportRecord> roms;
 
     public List<RomImportRecord> getRoms() {
         return roms;
     }
 
-    public void setRoms(List<RomImportRecord> roms) {
-        this.roms = FXCollections.observableList(roms);
+    public void setRoms(ObservableList<RomImportRecord> roms) {
+        this.roms = roms;
         setTable();
     }
 
-    public void onNext(ActionEvent event){
-//        roms.forEach(record->{
-//            System.out.println(record.toString());
-//        });
+    public void onNext(){
         importRoms();
+    }
+
+    public void onBack(){
+        FXMLLoader loader = FXMLLoaderUtil.createFMXLLoader("importPlatformSelection.fxml");
+        root = RootUtil.createRoot(loader);
+        Scene scene = new Scene(root, this.scene.getWidth(),this.scene.getHeight());
+        ImportPlatformSelectionController.create(loader, files, stage, scene, XMLParser.importingAsPlatform,XMLParser.scrapeAsPlatform);
+        stage.setScene(scene);
+        stage.show();
     }
 
     public void importRoms(){
@@ -53,12 +61,6 @@ public class ImportOverviewController implements Initializable{
         XMLParser parser = new XMLParser();
         List<Game> databaseRecords = parser.parseGames(roms);
         DatabaseHelper.importRoms(databaseRecords);
-    }
-
-
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-
     }
 
     public void setKeyBehavior(){
@@ -101,27 +103,46 @@ public class ImportOverviewController implements Initializable{
         overviewTable.setRowHeaderVisible(true);
     }
 
-    public static Stage getStage() {
+    public static ImportOverviewController create(FXMLLoader loader, List<File> files, Stage stage, Scene scene){
+        ImportOverviewController ioc = loader.getController();
+        ioc.configure(files, stage, scene);
+        return ioc;
+    }
+
+    public void configure(List<File> files, Stage stage, Scene scene){
+        this.files = files;
+        this.roms = XMLParser.parseRoms(files);
+        this.stage = stage;
+        this.scene = scene;
+        setTable();
+        setKeyBehavior();
+    }
+
+    public Stage getStage() {
         return stage;
     }
 
-    public static void setStage(Stage stage) {
-        ImportOverviewController.stage = stage;
+    public void setStage(Stage stage) {
+        this.stage = stage;
     }
 
-    public static Parent getRoot() {
+    public Parent getRoot() {
         return root;
     }
 
-    public static void setRoot(Parent root) {
-        ImportOverviewController.root = root;
+    public void setRoot(Parent root) {
+        this.root = root;
     }
 
-    public static Scene getScene() {
+    public Scene getScene() {
         return scene;
     }
 
-    public static void setScene(Scene scene) {
-        ImportOverviewController.scene = scene;
+    public void setScene(Scene scene) {
+        this.scene = scene;
+    }
+
+    public void setFiles(List<File> files) {
+        this.files = files;
     }
 }

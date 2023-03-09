@@ -9,6 +9,7 @@ module stijn.dev.frontendgui {
     requires org.apache.commons.lang3;
     requires htmlunit;
     requires org.jsoup;
+    requires com.google.guice;
 
     opens stijn.dev.resource to javafx.fxml;
     exports stijn.dev.resource;
