@@ -17,9 +17,9 @@ public class DemoController extends SceneController implements Initializable{
     @FXML
     private AnchorPane pane;
     public void playGame(ActionEvent e){
-        Emulator emulator = new Emulator("bsnes", "D:\\Emulator Installs\\bsnes_v115-windows\\bsnes.exe");
-        Game game = new Game("", "L:\\Super Nintendo Entertainment System\\Super Mario World (U) [!].smc");
-        Process process = emulator.launchGame(game);
+//        Emulator emulator = new Emulator("bsnes", "D:\\Emulator Installs\\bsnes_v115-windows\\bsnes.exe");
+//        Game game = new Game("", "L:\\Super Nintendo Entertainment System\\Super Mario World (U) [!].smc");
+//        Process process = emulator.launchGame(game);
     }
 
     public void switchToImportScreen(ActionEvent event) throws IOException {

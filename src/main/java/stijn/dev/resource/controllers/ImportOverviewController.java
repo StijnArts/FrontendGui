@@ -6,10 +6,12 @@ import javafx.event.*;
 import javafx.fxml.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
+import javafx.scene.input.*;
 import javafx.stage.*;
 import org.controlsfx.control.tableview2.*;
 import org.controlsfx.control.tableview2.cell.*;
 import stijn.dev.data.database.*;
+import stijn.dev.data.objects.items.*;
 import stijn.dev.records.*;
 import stijn.dev.resource.*;
 
@@ -27,8 +29,8 @@ public class ImportOverviewController implements Initializable{
     private Button backButton;
     private static Stage stage;
     private static Parent root;
+    private static Scene scene;
     ObservableList<RomImportRecord> roms;
-
 
     public List<RomImportRecord> getRoms() {
         return roms;
@@ -43,18 +45,28 @@ public class ImportOverviewController implements Initializable{
 //        roms.forEach(record->{
 //            System.out.println(record.toString());
 //        });
-        XMLParser parser = new XMLParser();
-        List<RomDatabaseRecord> databaseRecords = parser.parseGames(roms);//TODO change it to return games instead
-        DatabaseHelper.importRoms(databaseRecords);
-        System.out.println("switching to ImportDatabaseComparison scene");
+        importRoms();
+    }
 
-        //TODO Make it close the diaglogue box and run the import sequence
+    public void importRoms(){
+        stage.close();
+        XMLParser parser = new XMLParser();
+        List<Game> databaseRecords = parser.parseGames(roms);
+        DatabaseHelper.importRoms(databaseRecords);
     }
 
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
+    }
+
+    public void setKeyBehavior(){
+        scene.setOnKeyPressed(keyEvent -> {
+            if(keyEvent.getCode()== KeyCode.ENTER){
+                importRoms();
+            }
+        });
     }
 
     private void setTable() {
@@ -103,5 +115,13 @@ public class ImportOverviewController implements Initializable{
 
     public static void setRoot(Parent root) {
         ImportOverviewController.root = root;
+    }
+
+    public static Scene getScene() {
+        return scene;
+    }
+
+    public static void setScene(Scene scene) {
+        ImportOverviewController.scene = scene;
     }
 }

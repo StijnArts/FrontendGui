@@ -5,18 +5,16 @@ import java.util.*;
 
 public class Platform extends Item {
     private String platformName;
-    //TODO create territory's and releasedate relationships for releasedate attribute
     private HashMap<String, LocalDate> releaseDates;
-    //TODO create developer if not exists
     private String publisher;
     private String description;
     private Emulator defaultEmulator;
     private HashMap<String,String> specs;
-    private int maxPlayers;
+    private String maxPlayers;
     private String category;
 
     public Platform(String systemName, HashMap<String, LocalDate> releaseDates, String developer, String description,
-                    HashMap<String,String> specs, int maxPlayers, String category){
+                    HashMap<String,String> specs, String maxPlayers, String category){
         this.platformName = systemName;
         this.releaseDates =releaseDates;
         this.publisher = developer;
@@ -50,7 +48,7 @@ public class Platform extends Item {
         return specs;
     }
 
-    public int getMaxPlayers() {
+    public String getMaxPlayers() {
         return maxPlayers;
     }
 

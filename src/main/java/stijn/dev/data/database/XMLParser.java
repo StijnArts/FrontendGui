@@ -8,6 +8,7 @@ import javafx.util.*;
 import nu.xom.*;
 import nu.xom.Builder;
 import org.apache.commons.lang3.*;
+import stijn.dev.data.*;
 import stijn.dev.data.objects.items.*;
 import stijn.dev.records.*;
 
@@ -20,9 +21,9 @@ public class XMLParser {
     private static File gameControllers = new File(metadataFolder+"\\GameControllers.xml");
     private static boolean noMatchFound = true;
     private static int lowestDatabaseID = 0;
-    public ArrayList<RomDatabaseRecord> parseGames(List<RomImportRecord> romImportRecords){
+    public ArrayList<Game> parseGames(List<RomImportRecord> romImportRecords){
         double startTime = System.currentTimeMillis();
-        ArrayList<RomDatabaseRecord> results = new ArrayList<>();
+        ArrayList<Game> results = new ArrayList<>();
         try{
             Builder parser = new Builder();
             Document doc = parser.build(metadata);
@@ -38,7 +39,6 @@ public class XMLParser {
         } catch (IOException e) {
             System.out.println("Document not found!");
         }
-        results.forEach(game-> System.out.println(game.toString()));
         double endTime = System.currentTimeMillis();
         System.out.println("Parsing roms took: "+(endTime-startTime)+"ms.");
         return results;
@@ -46,12 +46,12 @@ public class XMLParser {
     public class CheckRomToDatabase implements Runnable{
         private RomImportRecord rom;
         private Elements files;
-        private List<RomDatabaseRecord> results;
-        public List<RomDatabaseRecord> getResults(){
+        private List<Game> results;
+        public List<Game> getResults(){
             return results;
         }
 
-        public CheckRomToDatabase(RomImportRecord rom , Elements files, List<RomDatabaseRecord> results){
+        public CheckRomToDatabase(RomImportRecord rom , Elements files, List<Game> results){
             this.rom = rom;
             this.files = files;
             this.results = results;
@@ -66,33 +66,33 @@ public class XMLParser {
 
                 String mostMatchingContainingDatabaseId = null;
                 String mostMatchingContainingGameTitle =null;
+                Element mostMatchingContainingFile = null;
                 for (Element file : files) {
                     String gameTitle = file.getFirstChildElement("Name").getValue();
                     String platform = file.getFirstChildElement("Platform").getValue();
                     if (platform.equals(rom.scrapeAsPlatform().getValue())) {
-                        if (StringUtils.stripAccents(gameTitle).toLowerCase().matches(rom.title().getValue().toLowerCase())) {
-                            results.add(new RomDatabaseRecord(rom.fullFilename().getValue(),gameTitle,rom.region().getValue(),
-                                    rom.platform().getValue(),file.getFirstChildElement("DatabaseID").getValue()));
+                        if (StringUtils.stripAccents(gameTitle).toLowerCase().matches(StringUtils.stripAccents(rom.title().getValue().toLowerCase()))) {
+                            createGame(file);
                             return;
                         }
-                        if (StringUtils.stripAccents(gameTitle).toLowerCase().contains(rom.title().getValue().toLowerCase())) {
+                        if (StringUtils.stripAccents(gameTitle).toLowerCase().contains(StringUtils.stripAccents(rom.title().getValue().toLowerCase()))) {
                             if (Integer.valueOf(file.getFirstChildElement("DatabaseID").getValue()) < lowestDatabaseID || lowestDatabaseID == 0) {
                                 lowestDatabaseID = Integer.valueOf(file.getFirstChildElement("DatabaseID").getValue());
                                 mostMatchingContainingDatabaseId = file.getFirstChildElement("DatabaseID").getValue();
-                                mostMatchingContainingGameTitle = gameTitle;
+                                mostMatchingContainingFile = file;
                             }
                         }
                     }
                 }
                 if(null!=mostMatchingContainingDatabaseId){
-                    results.add(new RomDatabaseRecord(rom.fullFilename().getValue(),mostMatchingContainingGameTitle,rom.region().getValue(),
-                            rom.platform().getValue(),mostMatchingContainingDatabaseId));
+                    createGame(mostMatchingContainingFile);
                     return;
                 }
                 int highestMatchRating = 0;
 
                 String mostMatchingDatabaseID ="0";
                 String mostMatchingGameTitle = "";
+                Element mostMatchingFile = null;
                 for (Element file : files){
 
                     int matchRating = 0;
@@ -101,13 +101,14 @@ public class XMLParser {
                     if(noMatchFound) {
                         int gameTitleSegments= gameTitle.split(" ").length;
                         for (String segment : rom.title().getValue().split(" ")) {
-                            if(StringUtils.stripAccents(gameTitle).toLowerCase().contains(segment.toLowerCase())
+                            if(StringUtils.stripAccents(gameTitle).toLowerCase().contains(StringUtils.stripAccents(segment.toLowerCase()))
                                     &&platform.equals(rom.scrapeAsPlatform().getValue())){
                                 matchRating++;
                             }
                             if(matchRating>highestMatchRating && matchRating>=gameTitleSegments/2){
                                 mostMatchingDatabaseID= file.getFirstChildElement("DatabaseID").getValue();
                                 mostMatchingGameTitle=gameTitle;
+                                mostMatchingFile = file;
                                 highestMatchRating=matchRating;
                                 if(Integer.valueOf(mostMatchingDatabaseID)<lowestDatabaseID){
                                     lowestDatabaseID = Integer.valueOf(mostMatchingDatabaseID);
@@ -115,6 +116,7 @@ public class XMLParser {
                             } else if(matchRating==highestMatchRating&&Integer.valueOf(file.getFirstChildElement("DatabaseID").getValue())<lowestDatabaseID){
                                 mostMatchingDatabaseID= file.getFirstChildElement("DatabaseID").getValue();
                                 mostMatchingGameTitle=gameTitle;
+                                mostMatchingFile = file;
                                 highestMatchRating=matchRating;
                             }
 
@@ -122,52 +124,97 @@ public class XMLParser {
                     }
                 }
                 if(noMatchFound && highestMatchRating>=2){
-                    results.add(new RomDatabaseRecord(rom.fullFilename().getValue(),mostMatchingGameTitle,rom.region().getValue(),
-                            rom.platform().getValue(),mostMatchingDatabaseID));
+                    createGame(mostMatchingFile);
                 } else{
-                    results.add(new RomDatabaseRecord(rom.fullFilename().getValue(),rom.title().getValue(),rom.region().getValue(),
-                            rom.platform().getValue(),"Not Found"));
+                    createGame("Not Found");
                 }
             }
+
+        private void createGame(Element file) {
+            String region;
+            if(rom.region().getValue().equals("N/A")){
+                region = "USA";
+            } else{
+                region = rom.region().getValue();
+            }
+            HashMap<String, LocalDate> releaseDates = new HashMap<>();
+            if(readElement(file.getFirstChildElement("ReleaseDate")).length()>=10){
+                if(DateValidator.isValid(readElement(file.getFirstChildElement("ReleaseDate")).substring(0,10),"yyyy-MM-dd")){
+                    releaseDates.put(region, LocalDate.parse(readElement(file.getFirstChildElement("ReleaseDate")).substring(0,10)));
+                }
+            }  else {
+                releaseDates.put(region, LocalDate.parse("9999-12-31"));
+            }
+
+            ArrayList<String> tags = new ArrayList<>();
+            for (String tag :
+                    readElement(file.getFirstChildElement("Genres")).split(";")) {
+                tags.add(tag.trim());
+            }
+            results.add(new Game(readElement(file.getFirstChildElement("Name")),
+                    rom.fullFilename().getValue(),
+                    readElement(file.getFirstChildElement("DatabaseID")),
+                    readElement(file.getFirstChildElement("Overview")),
+                    releaseDates,
+                    readElement(file.getFirstChildElement("MaxPlayers")),
+                    tags,
+                    readElement(file.getFirstChildElement("VideoURL")),
+                    readElement(file.getFirstChildElement("WikipediaURL")),
+                    readElement(file.getFirstChildElement("Developer")),
+                            readElement(file.getFirstChildElement("Publisher")),
+                    rom.platform().getValue(),
+                    readElement(file.getFirstChildElement("CommunityRating")),
+                    readElement(file.getFirstChildElement("CommunityRatingCount")),
+                    Boolean.valueOf(readElement(file.getFirstChildElement("Cooperative"))),
+                    readElement(file.getFirstChildElement("ESRB"))));
         }
 
+        private void createGame(String status) {
+            String region;
+            if(rom.region().getValue().equals("N/A")){
+                region = "USA";
+            } else{
+                region = rom.region().getValue();
+            }
+            HashMap<String, LocalDate> releaseDates = new HashMap<>();
+            releaseDates.put(region, LocalDate.parse("9999-12-31"));
+            ArrayList<String> tags = new ArrayList<>();
+            for (String tag :
+                    readElement(null).split(";")) {
+                tags.add(tag.trim());
+            }
+            tags.add(readElement(null));
 
+            tags.add(readElement(null));
+            results.add(new Game(rom.title().getValue(),
+                    rom.fullFilename().getValue(),
+                    readElement(null),
+                    readElement(null),
+                    releaseDates,
+                    readElement(null),
+                    tags,
+                    readElement(null),
+                    readElement(null),
+                    readElement(null),
+                    readElement(null),
+                    rom.platform().getValue(),
+                    readElement(null),
+                    readElement(null),
+                    false,
+                    readElement(null)));
+        }
+
+        private String readElement(Element element){
+            if(element!=null){
+                return element.getValue();
+            } else return "N/A";
+        }
+    }
 
     private Pair<String, String> checkFullName(RomImportRecord rom,Elements files){
 
         return null;
     }
-
-
-//    try{
-//        Builder parser = new Builder();
-//        Document doc = parser.build(gamesAndPlatforms);
-//        romImportRecords = new ArrayList<>();
-//        for (File file: files){
-//            String filename = file.getPath();
-//            String cleanFilename = FilenameService.cleanFilename(filename);
-//            //String region = getFileRegion(filename.getKey());
-//            String region = "(USA)";
-//            romImportRecords.add(new RomImportRecord(file.getPath(),cleanFilename,region,platform,scrapeAsPlatform));
-//        }
-//        Elements files = doc.getRootElement().getChildElements("File");
-//        for (Element file : files) {
-//            for (RomImportRecord romImportRecord : romImportRecords) {
-//                String gameTitle = file.getFirstChildElement("GameName").getValue();
-//                String platform = file.getFirstChildElement("Platform").getValue();
-//                if(gameTitle.toLowerCase().contains(romImportRecord.cleanFilename().toLowerCase())||gameTitle.toLowerCase().matches(romImportRecord.cleanFilename().toLowerCase())){
-//
-//                    results.put(romImportRecord.fullFilename(),new Pair<>(platform,gameTitle));
-//                }
-//            }
-//        }
-//    } catch (ParsingException e) {
-//        System.out.println("Something went wrong parsing the document");
-//    } catch (IOException e) {
-//        System.out.println("Document not found!");
-//    }
-
-
 
     public static void listChildren(Element current, int depth){
         printSpaces(depth);
@@ -176,19 +223,6 @@ public class XMLParser {
             Element temp = (Element) current;
             data = ": "+temp.getFirstChildElement("FileName").getValue();
         }
-//        else if(current instanceof ProcessingInstruction){
-//            ProcessingInstruction temp = (ProcessingInstruction) current;
-//            data = ": " + temp.getTarget();
-//        } else if(current instanceof DocType){
-//            DocType temp = (DocType) current;
-//            data = ": "+temp.getRootElementName();
-//        } else if(current instanceof Text || current instanceof Comment){
-//            String value = current.getValue();
-//            value = value.replace('\n',' ').trim();
-//            if (value.length() <= 20) data = ": " + value;
-//            else data =": "+current.getValue().substring(0,17)+"...";
-//        }
-        //Attributes are never returned by getChild()
         System.out.println(current.getClass().getName()+data);
     }
 
@@ -205,7 +239,6 @@ public class XMLParser {
             Document doc = parser.build(platforms);
             Elements files = doc.getRootElement().getChildElements("Platform");
             for (Element platform : files) {
-                System.out.println(platform.getQualifiedName());
                     String platformName = platform.getFirstChildElement("Name").getValue();
                 platformList.add(platformName);
             }
@@ -214,14 +247,14 @@ public class XMLParser {
         } catch (IOException e) {
             System.out.println("Document not found!");
         }
-        System.out.println("Platforms Found during parsing: ");
         List<String> results = platformList.stream().sorted().toList();
-        results.forEach(string-> System.out.println(string));
         return results;
     }
 
     public static Platform parsePlatform(String platform) {
         Platform platformObject = null;
+        boolean platformFound = false;
+        HashMap<String, String> specs = new HashMap<>();
         try{
             Builder parser = new Builder();
             Document doc = parser.build(platforms);
@@ -230,7 +263,6 @@ public class XMLParser {
                 if(platform.equals(element.getFirstChildElement("Name").getValue())){
                     HashMap<String, LocalDate> releaseDate = new HashMap<>();
                     releaseDate.put("USA", LocalDate.parse(element.getFirstChildElement("ReleaseDate").getValue().substring(0,10)));
-                    HashMap<String, String> specs = new HashMap<>();
                     specs.put("Cpu",element.getFirstChildElement("Cpu").getValue());
                     specs.put("Memory",element.getFirstChildElement("Memory").getValue());
                     specs.put("Graphics",element.getFirstChildElement("Graphics").getValue());
@@ -240,8 +272,9 @@ public class XMLParser {
 
                     platformObject = new Platform(element.getFirstChildElement("Name").getValue(),releaseDate,
                             element.getFirstChildElement("Developer").getValue(),element.getFirstChildElement("Notes").getValue(),
-                            specs, Integer.valueOf(element.getFirstChildElement("MaxControllers").getValue()),element.getFirstChildElement("Category").getValue()
+                            specs, element.getFirstChildElement("MaxControllers").getValue(),element.getFirstChildElement("Category").getValue()
                     );
+                    platformFound = true;
                 }
             }
         } catch (ParsingException e) {
@@ -249,8 +282,18 @@ public class XMLParser {
         } catch (IOException e) {
             System.out.println("Document not found!");
         }
-        System.out.println("Platforms Found during parsing: ");
-        System.out.println(platformObject.toString());
+        if(!platformFound){
+            HashMap<String, LocalDate> releaseDate = new HashMap<>();
+
+            specs.put("Cpu","");
+            specs.put("Memory","");
+            specs.put("Graphics","");
+            specs.put("Sound","");
+            specs.put("Display","");
+            specs.put("MediaType","");
+            releaseDate.put("USA", LocalDate.parse("9999-12-31"));
+            platformObject = new Platform(platform,releaseDate,null,null,specs,null,null);
+        }
         return platformObject;
     }
 }

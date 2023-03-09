@@ -6,6 +6,7 @@ import javafx.event.*;
 import javafx.fxml.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
+import javafx.scene.input.*;
 import javafx.stage.*;
 import org.controlsfx.control.*;
 import stijn.dev.data.database.*;
@@ -30,6 +31,7 @@ public class ImportPlatformSelectionController implements Initializable {
 
     private static Stage stage;
     private static Parent root;
+    private static Scene scene;
     public static final String NOT_RECOGNIZED = "Not Recognized";
     private List<File> files;
     private final String MULTIPLE = "Multiple";
@@ -41,14 +43,15 @@ public class ImportPlatformSelectionController implements Initializable {
         this.files = files;
     }
     public void importRoms(ActionEvent event){
-        if(customPlatformBox.getText()!=null&&!customPlatformBox.getText().isEmpty()){
-            importingAsPlatform=customPlatformBox.getText();
-            System.out.println("Chosen Platform: "+ importingAsPlatform);
-        }
+
         importRoms();
 
     }
     public void importRoms(){
+        if(customPlatformBox.getText()!=null&&!customPlatformBox.getText().isEmpty()){
+            importingAsPlatform=customPlatformBox.getText();
+            System.out.println("Chosen Platform: "+ importingAsPlatform);
+        }
         List<RomImportRecord> roms = parseRoms(files, importingAsPlatform, scrapeAsPlatform);
         System.out.println("switching to import scene");
         try {
@@ -58,6 +61,8 @@ public class ImportPlatformSelectionController implements Initializable {
             importOverviewController.setRoms(roms);
             importOverviewController.setStage(stage);
             Scene scene = new Scene(root);
+            importOverviewController.setScene(scene);
+            importOverviewController.setKeyBehavior();
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
@@ -68,6 +73,7 @@ public class ImportPlatformSelectionController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
         fillPlatformExtensionList();
         nextButton.setDisable(true);
         scrapeAsPlatformComboBox.setDisable(true);
@@ -101,27 +107,51 @@ public class ImportPlatformSelectionController implements Initializable {
         });
     }
 
+    public void setKeyBehavior(){
+        scene.setOnKeyPressed(keyEvent -> {
+            if(keyEvent.getCode()== KeyCode.ENTER){
+                importRoms();
+            }
+        });
+    }
+
     public void processPlatforms() {
-        ArrayList<String> fileExtensions = FilenameService.extractFileExtensions(files);
+        ArrayList<String> fileExtensions = FilenameUtil.extractFileExtensions(files);
         ArrayList<String> platforms = platformFromExtension(fileExtensions);
-        if (platforms.size() < 1 || !platforms.contains(MULTIPLE) || !platforms.contains(NOT_RECOGNIZED)) {
-            //TODO Check the folder name when multiple platforms are detected
+        List<String> platformList = XMLParser.getPlatforms();
+        if (platforms.size() < 1 && !platforms.contains(MULTIPLE) && !platforms.contains(NOT_RECOGNIZED)) {
             platformComboBox.setValue(platforms.get(0));
             scrapeAsPlatformComboBox.setValue(platforms.get(0));
+        } else if(!"".equals(checkIfDirectoryContainsPlatformString(platformList, files.get(0).getParentFile().getAbsolutePath()))){
+            String platform = checkIfDirectoryContainsPlatformString(platformList, files.get(0).getParentFile().getAbsolutePath());
+            platformComboBox.setValue(platform);
+            scrapeAsPlatformComboBox.setValue(platform);
         }
-        List<String> platformList = XMLParser.getPlatforms();
         platformComboBox.getItems().addAll(platformList);
         scrapeAsPlatformComboBox.getItems().addAll(platformList);
+    }
+
+    private String checkIfDirectoryContainsPlatformString(List<String> platforms,String directory){
+        System.out.println(directory.toLowerCase());
+        for (String platform :
+                platforms) {
+            System.out.println(platform.toLowerCase());
+            if (directory.toLowerCase().contains(platform.toLowerCase())) {
+                System.out.println("Match Found!");
+                return platform;
+                }
+            }
+        return "";
     }
 
     public static List<RomImportRecord> parseRoms(List<File> files, String platform, String scrapeAsPlatform){
         List<RomImportRecord> romImportRecords=new ArrayList<>();;
         for (File file: files){
             String filename = file.getName();
-            String cleanFilename = FilenameService.cleanFilename(filename);
+            String cleanFilename = FilenameUtil.cleanFilename(filename);
             String region = getFileRegion(filename);
             romImportRecords.add(new RomImportRecord(new SimpleStringProperty(file.getPath()),
-                    new SimpleStringProperty(FilenameService.extractFileExtension(file)), new SimpleStringProperty(cleanFilename),
+                    new SimpleStringProperty(FilenameUtil.extractFileExtension(file)), new SimpleStringProperty(cleanFilename),
                     new SimpleStringProperty(region), new SimpleStringProperty(platform), new SimpleStringProperty(scrapeAsPlatform)));
         }
         readResults(romImportRecords);
@@ -153,8 +183,8 @@ public class ImportPlatformSelectionController implements Initializable {
         extensionsForPlatforms.put("tar.gz.gz",MULTIPLE);
         extensionsForPlatforms.put("tar",MULTIPLE);
         extensionsForPlatforms.put("001",MULTIPLE);
-        extensionsForPlatforms.put(".part1",MULTIPLE);
-        extensionsForPlatforms.put(".r01",MULTIPLE);
+        extensionsForPlatforms.put("part1",MULTIPLE);
+        extensionsForPlatforms.put("r01",MULTIPLE);
         extensionsForPlatforms.put("gzip",MULTIPLE);
         extensionsForPlatforms.put("iso",MULTIPLE);
         extensionsForPlatforms.put("img",MULTIPLE);
@@ -231,6 +261,7 @@ public class ImportPlatformSelectionController implements Initializable {
         extensionsForPlatforms.put("lnk","Windows");
         extensionsForPlatforms.put("url","Windows");
         extensionsForPlatforms.put("cda","Windows");
+        extensionsForPlatforms.put("rpx","Nintendo Wii U");
     }
 
     private void fillRegionSignifiersList(){
@@ -252,10 +283,12 @@ public class ImportPlatformSelectionController implements Initializable {
             }
         }
         if(returnRegion.isEmpty()||returnRegion==null){
-            return "N.A";
+            return "N/A";
         }
         return returnRegion;
     }
+
+
 
     public Stage getStage() {
         return stage;
@@ -263,5 +296,9 @@ public class ImportPlatformSelectionController implements Initializable {
 
     public void setStage(Stage stage) {
         this.stage = stage;
+    }
+
+    public static void setScene(Scene scene) {
+        ImportPlatformSelectionController.scene = scene;
     }
 }
