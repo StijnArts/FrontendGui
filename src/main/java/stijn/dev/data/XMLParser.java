@@ -225,11 +225,13 @@ public class XMLParser {
             }
         }
 
-        private String readElement(Element element){
-            if(element!=null){
-                return element.getValue();
-            } else return "N/A";
-        }
+
+    }
+
+    private static String readElement(Element element){
+        if(element!=null){
+            return element.getValue();
+        } else return "N/A";
     }
 
     private Pair<String, String> checkFullName(RomImportRecord rom,Elements files){
@@ -309,9 +311,9 @@ public class XMLParser {
                     specs.put("Display",element.getFirstChildElement("Display").getValue());
                     specs.put("MediaType",element.getFirstChildElement("Media").getValue());
 
-                    platformObject = new Platform(element.getFirstChildElement("Name").getValue(),releaseDate,
-                            element.getFirstChildElement("Developer").getValue(),element.getFirstChildElement("Notes").getValue(),
-                            specs, element.getFirstChildElement("MaxControllers").getValue(),element.getFirstChildElement("Category").getValue()
+                    platformObject = new Platform(readElement(element.getFirstChildElement("Name")),releaseDate,
+                            readElement(element.getFirstChildElement("Developer")),readElement(element.getFirstChildElement("Notes")),
+                            specs, readElement(element.getFirstChildElement("MaxControllers")),readElement(element.getFirstChildElement("Category"))
                     );
                     platformFound = true;
                 }

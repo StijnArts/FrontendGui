@@ -153,7 +153,7 @@ public class DatabaseHelper {
         }
         queryString += " Return r";
         Query query = new Query(queryString, parameters);
-        Result platformCreateResult = neo4JDatabaseHelper.runQuery(query);
+        neo4JDatabaseHelper.runQuery(query);
         for (String locale : platformObject.getReleaseDates().keySet()) {
             HashMap<String, Object> releaseDateParameters = new HashMap<>();
             releaseDateParameters.put("platformName", platformObject.getPlatformName());
@@ -170,11 +170,17 @@ public class DatabaseHelper {
 
         parameters.put("publisherName",platform.getPublisher().trim());
         parameters.put("platformName", platform.getPlatformName());
-            String queryString = "Match (platform:Platform {PlatformName:$platformName}) " +
+        String queryString ="MATCH (d:Developer {DeveloperName:$publisherName}) " +
+                "SET d:Publisher, d.PublisherName = $publisherName " +
+                "MERGE (d)<-[:MADE_BY]-(platform) Return d";
+        Result result = neo4JDatabaseHelper.runQuery(new Query(queryString,parameters));
+        if(!result.hasNext()){
+            queryString = "Match (platform:Platform {PlatformName:$platformName}) " +
                     "MERGE (n:Publisher {PublisherName:$publisherName})" +
                     "MERGE r = (n)<-[:MADE_BY]-(platform) Return r";
             Query query = new Query(queryString, parameters);
             neo4JDatabaseHelper.runQuery(query);
+        }
     }
 
     private static void createPublisher(Game game) {
@@ -184,28 +190,40 @@ public class DatabaseHelper {
             parameters.put("gameId", game.getGameId());
             parameters.put("gameName", game.getName());
             parameters.put("platformName", game.getPlatform());
-                String queryString = "MATCH (game:Game {GameName:$gameName, GameId:$gameId})-[:ON_PLATFORM]-(p:Platform {PlatformName:$platformName}) " +
+            String queryString = "MATCH (d:Developer {DeveloperName:$publisherName}), (game:Game {GameName:$gameName, GameId:$gameId})-[:ON_PLATFORM]-(p:Platform {PlatformName:$platformName}) " +
+                    "SET d:Publisher, d.PublisherName = $publisherName " +
+                    "MERGE (d)<-[:PUBLISHED_BY]-(game) Return d";
+            Result result = neo4JDatabaseHelper.runQuery(new Query(queryString, parameters));
+            if (!result.hasNext()) {
+                queryString = "MATCH (game:Game {GameName:$gameName, GameId:$gameId})-[:ON_PLATFORM]-(p:Platform {PlatformName:$platformName}) " +
                         "MERGE (n:Publisher {PublisherName:$publisherName}) " +
                         "MERGE r = (n)<-[:PUBLISHED_BY]-(game) Return r";
                 Query query = new Query(queryString, parameters);
                 neo4JDatabaseHelper.runQuery(query);
             }
+        }
 
     }
 
     private static void createDeveloper(Game game) {
-        if(!game.getDeveloper().equals("N/A")){
+        if(!game.getDeveloper().equals("N/A")) {
             HashMap<String, Object> parameters = new HashMap<>();
-            parameters.put("developerName",game.getDeveloper().trim());
+            parameters.put("developerName", game.getDeveloper().trim());
             parameters.put("gameId", game.getGameId());
             parameters.put("gameName", game.getName());
-            parameters.put("platformName",game.getPlatform());
-                String queryString = "Match (game:Game {GameName:$gameName, GameId:$gameId})-[:ON_PLATFORM]-(p:Platform {PlatformName:$platformName}) " +
+            parameters.put("platformName", game.getPlatform());
+            String queryString = "MATCH (d:Publisher {PublisherName:$developerName}), (game:Game {GameName:$gameName, GameId:$gameId})-[:ON_PLATFORM]-(p:Platform {PlatformName:$platformName}) " +
+                    "SET d:Developer, d.DeveloperName = $developerName " +
+                    "MERGE (d)<-[:MADE_BY]-(game) Return d";
+            Result result = neo4JDatabaseHelper.runQuery(new Query(queryString, parameters));
+            if (!result.hasNext()) {
+                queryString = "Match (game:Game {GameName:$gameName, GameId:$gameId})-[:ON_PLATFORM]-(p:Platform {PlatformName:$platformName}) " +
                         "MERGE (n:Developer {DeveloperName:$developerName}) " +
                         "MERGE r = (n)<-[:MADE_BY]-(game) Return r";
                 Query query = new Query(queryString, parameters);
                 neo4JDatabaseHelper.runQuery(query);
             }
+        }
 
     }
 

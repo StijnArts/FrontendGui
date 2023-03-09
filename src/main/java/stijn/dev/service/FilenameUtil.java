@@ -38,7 +38,7 @@ public class FilenameUtil {
         if (pos > -1) cleanFilename = rawFilename.substring(0,pos);
         cleanFilename = cleanFilename.split(delimiters)[0];
         cleanFilename = cleanFilename.trim();
-        return cleanFilename;
+        return cleanFilename.replace('_',' ');
     }
 
 
