@@ -18,6 +18,7 @@ import stijn.dev.service.javafx.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.concurrent.*;
 
 public class ImportOverviewController{
 
@@ -59,7 +60,7 @@ public class ImportOverviewController{
     public void importRoms(){
         stage.close();
         XMLParser parser = new XMLParser();
-        List<Game> databaseRecords = parser.parseGames(roms);
+        ArrayBlockingQueue<Game> databaseRecords = parser.parseGames(roms);
         DatabaseHelper.importRoms(databaseRecords);
     }
 

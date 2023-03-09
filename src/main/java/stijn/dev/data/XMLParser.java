@@ -3,6 +3,7 @@ package stijn.dev.data;
 import java.io.*;
 import java.time.*;
 import java.util.*;
+import java.util.concurrent.*;
 
 import javafx.beans.property.*;
 import javafx.collections.*;
@@ -29,23 +30,30 @@ public class XMLParser {
     public static String scrapeAsPlatform = "";
 
 
-    public ArrayList<Game> parseGames(List<RomImportRecord> romImportRecords){
+    public ArrayBlockingQueue<Game> parseGames(List<RomImportRecord> romImportRecords){
         double startTime = System.currentTimeMillis();
-        ArrayList<Game> results = new ArrayList<>();
+        ArrayBlockingQueue<Game> results = new ArrayBlockingQueue<>(romImportRecords.size()*2);
+        Thread finalThread = new Thread();
         try{
-            Builder parser = new Builder();
-            Document doc = parser.build(metadata);
-            Elements files = doc.getRootElement().getChildElements("Game");
-            for (RomImportRecord rom : romImportRecords) {
-                CheckRomToDatabase checkRomToDatabase = new CheckRomToDatabase(rom, files,results);
-                Thread thread = new Thread(checkRomToDatabase);
-                thread.run();
+            synchronized(results) {
+                Builder parser = new Builder();
+                Document doc = parser.build(metadata);
+                Elements files = doc.getRootElement().getChildElements("Game");
+                for (RomImportRecord rom : romImportRecords) {
+                    CheckRomToDatabase checkRomToDatabase = new CheckRomToDatabase(rom, files, results);
+                    Thread thread = new Thread(checkRomToDatabase);
+                    thread.start();
+                }
             }
-
         } catch (ParsingException e) {
             System.out.println("Something went wrong parsing the document");
         } catch (IOException e) {
             System.out.println("Document not found!");
+        }
+        try {
+            finalThread.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
         double endTime = System.currentTimeMillis();
         System.out.println("Parsing roms took: "+(endTime-startTime)+"ms.");
@@ -54,12 +62,12 @@ public class XMLParser {
     public class CheckRomToDatabase implements Runnable{
         private RomImportRecord rom;
         private Elements files;
-        private List<Game> results;
-        public List<Game> getResults(){
+        private ArrayBlockingQueue<Game> results;
+        public ArrayBlockingQueue<Game> getResults(){
             return results;
         }
 
-        public CheckRomToDatabase(RomImportRecord rom , Elements files, List<Game> results){
+        public CheckRomToDatabase(RomImportRecord rom , Elements files, ArrayBlockingQueue<Game> results){
             this.rom = rom;
             this.files = files;
             this.results = results;
@@ -70,10 +78,7 @@ public class XMLParser {
                 lowestDatabaseID = 0;
                 HashMap<String, String> databaseId = new HashMap<>();
                 System.out.println( rom.title().getValue());
-
-
                 String mostMatchingContainingDatabaseId = null;
-                String mostMatchingContainingGameTitle =null;
                 Element mostMatchingContainingFile = null;
                 for (Element file : files) {
                     String gameTitle = file.getFirstChildElement("Name").getValue();
@@ -159,22 +164,26 @@ public class XMLParser {
                     readElement(file.getFirstChildElement("Genres")).split(";")) {
                 tags.add(tag.trim());
             }
-            results.add(new Game(readElement(file.getFirstChildElement("Name")),
-                    rom.fullFilename().getValue(),
-                    readElement(file.getFirstChildElement("DatabaseID")),
-                    readElement(file.getFirstChildElement("Overview")),
-                    releaseDates,
-                    readElement(file.getFirstChildElement("MaxPlayers")),
-                    tags,
-                    readElement(file.getFirstChildElement("VideoURL")),
-                    readElement(file.getFirstChildElement("WikipediaURL")),
-                    readElement(file.getFirstChildElement("Developer")),
-                            readElement(file.getFirstChildElement("Publisher")),
-                    rom.platform().getValue(),
-                    readElement(file.getFirstChildElement("CommunityRating")),
-                    readElement(file.getFirstChildElement("CommunityRatingCount")),
-                    Boolean.valueOf(readElement(file.getFirstChildElement("Cooperative"))),
-                    readElement(file.getFirstChildElement("ESRB"))));
+            try {
+                results.put(new Game(readElement(file.getFirstChildElement("Name")),
+                        rom.fullFilename().getValue(),
+                        readElement(file.getFirstChildElement("DatabaseID")),
+                        readElement(file.getFirstChildElement("Overview")),
+                        releaseDates,
+                        readElement(file.getFirstChildElement("MaxPlayers")),
+                        tags,
+                        readElement(file.getFirstChildElement("VideoURL")),
+                        readElement(file.getFirstChildElement("WikipediaURL")),
+                        readElement(file.getFirstChildElement("Developer")),
+                                readElement(file.getFirstChildElement("Publisher")),
+                        rom.platform().getValue(),
+                        readElement(file.getFirstChildElement("CommunityRating")),
+                        readElement(file.getFirstChildElement("CommunityRatingCount")),
+                        Boolean.valueOf(readElement(file.getFirstChildElement("Cooperative"))),
+                        readElement(file.getFirstChildElement("ESRB"))));
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         private void createGame(String status) {
@@ -194,22 +203,26 @@ public class XMLParser {
             tags.add(readElement(null));
 
             tags.add(readElement(null));
-            results.add(new Game(rom.title().getValue(),
-                    rom.fullFilename().getValue(),
-                    readElement(null),
-                    readElement(null),
-                    releaseDates,
-                    readElement(null),
-                    tags,
-                    readElement(null),
-                    readElement(null),
-                    readElement(null),
-                    readElement(null),
-                    rom.platform().getValue(),
-                    readElement(null),
-                    readElement(null),
-                    false,
-                    readElement(null)));
+            try {
+                results.put(new Game(rom.title().getValue(),
+                        rom.fullFilename().getValue(),
+                        readElement(null),
+                        readElement(null),
+                        releaseDates,
+                        readElement(null),
+                        tags,
+                        readElement(null),
+                        readElement(null),
+                        readElement(null),
+                        readElement(null),
+                        rom.platform().getValue(),
+                        readElement(null),
+                        readElement(null),
+                        false,
+                        readElement(null)));
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         private String readElement(Element element){

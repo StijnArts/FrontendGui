@@ -7,33 +7,41 @@ import stijn.dev.resource.*;
 
 import java.time.*;
 import java.util.*;
+import java.util.concurrent.*;
 
 //TODO split into multiple DAO
 public class DatabaseHelper {
     private static Neo4JDatabaseHelper neo4JDatabaseHelper = new Neo4JDatabaseHelper();
-    public static void importRoms(List<Game> games){
-        String platform = games.get(0).getPlatform();
-        String query = "Match (platform:Platform {PlatformName:'"+platform+"'}) RETURN platform.PlatformName";
-        System.out.println("Running Query: "+ query);
-        Result systemExistsCheckResult = neo4JDatabaseHelper.runQuery(query);
-        boolean systemExistsInDatabase = systemExistsCheckResult.hasNext();
-        System.out.println("Does the System Already Exist in the Database: "+systemExistsInDatabase);
-        if(!systemExistsInDatabase){
-            importSystem(platform);
+    public static void importRoms(ArrayBlockingQueue<Game> games){
+        ArrayList<String> platforms = new ArrayList<>();
+        synchronized (games) {
+            for (Game game : games) {
+                if (!platforms.contains(game.getPlatform())) {
+                    String platform = game.getPlatform();
+                    platforms.add(platform);
+                    String query = "Match (platform:Platform {PlatformName:'" + platform + "'}) RETURN platform.PlatformName";
+                    System.out.println("Running Query: " + query);
+                    Result systemExistsCheckResult = neo4JDatabaseHelper.runQuery(query);
+                    boolean systemExistsInDatabase = systemExistsCheckResult.hasNext();
+                    System.out.println("Does the System Already Exist in the Database: " + systemExistsInDatabase);
+                    if (!systemExistsInDatabase) {
+                        importSystem(platform);
+                    }
+
+                }
+                importGame(game);
+            }
         }
-        importGame(games);
         FrontEndApplication.importProcessIsRunning = false;
         System.out.println("Finished Importing game(s).");
     }
 
-    private static void importGame(List<Game> games) {
-        for (Game game : games) {
+    private static void importGame(Game game) {
             createGame(game);
             createPublisher(game);
             createDeveloper(game);
             createGameTags(game);
-        }
-
+        //TODO threading check
         //TODO add file with gallery categories
     }
 
@@ -173,9 +181,10 @@ public class DatabaseHelper {
         if(!game.getPublisher().equals("N/A")) {
             HashMap<String, Object> parameters = new HashMap<>();
             parameters.put("publisherName", game.getPublisher().trim());
+            parameters.put("gameId", game.getGameId());
             parameters.put("gameName", game.getName());
             parameters.put("platformName", game.getPlatform());
-                String queryString = "MATCH (game:Game {GameName:$gameName})-[:ON_PLATFORM]-(p:Platform {PlatformName:$platformName}) " +
+                String queryString = "MATCH (game:Game {GameName:$gameName, GameId:$gameId})-[:ON_PLATFORM]-(p:Platform {PlatformName:$platformName}) " +
                         "MERGE (n:Publisher {PublisherName:$publisherName}) " +
                         "MERGE r = (n)<-[:PUBLISHED_BY]-(game) Return r";
                 Query query = new Query(queryString, parameters);
@@ -188,9 +197,10 @@ public class DatabaseHelper {
         if(!game.getDeveloper().equals("N/A")){
             HashMap<String, Object> parameters = new HashMap<>();
             parameters.put("developerName",game.getDeveloper().trim());
+            parameters.put("gameId", game.getGameId());
             parameters.put("gameName", game.getName());
             parameters.put("platformName",game.getPlatform());
-                String queryString = "Match (game:Game {GameName:$gameName})-[:ON_PLATFORM]-(p:Platform {PlatformName:$platformName}) " +
+                String queryString = "Match (game:Game {GameName:$gameName, GameId:$gameId})-[:ON_PLATFORM]-(p:Platform {PlatformName:$platformName}) " +
                         "MERGE (n:Developer {DeveloperName:$developerName}) " +
                         "MERGE r = (n)<-[:MADE_BY]-(game) Return r";
                 Query query = new Query(queryString, parameters);
