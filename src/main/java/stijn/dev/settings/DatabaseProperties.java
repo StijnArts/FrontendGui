@@ -1,7 +1,5 @@
 package stijn.dev.settings;
 
-import stijn.dev.data.database.*;
-
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;

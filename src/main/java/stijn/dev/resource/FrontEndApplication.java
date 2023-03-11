@@ -8,9 +8,7 @@ import javafx.scene.text.*;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-//TODO refactor code (Extract methods and classes)
 //TODO add dependency Injection
-//TODO add interfaces
 public class FrontEndApplication extends Application {
     public static boolean importProcessIsRunning;
     @Override

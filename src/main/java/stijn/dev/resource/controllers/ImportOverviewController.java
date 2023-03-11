@@ -7,11 +7,11 @@ import javafx.scene.control.*;
 import javafx.stage.*;
 import org.controlsfx.control.tableview2.*;
 import org.controlsfx.control.tableview2.cell.*;
-import stijn.dev.data.database.*;
-import stijn.dev.data.importing.xml.*;
-import stijn.dev.records.*;
+import stijn.dev.datasource.database.*;
+import stijn.dev.datasource.importing.xml.*;
+import stijn.dev.datasource.records.*;
 import stijn.dev.resource.controllers.interfaces.*;
-import stijn.dev.service.javafx.*;
+import stijn.dev.util.javafx.*;
 
 import java.io.*;
 import java.util.*;

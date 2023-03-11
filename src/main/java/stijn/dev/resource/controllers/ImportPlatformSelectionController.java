@@ -6,10 +6,9 @@ import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.stage.*;
 import org.controlsfx.control.*;
-import stijn.dev.data.importing.*;
-import stijn.dev.data.importing.xml.*;
+import stijn.dev.datasource.importing.*;
 import stijn.dev.resource.controllers.interfaces.*;
-import stijn.dev.service.javafx.*;
+import stijn.dev.util.javafx.*;
 
 import java.io.*;
 import java.net.*;
