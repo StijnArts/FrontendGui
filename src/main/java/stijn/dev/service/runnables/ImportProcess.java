@@ -27,7 +27,7 @@ public class ImportProcess implements Runnable{
         root = RootUtil.createRoot(loader);
         Stage stage = StageUtil.createStageFromExistingNode(node);
         Scene scene = new Scene(root);
-        ImportPlatformSelectionController.create(loader, files, stage, scene); loader.getController();
+        ImportPlatformSelectionController.create(loader, files, stage, scene);
         stage.setScene(scene);
         stage.setOnHidden(event->{FrontEndApplication.importProcessIsRunning = false;});
         stage.show();

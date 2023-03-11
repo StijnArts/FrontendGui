@@ -15,4 +15,6 @@ module stijn.dev.frontendgui {
     exports stijn.dev.resource;
     exports stijn.dev.resource.controllers;
     opens stijn.dev.resource.controllers to javafx.fxml;
+    exports stijn.dev.resource.controllers.interfaces;
+    opens stijn.dev.resource.controllers.interfaces to javafx.fxml;
 }

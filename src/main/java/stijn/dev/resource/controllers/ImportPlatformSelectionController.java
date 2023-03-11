@@ -8,6 +8,8 @@ import javafx.scene.input.*;
 import javafx.stage.*;
 import org.controlsfx.control.*;
 import stijn.dev.data.*;
+import stijn.dev.data.importing.*;
+import stijn.dev.resource.controllers.interfaces.*;
 import stijn.dev.service.*;
 import stijn.dev.service.javafx.*;
 
@@ -18,7 +20,7 @@ import java.util.*;
 import static stijn.dev.service.FileExtensionService.MULTIPLE;
 import static stijn.dev.service.FileExtensionService.NOT_RECOGNIZED;
 
-public class ImportPlatformSelectionController implements Initializable{
+public class ImportPlatformSelectionController implements Initializable, IHasNextButton {
 
     @FXML
     private PrefixSelectionComboBox<String> platformComboBox;
@@ -28,10 +30,10 @@ public class ImportPlatformSelectionController implements Initializable{
     private TextField customPlatformBox;
     @FXML
     private Button nextButton;
-
     private Stage stage;
     private Parent root;
     private Scene scene;
+    private PlatformProcessor platformProcessor = new PlatformProcessor();
     private List<File> files;
 
 
@@ -45,6 +47,7 @@ public class ImportPlatformSelectionController implements Initializable{
         return ipsc;
     }
 
+    @Override
     public void onNext(){
         checkCustomPlatform();
         FXMLLoader loader = FXMLLoaderUtil.createFMXLLoader("importOverview.fxml");
@@ -55,36 +58,25 @@ public class ImportPlatformSelectionController implements Initializable{
         stage.show();
     }
 
-    private void checkCustomPlatform(){
-        if(customPlatformBox.getText()!=null&&!customPlatformBox.getText().isEmpty()){
-            XMLParser.importingAsPlatform = customPlatformBox.getText();
-            System.out.println("Chosen Platform: "+ XMLParser.importingAsPlatform);
-        }
-    }
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         nextButton.setDisable(true);
         scrapeAsPlatformComboBox.setDisable(true);
-        platformComboBox.valueProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
-                XMLParser.importingAsPlatform = platformComboBox.getValue();
-                scrapeAsPlatformComboBox.setDisable(false);
-                scrapeAsPlatformComboBox.setValue(platformComboBox.getValue());
-                System.out.println("Chosen Platform: "+ platformComboBox.getValue());
-            }
-        });
-        customPlatformBox.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
-                XMLParser.importingAsPlatform = customPlatformBox.getText();
-                scrapeAsPlatformComboBox.setDisable(false);
-                XMLParser.importingAsPlatform = customPlatformBox.getText();
-                System.out.println("Chosen Platform: "+ customPlatformBox.getText());
-            }
-        });
+        setPlatformComboBoxBehavior();
+        setCustomPlatformBoxBehavior();
+        setScrapeAsPlatformComboBoxBehavior();
+    }
 
+    public void configure(List<File> files, Stage stage, Scene scene, String importAs, String scrapeAs){
+        this.files = files;
+        this.stage = stage;
+        this.scene = scene;
+        platformProcessor.processPlatforms(platformComboBox,scrapeAsPlatformComboBox,files);
+        setKeyBehavior(scene);
+        setPlatformSelections(importAs,scrapeAs);
+    }
+
+    private void setScrapeAsPlatformComboBoxBehavior() {
         scrapeAsPlatformComboBox.valueProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
@@ -97,6 +89,22 @@ public class ImportPlatformSelectionController implements Initializable{
         });
     }
 
+    private void setCustomPlatformBoxBehavior() {
+        customPlatformBox.textProperty().addListener((observableValue, s, t1) -> {
+            XMLParser.importingAsPlatform = customPlatformBox.getText();
+            scrapeAsPlatformComboBox.setDisable(false);
+            XMLParser.importingAsPlatform = customPlatformBox.getText();
+        });
+    }
+
+    private void setPlatformComboBoxBehavior() {
+        platformComboBox.valueProperty().addListener((observableValue, s, t1) -> {
+            XMLParser.importingAsPlatform = platformComboBox.getValue();
+            scrapeAsPlatformComboBox.setDisable(false);
+            scrapeAsPlatformComboBox.setValue(platformComboBox.getValue());
+        });
+    }
+
     public void setPlatformSelections(String importAs, String scrapeAs){
         if(importAs!=null){
             platformComboBox.setValue(importAs);
@@ -105,69 +113,11 @@ public class ImportPlatformSelectionController implements Initializable{
             scrapeAsPlatformComboBox.setValue(scrapeAs);
         }
     }
-
-    public void configure(List<File> files, Stage stage, Scene scene, String importAs, String scrapeAs){
-        this.files = files;
-        this.stage = stage;
-        this.scene = scene;
-        processPlatforms();
-        setKeyBehavior();
-        setPlatformSelections(importAs,scrapeAs);
-    }
-
-
-
-    public void processPlatforms() {
-        ArrayList<String> fileExtensions = FilenameUtil.extractFileExtensions(files);
-        ArrayList<String> platforms = platformFromExtension(fileExtensions);
-        List<String> platformList = XMLParser.getPlatforms();
-        if (platforms.size() <= 1 && !platforms.contains(MULTIPLE) && !platforms.contains(NOT_RECOGNIZED)) {
-            platformComboBox.setValue(platforms.get(0));
-            scrapeAsPlatformComboBox.setValue(platforms.get(0));
-        } else if(!"".equals(checkIfDirectoryContainsPlatformString(platformList, files.get(0).getParentFile().getAbsolutePath()))){
-            String platform = checkIfDirectoryContainsPlatformString(platformList, files.get(0).getParentFile().getAbsolutePath());
-            platformComboBox.setValue(platform);
-            scrapeAsPlatformComboBox.setValue(platform);
+    private void checkCustomPlatform(){
+        if(customPlatformBox.getText()!=null&&!customPlatformBox.getText().isEmpty()){
+            XMLParser.importingAsPlatform = customPlatformBox.getText();
+            System.out.println("Chosen Platform: "+ XMLParser.importingAsPlatform);
         }
-        platformComboBox.getItems().addAll(platformList);
-        scrapeAsPlatformComboBox.getItems().addAll(platformList);
-    }
-
-    private String checkIfDirectoryContainsPlatformString(List<String> platforms,String directory){
-        //System.out.println(directory.toLowerCase());
-        for (String platform :
-                platforms) {
-            //System.out.println(platform.toLowerCase());
-            if (directory.toLowerCase().contains(platform.toLowerCase())) {
-                //System.out.println("Match Found!");
-                return platform;
-                }
-            }
-        return "";
-    }
-
-    private ArrayList<String> platformFromExtension(ArrayList<String> fileExtensions) {
-        ArrayList<String> platforms = new ArrayList<>();
-        fileExtensions.stream().forEach(fileExtension->{
-            if(FileExtensionService.getExtensionsForPlatforms().containsKey(fileExtension)) {
-                if(!platforms.contains(FileExtensionService.getExtensionsForPlatforms().get(fileExtension))){
-                    platforms.add(FileExtensionService.getExtensionsForPlatforms().get(fileExtension));
-                }
-            } else {
-                platforms.add(NOT_RECOGNIZED);
-            }
-        });
-        return platforms;
-    }
-
-
-
-    public void setKeyBehavior(){
-        scene.setOnKeyPressed(keyEvent -> {
-            if(keyEvent.getCode()== KeyCode.ENTER){
-                onNext();
-            }
-        });
     }
 
     public void setFiles(List<File> files) {
