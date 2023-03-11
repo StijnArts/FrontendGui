@@ -61,7 +61,7 @@ public class FileExtensionService {
             extensionsForPlatforms.put("n64", "Nintendo 64");
             extensionsForPlatforms.put("gb", "Nintendo Game Boy");
             extensionsForPlatforms.put("gbc", "Nintendo Game Boy Color");
-            extensionsForPlatforms.put("gba", "Nintendo Game Boy Advanced");
+            extensionsForPlatforms.put("gba", "Nintendo Game Boy Advance");
             extensionsForPlatforms.put("gcm", "Nintendo GameCube");
             extensionsForPlatforms.put("nkit.iso", MULTIPLE);
             extensionsForPlatforms.put("nds", "Nintendo DS");

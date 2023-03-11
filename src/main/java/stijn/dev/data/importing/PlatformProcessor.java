@@ -1,7 +1,7 @@
 package stijn.dev.data.importing;
 
 import org.controlsfx.control.*;
-import stijn.dev.data.*;
+import stijn.dev.data.importing.xml.*;
 import stijn.dev.service.*;
 
 import java.io.*;
@@ -12,7 +12,8 @@ import static stijn.dev.service.FileExtensionService.NOT_RECOGNIZED;
 
 public class PlatformProcessor {
 
-    private List<String> platformList = XMLParser.getPlatforms();
+    private PlatformXMLParser platformXMLParser = new PlatformXMLParser();
+    private List<String> platformList = platformXMLParser.getPlatforms();
 
     public void processPlatforms(PrefixSelectionComboBox<String> platformComboBox, PrefixSelectionComboBox<String> scrapeAsPlatformComboBox, List<File> files){
         ArrayList<String> fileExtensions = FilenameUtil.extractFileExtensions(files);
@@ -36,7 +37,7 @@ public class PlatformProcessor {
     private ArrayList<String> platformFromExtension(ArrayList<String> fileExtensions) {
         ArrayList<String> platforms = new ArrayList<>();
         fileExtensions.forEach(fileExtension->{
-            if(FileExtensionService.getExtensionsForPlatforms().containsKey(fileExtension)) {
+            if(FileExtensionService.getExtensionsForPlatforms().containsKey(fileExtension.toLowerCase())) {
                 if(!platforms.contains(FileExtensionService.getExtensionsForPlatforms().get(fileExtension))){
                     platforms.add(FileExtensionService.getExtensionsForPlatforms().get(fileExtension));
                 }

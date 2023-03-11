@@ -9,7 +9,8 @@ public class FilenameUtil {
     public static ArrayList<String> extractFileExtensions(List<File> files) {
         ArrayList<String> fileExtensions = new ArrayList<>();
         for (File file : files) {
-            fileExtensions.add(extractFileExtension(file));
+            fileExtensions.add(extractFileExtension(file).toLowerCase());
+            System.out.println(extractFileExtension(file).toLowerCase());
         }
         return fileExtensions;
     }
@@ -28,7 +29,7 @@ public class FilenameUtil {
             }
         }
         //System.out.println("NEW WAY OF SPLITTING: "+fileExtension.substring(1));
-        return fileExtension.substring(1);
+        return fileExtension.substring(1).toLowerCase();
     }
 
     public static String cleanFilename(String rawFilename) {
@@ -40,8 +41,4 @@ public class FilenameUtil {
         cleanFilename = cleanFilename.trim();
         return cleanFilename.replace('_',' ');
     }
-
-
-    
-    
 }

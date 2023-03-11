@@ -25,7 +25,7 @@ public class RegionUtil {
         String returnRegion ="";
         for (String region : segments) {
             region = region.toLowerCase().replace('(',' ').replace(')',' ').trim();
-            System.out.println("Trying segment: "+region);
+            //System.out.println("Trying segment: "+region);
             if (region.equals("j") || region.equals("japan")) {
                 returnRegion = "Japan";
             } else if (region.equals("usa")) {

@@ -1,26 +1,22 @@
 package stijn.dev.resource.controllers;
 
 import javafx.collections.*;
-import javafx.event.*;
 import javafx.fxml.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
-import javafx.scene.input.*;
 import javafx.stage.*;
 import org.controlsfx.control.tableview2.*;
 import org.controlsfx.control.tableview2.cell.*;
-import stijn.dev.data.*;
 import stijn.dev.data.database.*;
-import stijn.dev.data.objects.items.*;
+import stijn.dev.data.importing.xml.*;
 import stijn.dev.records.*;
+import stijn.dev.resource.controllers.interfaces.*;
 import stijn.dev.service.javafx.*;
 
 import java.io.*;
-import java.net.*;
 import java.util.*;
-import java.util.concurrent.*;
 
-public class ImportOverviewController{
+public class ImportOverviewController implements IHasNextButton,IHasBackButton {
 
     @FXML
     private FilteredTableView<RomImportRecord> overviewTable;
@@ -32,8 +28,12 @@ public class ImportOverviewController{
     private Parent root;
     private Scene scene;
     private List<File> files;
-
+    private GamesXMLParser parser = new GamesXMLParser();
+    private RomXMLParser romXMLParser = new RomXMLParser();
+    private DatabaseHelper databaseHelper = new DatabaseHelper();
     private ObservableList<RomImportRecord> roms;
+    private String importingAsPlatform;
+    private String scrapeAsPlatform;
 
     public List<RomImportRecord> getRoms() {
         return roms;
@@ -44,32 +44,24 @@ public class ImportOverviewController{
         setTable();
     }
 
+    @Override
     public void onNext(){
         importRoms();
     }
 
+    @Override
     public void onBack(){
         FXMLLoader loader = FXMLLoaderUtil.createFMXLLoader("importPlatformSelection.fxml");
         root = RootUtil.createRoot(loader);
         Scene scene = new Scene(root, this.scene.getWidth(),this.scene.getHeight());
-        ImportPlatformSelectionController.create(loader, files, stage, scene, XMLParser.importingAsPlatform,XMLParser.scrapeAsPlatform);
+        ImportPlatformSelectionController.create(loader, files, stage, scene, importingAsPlatform,scrapeAsPlatform);
         stage.setScene(scene);
         stage.show();
     }
 
     public void importRoms(){
         stage.close();
-        XMLParser parser = new XMLParser();
-        ArrayBlockingQueue<Game> databaseRecords = parser.parseGames(roms);
-        DatabaseHelper.importRoms(databaseRecords);
-    }
-
-    public void setKeyBehavior(){
-        scene.setOnKeyPressed(keyEvent -> {
-            if(keyEvent.getCode()== KeyCode.ENTER){
-                importRoms();
-            }
-        });
+        databaseHelper.importRoms(parser.parseGames(roms,importingAsPlatform,scrapeAsPlatform));
     }
 
     private void setTable() {
@@ -104,35 +96,22 @@ public class ImportOverviewController{
         overviewTable.setRowHeaderVisible(true);
     }
 
-    public static ImportOverviewController create(FXMLLoader loader, List<File> files, Stage stage, Scene scene){
+    public static ImportOverviewController create(FXMLLoader loader, List<File> files, Stage stage, Scene scene,
+                                                  String importingAsPlatform, String scrapeAsPlatform){
         ImportOverviewController ioc = loader.getController();
-        ioc.configure(files, stage, scene);
+        ioc.configure(files, stage, scene, importingAsPlatform, scrapeAsPlatform);
         return ioc;
     }
 
-    public void configure(List<File> files, Stage stage, Scene scene){
+    public void configure(List<File> files, Stage stage, Scene scene, String importingAsPlatform, String scrapeAsPlatform){
         this.files = files;
-        this.roms = XMLParser.parseRoms(files);
+        this.importingAsPlatform = importingAsPlatform;
+        this.scrapeAsPlatform = scrapeAsPlatform;
+        this.roms = romXMLParser.parseRoms(files, importingAsPlatform, scrapeAsPlatform);
         this.stage = stage;
         this.scene = scene;
         setTable();
-        setKeyBehavior();
-    }
-
-    public Stage getStage() {
-        return stage;
-    }
-
-    public void setStage(Stage stage) {
-        this.stage = stage;
-    }
-
-    public Parent getRoot() {
-        return root;
-    }
-
-    public void setRoot(Parent root) {
-        this.root = root;
+        setKeyBehavior(scene);
     }
 
     public Scene getScene() {
@@ -141,9 +120,5 @@ public class ImportOverviewController{
 
     public void setScene(Scene scene) {
         this.scene = scene;
-    }
-
-    public void setFiles(List<File> files) {
-        this.files = files;
     }
 }

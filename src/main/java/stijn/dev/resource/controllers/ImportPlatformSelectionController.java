@@ -4,21 +4,16 @@ import javafx.beans.value.*;
 import javafx.fxml.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
-import javafx.scene.input.*;
 import javafx.stage.*;
 import org.controlsfx.control.*;
-import stijn.dev.data.*;
 import stijn.dev.data.importing.*;
+import stijn.dev.data.importing.xml.*;
 import stijn.dev.resource.controllers.interfaces.*;
-import stijn.dev.service.*;
 import stijn.dev.service.javafx.*;
 
 import java.io.*;
 import java.net.*;
 import java.util.*;
-
-import static stijn.dev.service.FileExtensionService.MULTIPLE;
-import static stijn.dev.service.FileExtensionService.NOT_RECOGNIZED;
 
 public class ImportPlatformSelectionController implements Initializable, IHasNextButton {
 
@@ -35,6 +30,8 @@ public class ImportPlatformSelectionController implements Initializable, IHasNex
     private Scene scene;
     private PlatformProcessor platformProcessor = new PlatformProcessor();
     private List<File> files;
+    private String importingAsPlatform;
+    private String scrapeAsPlatform;
 
 
     public static ImportPlatformSelectionController create(FXMLLoader loader, List<File> files, Stage stage, Scene scene) {
@@ -53,7 +50,7 @@ public class ImportPlatformSelectionController implements Initializable, IHasNex
         FXMLLoader loader = FXMLLoaderUtil.createFMXLLoader("importOverview.fxml");
         root = RootUtil.createRoot(loader);
         Scene overviewScene = new Scene(root,scene.getWidth(),scene.getHeight());
-        ImportOverviewController.create(loader, files, stage, overviewScene);
+        ImportOverviewController.create(loader, files, stage, overviewScene, importingAsPlatform, scrapeAsPlatform);
         stage.setScene(overviewScene);
         stage.show();
     }
@@ -80,7 +77,7 @@ public class ImportPlatformSelectionController implements Initializable, IHasNex
         scrapeAsPlatformComboBox.valueProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
-                XMLParser.scrapeAsPlatform = scrapeAsPlatformComboBox.getValue();
+                scrapeAsPlatform = scrapeAsPlatformComboBox.getValue();
                 System.out.println("Scraping As Platform: "+ scrapeAsPlatformComboBox.getValue());
                 if(null!= scrapeAsPlatformComboBox.getValue()&&!scrapeAsPlatformComboBox.getValue().isEmpty()) {
                     nextButton.setDisable(false);
@@ -91,15 +88,15 @@ public class ImportPlatformSelectionController implements Initializable, IHasNex
 
     private void setCustomPlatformBoxBehavior() {
         customPlatformBox.textProperty().addListener((observableValue, s, t1) -> {
-            XMLParser.importingAsPlatform = customPlatformBox.getText();
+            importingAsPlatform = customPlatformBox.getText();
             scrapeAsPlatformComboBox.setDisable(false);
-            XMLParser.importingAsPlatform = customPlatformBox.getText();
+            nextButton.setDisable(true);
         });
     }
 
     private void setPlatformComboBoxBehavior() {
         platformComboBox.valueProperty().addListener((observableValue, s, t1) -> {
-            XMLParser.importingAsPlatform = platformComboBox.getValue();
+            importingAsPlatform = platformComboBox.getValue();
             scrapeAsPlatformComboBox.setDisable(false);
             scrapeAsPlatformComboBox.setValue(platformComboBox.getValue());
         });
@@ -115,8 +112,8 @@ public class ImportPlatformSelectionController implements Initializable, IHasNex
     }
     private void checkCustomPlatform(){
         if(customPlatformBox.getText()!=null&&!customPlatformBox.getText().isEmpty()){
-            XMLParser.importingAsPlatform = customPlatformBox.getText();
-            System.out.println("Chosen Platform: "+ XMLParser.importingAsPlatform);
+            importingAsPlatform = customPlatformBox.getText();
+            System.out.println("Chosen Platform: "+ importingAsPlatform);
         }
     }
 
