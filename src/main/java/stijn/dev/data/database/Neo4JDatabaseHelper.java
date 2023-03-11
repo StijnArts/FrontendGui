@@ -7,7 +7,7 @@ public class Neo4JDatabaseHelper implements AutoCloseable{
     private final String user = "neo4j";
     private final String password = "password";
     private final String uri = "bolt://localhost:7687";
-
+    //TODO add indexes on nodes after import and edit
     private DatabaseProperties databaseProperties = new DatabaseProperties();
     private Driver driver;
     public Neo4JDatabaseHelper(){
