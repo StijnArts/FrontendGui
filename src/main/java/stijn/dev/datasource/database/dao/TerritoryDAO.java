@@ -17,7 +17,7 @@ public class TerritoryDAO {
                 releaseDateParameters.put("platformName", game.getPlatform());
                 releaseDateParameters.put("releaseDate", game.getReleaseDates().get(locale).toString());
                 releaseDateParameters.put("locale", locale);
-                neo4JDatabaseHelper.runQuery(new Query("MATCH (g:Game {GameName:$gameName})-[:ON_PLATFORM]-(p:Platform {PlatformName:$gamePlatform}) " +
+                neo4JDatabaseHelper.runQuery(new Query("MATCH (g:Game {GameName:$gameName})-[:ON_PLATFORM]-(p:Platform {PlatformName:$platformName}) " +
                         "MERGE (t:Territory {Name:$locale}) " +
                         "MERGE (g)-[:RELEASED_IN {Territory:$releaseDate}]->(t)",releaseDateParameters));
             }

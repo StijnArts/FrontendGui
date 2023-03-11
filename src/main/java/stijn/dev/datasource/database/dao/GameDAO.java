@@ -39,7 +39,7 @@ public class GameDAO {
 
     private boolean gameFileAlreadyImportedForPlatform(HashMap<String, Object> parameters) {
         return !neo4JDatabaseHelper.runQuery(new Query(
-                "Match (g:Game {GameName:$gameName, GameId:$gameId}), (p:Platform {PlatformName:$platformName})" +
+                "Match (g:Game {GameName:$gameName, GameId:$gameId}), (p:Platform {PlatformName:$gamePlatform})" +
                         "MATCH (g)-[r:ON_PLATFORM]->(p) RETURN r", parameters)).hasNext();
     }
 }
