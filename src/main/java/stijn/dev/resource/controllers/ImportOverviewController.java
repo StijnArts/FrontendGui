@@ -1,25 +1,22 @@
 package stijn.dev.resource.controllers;
 
 import javafx.collections.*;
-import javafx.collections.transformation.*;
-import javafx.event.*;
 import javafx.fxml.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
-import javafx.scene.input.*;
 import javafx.stage.*;
 import org.controlsfx.control.tableview2.*;
 import org.controlsfx.control.tableview2.cell.*;
-import stijn.dev.data.database.*;
-import stijn.dev.data.objects.items.*;
-import stijn.dev.records.*;
-import stijn.dev.resource.*;
+import stijn.dev.datasource.database.*;
+import stijn.dev.datasource.importing.xml.*;
+import stijn.dev.datasource.records.*;
+import stijn.dev.resource.controllers.interfaces.*;
+import stijn.dev.util.javafx.*;
 
 import java.io.*;
-import java.net.*;
 import java.util.*;
 
-public class ImportOverviewController implements Initializable{
+public class ImportOverviewController implements IHasNextButton,IHasBackButton {
 
     @FXML
     private FilteredTableView<RomImportRecord> overviewTable;
@@ -27,46 +24,44 @@ public class ImportOverviewController implements Initializable{
     private Button nextButton;
     @FXML
     private Button backButton;
-    private static Stage stage;
-    private static Parent root;
-    private static Scene scene;
-    ObservableList<RomImportRecord> roms;
+    private Stage stage;
+    private Parent root;
+    private Scene scene;
+    private List<File> files;
+    private GamesXMLParser parser = new GamesXMLParser();
+    private RomXMLParser romXMLParser = new RomXMLParser();
+    private DatabaseHelper databaseHelper = new DatabaseHelper();
+    private ObservableList<RomImportRecord> roms;
+    private String importingAsPlatform;
+    private String scrapeAsPlatform;
 
     public List<RomImportRecord> getRoms() {
         return roms;
     }
 
-    public void setRoms(List<RomImportRecord> roms) {
-        this.roms = FXCollections.observableList(roms);
+    public void setRoms(ObservableList<RomImportRecord> roms) {
+        this.roms = roms;
         setTable();
     }
 
-    public void onNext(ActionEvent event){
-//        roms.forEach(record->{
-//            System.out.println(record.toString());
-//        });
+    @Override
+    public void onNext(){
         importRoms();
+    }
+
+    @Override
+    public void onBack(){
+        FXMLLoader loader = FXMLLoaderUtil.createFMXLLoader("importPlatformSelection.fxml");
+        root = RootUtil.createRoot(loader);
+        Scene scene = new Scene(root, this.scene.getWidth(),this.scene.getHeight());
+        ImportPlatformSelectionController.create(loader, files, stage, scene, importingAsPlatform,scrapeAsPlatform);
+        stage.setScene(scene);
+        stage.show();
     }
 
     public void importRoms(){
         stage.close();
-        XMLParser parser = new XMLParser();
-        List<Game> databaseRecords = parser.parseGames(roms);
-        DatabaseHelper.importRoms(databaseRecords);
-    }
-
-
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-
-    }
-
-    public void setKeyBehavior(){
-        scene.setOnKeyPressed(keyEvent -> {
-            if(keyEvent.getCode()== KeyCode.ENTER){
-                importRoms();
-            }
-        });
+        databaseHelper.importRoms(parser.parseGames(roms,importingAsPlatform,scrapeAsPlatform));
     }
 
     private void setTable() {
@@ -101,27 +96,29 @@ public class ImportOverviewController implements Initializable{
         overviewTable.setRowHeaderVisible(true);
     }
 
-    public static Stage getStage() {
-        return stage;
+    public static ImportOverviewController create(FXMLLoader loader, List<File> files, Stage stage, Scene scene,
+                                                  String importingAsPlatform, String scrapeAsPlatform){
+        ImportOverviewController ioc = loader.getController();
+        ioc.configure(files, stage, scene, importingAsPlatform, scrapeAsPlatform);
+        return ioc;
     }
 
-    public static void setStage(Stage stage) {
-        ImportOverviewController.stage = stage;
+    public void configure(List<File> files, Stage stage, Scene scene, String importingAsPlatform, String scrapeAsPlatform){
+        this.files = files;
+        this.importingAsPlatform = importingAsPlatform;
+        this.scrapeAsPlatform = scrapeAsPlatform;
+        this.roms = romXMLParser.parseRoms(files, importingAsPlatform, scrapeAsPlatform);
+        this.stage = stage;
+        this.scene = scene;
+        setTable();
+        setKeyBehavior(scene);
     }
 
-    public static Parent getRoot() {
-        return root;
-    }
-
-    public static void setRoot(Parent root) {
-        ImportOverviewController.root = root;
-    }
-
-    public static Scene getScene() {
+    public Scene getScene() {
         return scene;
     }
 
-    public static void setScene(Scene scene) {
-        ImportOverviewController.scene = scene;
+    public void setScene(Scene scene) {
+        this.scene = scene;
     }
 }

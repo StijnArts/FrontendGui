@@ -15,6 +15,6 @@
       <Label layoutX="55.0" layoutY="69.0" text="Select Platform to import as:" />
       <Label layoutX="55.0" layoutY="149.0" text="If the platform isn't in the list, fill it in here:" />
       <Label layoutX="55.0" layoutY="217.0" text="Scrape as:" />
-      <Button fx:id="nextButton" layoutX="534.0" layoutY="361.0" mnemonicParsing="false" onAction="#importRoms" text="Next" />
+      <Button fx:id="nextButton" layoutX="534.0" layoutY="361.0" mnemonicParsing="false" onAction="#onNext" text="Next" />
    </children>
 </AnchorPane>
