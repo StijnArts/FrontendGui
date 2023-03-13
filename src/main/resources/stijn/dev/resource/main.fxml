@@ -7,14 +7,14 @@
 <?import org.controlsfx.control.GridView?>
 
 
-<BorderPane fx:id="mainBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="606.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane fx:id="mainBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="606.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stijn.dev.resource.controllers.MainController">
    <center>
       <GridView fx:id="gamesGridView" BorderPane.alignment="CENTER" />
    </center>
    <left>
       <BorderPane prefHeight="400.0" prefWidth="125.0" BorderPane.alignment="CENTER">
          <center>
-            <Accordion fx:id="overviewAccordion" minWidth="-Infinity" BorderPane.alignment="CENTER" />
+            <Accordion fx:id="overviewAccordion" BorderPane.alignment="CENTER" />
          </center>
       </BorderPane>
    </left>
@@ -25,7 +25,7 @@
       <VBox fx:id="detailsPanel" prefHeight="498.0" prefWidth="219.0" BorderPane.alignment="CENTER" />
    </right>
    <bottom>
-      <VBox prefHeight="95.0" prefWidth="1000.0" BorderPane.alignment="CENTER">
+      <VBox prefHeight="95.0" fx:id="bottomBar" prefWidth="1000.0" BorderPane.alignment="CENTER">
          <children>
             <HBox fx:id="progressBar" prefHeight="100.0" prefWidth="1000.0" />
             <HBox fx:id="bottomControlBar" prefHeight="100.0" prefWidth="200.0" />

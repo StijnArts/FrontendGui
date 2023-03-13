@@ -14,7 +14,7 @@ public class SceneController {
     private Parent root;
 
     public void switchToDemo(ActionEvent event) throws IOException {
-        root = FXMLLoader.load(FrontEndApplication.class.getResource("../demo.fxml"));
+        root = FXMLLoader.load(FrontEndApplication.class.getResource("../main.fxml"));
         stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         scene = new Scene(root);
         stage.setScene(scene);
