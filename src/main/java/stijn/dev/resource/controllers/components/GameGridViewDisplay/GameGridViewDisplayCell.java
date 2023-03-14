@@ -8,6 +8,8 @@ public class GameGridViewDisplayCell extends GridCell<GameGridViewDisplay> {
         super();
     }
 
+    private int previousWidth = 0;
+    private int previousHeight = 0;
     @Override
     public void updateItem(GameGridViewDisplay gameGridViewDisplay, boolean empty){
         super.updateItem(gameGridViewDisplay, empty);
@@ -15,7 +17,7 @@ public class GameGridViewDisplayCell extends GridCell<GameGridViewDisplay> {
             setGraphic(null);
 
         } else {
-            if(getWidth()!= MainController.cellWidth||getHeight()!= MainController.cellHeight){
+            if(checkHeightWidth()){
                 gameGridViewDisplay.setHeight(MainController.cellHeight);
                 gameGridViewDisplay.setWidth(MainController.cellWidth);
             }
@@ -23,5 +25,12 @@ public class GameGridViewDisplayCell extends GridCell<GameGridViewDisplay> {
             setText(gameGridViewDisplay.getGameTitle());
             setGraphic(gameGridViewDisplay);
         }
+    }
+
+    private boolean checkHeightWidth(){
+        if(previousWidth!=MainController.cellWidth || previousHeight!=MainController.cellHeight){
+            return true;
+        }
+        return false;
     }
 }
