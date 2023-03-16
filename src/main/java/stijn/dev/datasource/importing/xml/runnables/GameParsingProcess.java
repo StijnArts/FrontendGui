@@ -1,6 +1,7 @@
 package stijn.dev.datasource.importing.xml.runnables;
 
 import nu.xom.*;
+import stijn.dev.datasource.importing.xml.*;
 import stijn.dev.datasource.importing.xml.interfaces.*;
 import stijn.dev.datasource.importing.xml.objecttranslator.*;
 import stijn.dev.datasource.objects.items.*;
@@ -18,6 +19,8 @@ public class GameParsingProcess implements Runnable, IElementReader {
     private GameFromXML gameFromXML = new GameFromXML();
     public String importingAsPlatform;
     public String scrapeAsPlatform;
+    private PlatformXMLParser platformXMLParser = new PlatformXMLParser();
+    private Platform platform;
 
     public GameParsingProcess(RomImportRecord rom , Elements files, ArrayBlockingQueue<Game> results, String importingAsPlatform, String scrapeAsPlatform){
         this.rom = rom;
@@ -25,6 +28,7 @@ public class GameParsingProcess implements Runnable, IElementReader {
         this.results = results;
         this.importingAsPlatform = importingAsPlatform;
         this.scrapeAsPlatform = scrapeAsPlatform;
+        this.platform = platformXMLParser.parsePlatform(importingAsPlatform);
         gameFromXML.setRom(rom);
     }
     @Override
@@ -49,7 +53,7 @@ public class GameParsingProcess implements Runnable, IElementReader {
 
             if (platform.equals(rom.scrapeAsPlatform().getValue())) {
                 if (isExactMatch(gameTitle, rom)) {
-                    results.put(gameFromXML.createGame(file));
+                    results.put(gameFromXML.createGame(file,this.platform));
                     return true;
                 }
                 if (isContainedInTitle(gameTitle, rom)) {
@@ -62,7 +66,7 @@ public class GameParsingProcess implements Runnable, IElementReader {
             }
         }
         if(null!= mostMatchingContainingDatabaseId){
-            results.put(gameFromXML.createGame(mostMatchingContainingFile));
+            results.put(gameFromXML.createGame(mostMatchingContainingFile,this.platform));
             return true;
         }
         return false;
@@ -100,9 +104,9 @@ public class GameParsingProcess implements Runnable, IElementReader {
             }
         }
         if(noMatchFound && highestMatchRating>=2){
-            results.put(gameFromXML.createGame(mostMatchingFile));
+            results.put(gameFromXML.createGame(mostMatchingFile,this.platform));
         } else{
-            results.put(gameFromXML.createGame("Not Found"));
+            results.put(gameFromXML.createGame("Not Found",this.platform));
         }
     }
 

@@ -39,7 +39,7 @@ public class PublisherDAO {
             boolean publisherExists = false;
             while(!publisherExists){
                 HashMap<String, Object> parameters = new HashMap<>();
-                parameters.put("publisherName", game.getPublisher().trim());
+                parameters.put("publisherName", game.getPublisher().getPublisherName().trim());
                 parameters.put("gameId", game.getGameId());
                 parameters.put("gameName", game.getName());
                 parameters.put("platformName", game.getPlatform());

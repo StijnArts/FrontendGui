@@ -7,10 +7,11 @@ import java.util.logging.*;
 public class DatabaseProperties {
     private Logger logger = Logger.getLogger(DatabaseProperties.class.getName());
     private Properties properties;
+    private InputStream filePath = DatabaseProperties.class.getClassLoader().getResourceAsStream("database.properties");
     public DatabaseProperties(){
         properties = new Properties();
         try {
-            properties.load(DatabaseProperties.class.getClassLoader().getResourceAsStream("database.properties"));
+            properties.load(filePath);
         } catch (
                 IOException e) {
             logger.log(Level.SEVERE, "Can't access property file database.properties");
@@ -23,6 +24,11 @@ public class DatabaseProperties {
 
     public void isInitialized(boolean state){
         properties.setProperty("isInitialized",String.valueOf(state));
+        try {
+            properties.store(new FileWriter(filePath.toString()),null);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

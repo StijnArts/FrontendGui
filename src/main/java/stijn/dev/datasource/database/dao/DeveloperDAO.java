@@ -14,7 +14,7 @@ public class DeveloperDAO {
             boolean developerExists = false;
             while(!developerExists) {
                 HashMap<String, Object> parameters = new HashMap<>();
-                parameters.put("developerName", game.getDeveloper().trim());
+                parameters.put("developerName", game.getDeveloper().getDeveloperName().trim());
                 parameters.put("gameId", game.getGameId());
                 parameters.put("gameName", game.getName());
                 parameters.put("platformName", game.getPlatform());

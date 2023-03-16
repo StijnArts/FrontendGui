@@ -22,7 +22,7 @@ public class GameGridViewDisplayCell extends GridCell<GameGridViewDisplay> {
                 gameGridViewDisplay.setWidth(MainController.cellWidth);
             }
             setItem(gameGridViewDisplay);
-            setText(gameGridViewDisplay.getGameTitle());
+            setText(gameGridViewDisplay.getGame().getName());
             setGraphic(gameGridViewDisplay);
         }
     }

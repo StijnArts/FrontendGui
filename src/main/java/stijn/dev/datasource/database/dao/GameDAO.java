@@ -10,7 +10,7 @@ public class GameDAO {
 
     private TerritoryDAO territoryDAO = new TerritoryDAO();
     private Neo4JDatabaseHelper neo4JDatabaseHelper = new Neo4JDatabaseHelper();
-    public void createGame(Game game){
+    public void createInDatabaseGame(Game game){
         HashMap<String, Object> parameters = new HashMap<>();
         parameters.put("gameName",game.getName());
         parameters.put("gameId",game.getGameId());
@@ -41,5 +41,25 @@ public class GameDAO {
         return !neo4JDatabaseHelper.runQuery(new Query(
                 "Match (g:Game {GameName:$gameName, GameId:$gameId}), (p:Platform {PlatformName:$gamePlatform})" +
                         "MATCH (g)-[r:ON_PLATFORM]->(p) RETURN r", parameters)).hasNext();
+    }
+
+    public ArrayList<Game> getGames(){
+        String query = "Match (g:Game) Return g.GameName";
+        Result result = neo4JDatabaseHelper.runQuery(query);
+        ArrayList<Game> games = new ArrayList<>();
+        while(result.hasNext()){
+            String gameData = "";
+            Map<String, Object> row = result.next().asMap();
+            for(Map.Entry<String,Object> column:row.entrySet()){
+                gameData+= column.getKey()+": "+column.getValue()+". \n";
+            }
+            gameData+="\n";
+            System.out.println(gameData);
+        }
+        return null;
+    }
+
+    private Game createGameFromDatabase(){
+        return null;
     }
 }

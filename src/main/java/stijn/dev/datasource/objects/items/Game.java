@@ -1,5 +1,6 @@
 package stijn.dev.datasource.objects.items;
 
+import stijn.dev.datasource.objects.collections.*;
 import stijn.dev.datasource.objects.items.data.*;
 
 import java.time.*;
@@ -7,31 +8,43 @@ import java.util.*;
 
 public class Game extends Item{
 
-    private String name;
-    private String path;
-    private String gameId;
-    private String description;
-    private HowLongToBeatData HLTBData;
-    private String launchParameters;
-    private double priority;
-    private HashMap<String, LocalDate> releaseDates;
-    private String maxPlayers;
 
-    private ArrayList<String> tags;
+    //Properties
+        private String name;
+        private String path;
+        private String gameId;
+        private String description;
+        private HowLongToBeatData HLTBData;
+        private String launchParameters;
+        private double priority;
+        private HashMap<String, LocalDate> releaseDates;
+        private String maxPlayers;
+        private ArrayList<String> tags;
+        //Tag Nodes for the Cooperative parent and the Genres parent and ESRB
+        private String videoURL;
+        private String wikipediaURL;
+        private String communityRating;
+        private String communityRatingCount;
+        private boolean cooperative;
+        private String ESRBRating;
+    //Relationships
+        private HashMap<String, Gallery> galleries = new HashMap<>();
+        private ArrayList<Trivia> trivia = new ArrayList<>();
+        private Emulator defaultEmulator = null;
+        private Platform platform;
+        private Developer developer;
+        private Publisher publisher;
+//        private ArrayList<Canon> canons = new ArrayList<>();
+//        private ArrayList<Serie> series = new ArrayList<>();
+//        private ArrayList<Franchise> franchises = new ArrayList<>();
+//        private ArrayList<Playlist> playlists = new ArrayList<>();
+//        private ArrayList<TimelineStep> timelineSteps = new ArrayList<>();
 
-    //Tag Nodes for the Cooperative parent and the Genres parent and ESRB
-    private String videoURL;
-    private String wikipediaURL;
-    private String developer;
-    private String publisher;
-    private String platform;
-    private String communityRating;
-    private String communityRatingCount;
-    private boolean cooperative;
-    private String ESRBRating;
-
-    private Emulator emulator;
     //Summary is empty by default and needs to be added manually.
+
+    public Game(String name){
+        this.name = name;
+    }
     public Game(String name,
                 String path,
                 String gameId,
@@ -41,9 +54,9 @@ public class Game extends Item{
                 ArrayList<String> tags,
                 String videoURL,
                 String wikipediaURL,
-                String developer,
-                String publisher,
-                String platform,
+                Developer developer,
+                Publisher publisher,
+                Platform platform,
                 String communityRating,
                 String communityRatingCount,
                 boolean cooperative,
@@ -106,15 +119,15 @@ public class Game extends Item{
         return wikipediaURL;
     }
 
-    public String getDeveloper() {
+    public Developer getDeveloper() {
         return developer;
     }
 
-    public String getPublisher() {
+    public Publisher getPublisher() {
         return publisher;
     }
 
-    public String getPlatform() {
+    public Platform getPlatform() {
         return platform;
     }
 
@@ -143,6 +156,6 @@ public class Game extends Item{
     }
 
     public Emulator getEmulator() {
-        return emulator;
+        return defaultEmulator;
     }
 }

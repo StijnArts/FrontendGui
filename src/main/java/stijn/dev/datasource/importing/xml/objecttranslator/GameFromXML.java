@@ -2,6 +2,7 @@ package stijn.dev.datasource.importing.xml.objecttranslator;
 
 import nu.xom.*;
 import stijn.dev.datasource.*;
+import stijn.dev.datasource.importing.xml.*;
 import stijn.dev.datasource.importing.xml.interfaces.*;
 import stijn.dev.datasource.objects.items.*;
 import stijn.dev.datasource.records.*;
@@ -11,7 +12,8 @@ import java.util.*;
 
 public class GameFromXML implements IElementReader {
     private RomImportRecord rom;
-    public Game createGame(Element file) {
+
+    public Game createGame(Element file, Platform platform) {
         String region;
         if(rom.region().getValue().equals("N/A")){
             region = "USA";
@@ -41,16 +43,16 @@ public class GameFromXML implements IElementReader {
                 tags,
                 readElement(file.getFirstChildElement("VideoURL")),
                 readElement(file.getFirstChildElement("WikipediaURL")),
-                readElement(file.getFirstChildElement("Developer")),
-                readElement(file.getFirstChildElement("Publisher")),
-                rom.platform().getValue(),
+                new Developer(readElement(file.getFirstChildElement("Developer"))),
+                new Publisher(readElement(file.getFirstChildElement("Publisher"))),
+                platform,
                 readElement(file.getFirstChildElement("CommunityRating")),
                 readElement(file.getFirstChildElement("CommunityRatingCount")),
                 Boolean.valueOf(readElement(file.getFirstChildElement("Cooperative"))),
                 readElement(file.getFirstChildElement("ESRB")));
     }
 
-    public Game createGame(String status) {
+    public Game createGame(String status,Platform platform) {
         String region;
         if(rom.region().getValue().equals("N/A")){
             region = "USA";
@@ -76,9 +78,9 @@ public class GameFromXML implements IElementReader {
                 tags,
                 readElement(null),
                 readElement(null),
-                readElement(null),
-                readElement(null),
-                rom.platform().getValue(),
+                new Developer(readElement(null)),
+                new Publisher(readElement(null)),
+                platform,
                 readElement(null),
                 readElement(null),
                 false,

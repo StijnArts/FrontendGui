@@ -7,6 +7,7 @@ import javafx.scene.layout.*;
 import javafx.util.*;
 import org.controlsfx.control.*;
 import org.controlsfx.control.cell.*;
+import stijn.dev.datasource.objects.items.*;
 import stijn.dev.resource.controllers.components.*;
 import stijn.dev.resource.controllers.components.GameGridViewDisplay.*;
 
@@ -30,14 +31,14 @@ public class MainController extends SceneController implements Initializable{
     private HBox progressBar;
     @FXML
     private HBox bottomControlBar;
-    public static double cellWidth = 300;
-    public static double cellHeight = 300;
+    public static double cellWidth = 200;
+    public static double cellHeight = 200;
     private RomImportDragAndDroppable romImportDragAndDroppable = new RomImportDragAndDroppable();
 
     public void configure(){
         ArrayList<GameGridViewDisplay> gameGridViewDisplays = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
-            gameGridViewDisplays.add(new GameGridViewDisplay("test title","image location"));
+            gameGridViewDisplays.add(new GameGridViewDisplay(new Game("test game"),"image location"));
         }
         ObservableList games = FXCollections.observableList(gameGridViewDisplays);
         gamesGridView.setItems(games);

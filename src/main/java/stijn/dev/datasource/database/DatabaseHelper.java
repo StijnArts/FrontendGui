@@ -22,10 +22,10 @@ public class DatabaseHelper {
         synchronized (games) {
             for (Game game : games) {
                 if (!platforms.contains(game.getPlatform())) {
-                    String platform = game.getPlatform();
+                    String platform = game.getPlatform().getPlatformName();
                     platforms.add(platform);
                     if (!platformDAO.checkIfPlatformExists(platform)) {
-                        importPlatform(platform);
+                        importPlatform(game.getPlatform());
                     }
                 }
                 importGame(game);
@@ -36,7 +36,7 @@ public class DatabaseHelper {
     }
 
     private void importGame(Game game) {
-            gameDAO.createGame(game);
+            gameDAO.createInDatabaseGame(game);
             publisherDAO.createPublisher(game);
             createESRBRating(game);
             developerDAO.createDeveloper(game);
@@ -61,11 +61,10 @@ public class DatabaseHelper {
         }
     }
 
-    private void importPlatform(String platform) {
-        Platform platformObject = platformXMLParser.parsePlatform(platform);
-        platformDAO.createPlatform(platformObject);
-        if(platformObject.getPublisher()!=null){
-            publisherDAO.createPublisher(platformObject);
+    private void importPlatform(Platform platform) {
+        platformDAO.createPlatform(platform);
+        if(platform.getPublisher()!=null){
+            publisherDAO.createPublisher(platform);
         }
     }
 }
