@@ -53,7 +53,7 @@ public class GameParsingProcess implements Runnable, IElementReader {
 
             if (platform.equals(rom.scrapeAsPlatform().getValue())) {
                 if (isExactMatch(gameTitle, rom)) {
-                    results.put(gameFromXML.createGame(file,this.platform));
+                    results.put(gameFromXML.createGame(file));
                     return true;
                 }
                 if (isContainedInTitle(gameTitle, rom)) {
@@ -66,7 +66,7 @@ public class GameParsingProcess implements Runnable, IElementReader {
             }
         }
         if(null!= mostMatchingContainingDatabaseId){
-            results.put(gameFromXML.createGame(mostMatchingContainingFile,this.platform));
+            results.put(gameFromXML.createGame(mostMatchingContainingFile));
             return true;
         }
         return false;
@@ -104,9 +104,9 @@ public class GameParsingProcess implements Runnable, IElementReader {
             }
         }
         if(noMatchFound && highestMatchRating>=2){
-            results.put(gameFromXML.createGame(mostMatchingFile,this.platform));
+            results.put(gameFromXML.createGame(mostMatchingFile));
         } else{
-            results.put(gameFromXML.createGame("Not Found",this.platform));
+            results.put(gameFromXML.createGame("Not Found"));
         }
     }
 

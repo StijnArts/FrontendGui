@@ -31,9 +31,9 @@ public class Game extends Item{
         private HashMap<String, Gallery> galleries = new HashMap<>();
         private ArrayList<Trivia> trivia = new ArrayList<>();
         private Emulator defaultEmulator = null;
-        private Platform platform;
-        private Developer developer;
-        private Publisher publisher;
+        private String platform;
+        private String developer;
+        private String publisher;
 //        private ArrayList<Canon> canons = new ArrayList<>();
 //        private ArrayList<Serie> series = new ArrayList<>();
 //        private ArrayList<Franchise> franchises = new ArrayList<>();
@@ -54,9 +54,9 @@ public class Game extends Item{
                 ArrayList<String> tags,
                 String videoURL,
                 String wikipediaURL,
-                Developer developer,
-                Publisher publisher,
-                Platform platform,
+                String developer,
+                String publisher,
+                String platform,
                 String communityRating,
                 String communityRatingCount,
                 boolean cooperative,
@@ -119,16 +119,16 @@ public class Game extends Item{
         return wikipediaURL;
     }
 
-    public Developer getDeveloper() {
+    public String getPlatform() {
+        return platform;
+    }
+
+    public String getDeveloper() {
         return developer;
     }
 
-    public Publisher getPublisher() {
+    public String getPublisher() {
         return publisher;
-    }
-
-    public Platform getPlatform() {
-        return platform;
     }
 
     public String getCommunityRating() {
