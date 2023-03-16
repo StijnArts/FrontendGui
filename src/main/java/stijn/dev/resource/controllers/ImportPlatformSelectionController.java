@@ -89,7 +89,7 @@ public class ImportPlatformSelectionController implements Initializable, IHasNex
         customPlatformBox.textProperty().addListener((observableValue, s, t1) -> {
             importingAsPlatform = customPlatformBox.getText();
             scrapeAsPlatformComboBox.setDisable(false);
-            nextButton.setDisable(true);
+            nextButton.setDisable(false);
         });
     }
 

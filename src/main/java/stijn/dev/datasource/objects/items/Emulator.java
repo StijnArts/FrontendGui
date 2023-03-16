@@ -14,7 +14,7 @@ public class Emulator {
         this.path = path;
     }
 
-    public Process launchGame(Game game){
+    public Process launchGame(GameImportItem gameImportItem){
 
         String gamePath = "\"" +path+ "\"";
 
@@ -22,7 +22,7 @@ public class Emulator {
             gamePath +=  " " +args;
         }
 
-        gamePath +=  " \"" + game.getPath()+ "\"";
+        gamePath +=  " \"" + gameImportItem.getPath()+ "\"";
 
         ProcessBuilder builder = new ProcessBuilder(gamePath);
         builder.redirectErrorStream(true);

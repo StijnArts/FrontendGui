@@ -13,7 +13,7 @@ import static stijn.dev.datasource.importing.util.GameTitleMatcher.*;
 public class GameParsingProcess implements Runnable, IElementReader {
     private RomImportRecord rom;
     private Elements files;
-    private ArrayBlockingQueue<Game> results;
+    private ArrayBlockingQueue<GameImportItem> results;
     private boolean noMatchFound = true;
     private int lowestDatabaseID = 0;
     private GameFromXML gameFromXML = new GameFromXML();
@@ -22,7 +22,7 @@ public class GameParsingProcess implements Runnable, IElementReader {
     private PlatformXMLParser platformXMLParser = new PlatformXMLParser();
     private Platform platform;
 
-    public GameParsingProcess(RomImportRecord rom , Elements files, ArrayBlockingQueue<Game> results, String importingAsPlatform, String scrapeAsPlatform){
+    public GameParsingProcess(RomImportRecord rom , Elements files, ArrayBlockingQueue<GameImportItem> results, String importingAsPlatform, String scrapeAsPlatform){
         this.rom = rom;
         this.files = files;
         this.results = results;

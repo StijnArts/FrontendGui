@@ -13,9 +13,9 @@ import java.util.concurrent.*;
 public class GamesXMLParser extends XMLParser{
     private static File metadata = new File(metadataFolder+"\\Metadata.xml");
 
-    public ArrayBlockingQueue<Game> parseGames(List<RomImportRecord> romImportRecords,String importingAsPlatform, String scrapeAsPlatform){
+    public ArrayBlockingQueue<GameImportItem> parseGames(List<RomImportRecord> romImportRecords, String importingAsPlatform, String scrapeAsPlatform){
         double startTime = System.currentTimeMillis();
-        ArrayBlockingQueue<Game> results = new ArrayBlockingQueue<>(romImportRecords.size()*2);
+        ArrayBlockingQueue<GameImportItem> results = new ArrayBlockingQueue<>(romImportRecords.size()*2);
         try{
             synchronized(results) {
                 Builder parser = new Builder();

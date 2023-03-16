@@ -4,9 +4,7 @@ import javafx.collections.*;
 import javafx.fxml.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.util.*;
 import org.controlsfx.control.*;
-import org.controlsfx.control.cell.*;
 import stijn.dev.datasource.objects.items.*;
 import stijn.dev.resource.controllers.components.*;
 import stijn.dev.resource.controllers.components.GameGridViewDisplay.*;
@@ -38,7 +36,7 @@ public class MainController extends SceneController implements Initializable{
     public void configure(){
         ArrayList<GameGridViewDisplay> gameGridViewDisplays = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
-            gameGridViewDisplays.add(new GameGridViewDisplay(new Game("test game"),"image location"));
+            gameGridViewDisplays.add(new GameGridViewDisplay(new GameImportItem("test game"),"image location"));
         }
         ObservableList games = FXCollections.observableList(gameGridViewDisplays);
         gamesGridView.setItems(games);

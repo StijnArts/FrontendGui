@@ -4,16 +4,16 @@ import javafx.fxml.*;
 import stijn.dev.datasource.objects.items.*;
 
 public class EditController {
-    private Game game;
+    private GameImportItem gameImportItem;
 
-    public static EditController create(FXMLLoader loader, Game game){
+    public static EditController create(FXMLLoader loader, GameImportItem gameImportItem){
         EditController ec = loader.getController();
-        ec.configure(game);
+        ec.configure(gameImportItem);
         return ec;
     }
 
-    public void configure(Game game){
-        this.game = game;
+    public void configure(GameImportItem gameImportItem){
+        this.gameImportItem = gameImportItem;
     }
 
 }

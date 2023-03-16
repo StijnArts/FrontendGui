@@ -16,6 +16,7 @@ import java.io.IOException;
 public class FrontEndApplication extends Application {
     public static boolean importProcessIsRunning;
     private static GameDAO gameDAO = new GameDAO();
+    public final static String DEFAULT_DATABASE_NAME = "Games_Graph_Database";
     @Override
     public void start(Stage primaryStage) throws IOException {
         FXMLLoader loader = FXMLLoaderUtil.createFMXLLoader(("main.fxml"));

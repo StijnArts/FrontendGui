@@ -224,9 +224,6 @@
                                        <center>
                                           <TextArea fx:id="descriptionTextArea" prefHeight="353.0" prefWidth="626.0" />
                                        </center>
-                                       <top>
-                                          <AnchorPane prefHeight="46.0" prefWidth="650.0" BorderPane.alignment="CENTER" />
-                                       </top>
                                        <left>
                                           <AnchorPane prefHeight="171.0" prefWidth="12.0" BorderPane.alignment="CENTER" />
                                        </left>
@@ -236,6 +233,13 @@
                                        <bottom>
                                           <AnchorPane prefHeight="6.0" prefWidth="650.0" BorderPane.alignment="CENTER" />
                                        </bottom>
+                                       <top>
+                                          <BorderPane prefHeight="46.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                                             <center>
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="The gameImportItem's description, visible on the details screen." BorderPane.alignment="CENTER" />
+                                             </center>
+                                          </BorderPane>
+                                       </top>
                                     </BorderPane>
                                  </content>
                               </Tab>
@@ -252,7 +256,11 @@
                                           </TableView2>
                                        </center>
                                        <top>
-                                          <AnchorPane prefHeight="46.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+                                          <BorderPane prefHeight="46.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                                             <center>
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Alternate names for the gameImportItem. This can be set to be per region, or to be a community-made alternate name for the gameImportItem." BorderPane.alignment="CENTER" />
+                                             </center>
+                                          </BorderPane>
                                        </top>
                                     </BorderPane>
                                  </content>
@@ -265,12 +273,17 @@
                                              <columns>
                                                 <TableColumn maxWidth="-1.0" minWidth="100.0" prefWidth="-1.0" text="Game" />
                                                 <TableColumn maxWidth="-1.0" minWidth="100.0" prefWidth="-1.0" text="Relationship" />
+                                                <TableColumn minWidth="50.0" prefWidth="-1.0" text="Edit" />
                                                 <TableColumn maxWidth="-1.0" minWidth="100.0" prefWidth="-1.0" text="Description" />
                                              </columns>
                                           </TableView2>
                                        </center>
                                        <top>
-                                          <AnchorPane prefHeight="46.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+                                          <BorderPane prefHeight="46.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                                             <center>
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Games that are related to this gameImportItem. Description typically lists the differences/improvments compared to the original version of the gameImportItem, or in the case of a different kind of relationship how it relates to said gameImportItem." textAlignment="CENTER" wrappingWidth="700.0" BorderPane.alignment="CENTER" />
+                                             </center>
+                                          </BorderPane>
                                        </top>
                                     </BorderPane>
                                  </content>
@@ -290,7 +303,7 @@
                                        <top>
                                           <BorderPane prefHeight="46.0" BorderPane.alignment="CENTER">
                                              <center>
-                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Additional Apps that you can run for your game. Think server executables or a configuration application." textAlignment="CENTER" wrappingWidth="650.0" />
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Additional Apps that you can run for your gameImportItem. Think server executables or a configuration application." textAlignment="CENTER" wrappingWidth="650.0" />
                                              </center>
                                           </BorderPane>
                                        </top>
@@ -303,13 +316,17 @@
                                        <center>
                                           <TableView2>
                                              <columns>
-                                                <TableColumn maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" text="TriviaName" />
+                                                <TableColumn maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" text="Trivia Name" />
                                                 <TableColumn maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" text="Trivia Body" />
                                              </columns>
                                           </TableView2>
                                        </center>
                                        <top>
-                                          <AnchorPane prefHeight="46.0" prefWidth="650.0" BorderPane.alignment="CENTER" />
+                                          <BorderPane prefHeight="46.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                                             <center>
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Trivia about the gameImportItem. The Trivia name needs to be unique per trivia fact, and it's recommended to use a prefix per item/collection. The trivia body is the actual fact that the trivia is about." textAlignment="CENTER" wrappingWidth="700.0" BorderPane.alignment="CENTER" />
+                                             </center>
+                                          </BorderPane>
                                        </top>
                                     </BorderPane>
                                  </content>
@@ -323,12 +340,15 @@
                                                 <TableColumn maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" text="ID" />
                                                 <TableColumn maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" text="Name" />
                                                 <TableColumn maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" text="Role" />
-                                                <TableColumn minWidth="50.0" prefWidth="-1.0" text="Edit" />
                                              </columns>
                                           </TableView2>
                                        </center>
                                        <top>
-                                          <AnchorPane prefHeight="46.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+                                          <BorderPane prefHeight="46.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                                             <center>
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="A list of staff that has worked on the gameImportItem. The ID should be unique, and it is recommended to use a recognizable prefix with it." BorderPane.alignment="CENTER" />
+                                             </center>
+                                          </BorderPane>
                                        </top>
                                     </BorderPane>
                                  </content>
@@ -347,7 +367,11 @@
                                           </TableView2>
                                        </center>
                                        <top>
-                                          <AnchorPane prefHeight="46.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+                                          <BorderPane prefHeight="46.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                                             <center>
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="A list of characters that are featured in the gameImportItem. The ID should be unique, and it is recommended to use a recognizable prefix with it." BorderPane.alignment="CENTER" />
+                                             </center>
+                                          </BorderPane>
                                        </top>
                                     </BorderPane>
                                  </content>
@@ -364,7 +388,11 @@
                                           </TableView2>
                                        </center>
                                        <top>
-                                          <AnchorPane prefHeight="46.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+                                          <BorderPane prefHeight="46.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                                             <center>
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="A list of tags that the gameImportItem belongs to." BorderPane.alignment="CENTER" />
+                                             </center>
+                                          </BorderPane>
                                        </top>
                                     </BorderPane>
                                  </content>
@@ -381,7 +409,11 @@
                                           </TableView2>
                                        </center>
                                        <top>
-                                          <AnchorPane prefHeight="46.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+                                          <BorderPane prefHeight="46.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                                             <center>
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="The release dates of the current gameImportItem per territory." BorderPane.alignment="CENTER" />
+                                             </center>
+                                          </BorderPane>
                                        </top>
                                     </BorderPane>
                                  </content>

@@ -19,12 +19,12 @@ import java.io.*;
 public class GameGridViewDisplay extends AnchorPane {
     private Label gameTitleLabel;
     private ImageView gameCoverImage;
-    private Game game;
+    private GameImportItem gameImportItem;
     private String imageLocation;
     private ContextMenu contextMenu = new ContextMenu();
 
-    public GameGridViewDisplay(Game game, String imageLocation){
-        this.game = game;
+    public GameGridViewDisplay(GameImportItem gameImportItem, String imageLocation){
+        this.gameImportItem = gameImportItem;
         //TODO make it take in the image location of the game
         File file = new File(imageLocation);
         if(file.exists()){
@@ -43,7 +43,7 @@ public class GameGridViewDisplay extends AnchorPane {
                 Parent root = RootUtil.createRoot(loader);
                 Stage stage = new Stage();
                 Scene scene = new Scene(root);
-                EditController.create(loader,game);
+                EditController.create(loader, gameImportItem);
                 stage.setScene(scene);
                 stage.show();
             }
@@ -54,18 +54,18 @@ public class GameGridViewDisplay extends AnchorPane {
         });
     }
 
-    public Game getGame() {
-        return game;
+    public GameImportItem getGame() {
+        return gameImportItem;
     }
 
     private void initGraphics(){
-        gameTitleLabel = new Label(game.getName());
+        gameTitleLabel = new Label(gameImportItem.getName());
 
         gameTitleLabel.layoutYProperty().setValue(0);
         gameTitleLabel.setLabelFor(gameCoverImage);
         gameTitleLabel.setFocusTraversable(false);
         gameTitleLabel.setAlignment(Pos.CENTER);
-        gameTitleLabel.setText(game.getName());
+        gameTitleLabel.setText(gameImportItem.getName());
         gameTitleLabel.setTextFill(Color.WHITE);
         gameTitleLabel.setBackground(new Background(new BackgroundFill(Color.BLACK,null,null)));
         gameTitleLabel.setMaxHeight(25);

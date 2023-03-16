@@ -1,4 +1,4 @@
-package stijn.dev.datasource;
+package stijn.dev.util;
 
 import java.text.*;
 

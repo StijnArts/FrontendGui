@@ -9,15 +9,15 @@ import java.util.*;
 public class DeveloperDAO {
 
     private Neo4JDatabaseHelper neo4JDatabaseHelper = new Neo4JDatabaseHelper();
-    public void createDeveloper(Game game) {
-        if(!game.getDeveloper().equals("N/A")) {
+    public void createDeveloper(GameImportItem gameImportItem) {
+        if(!gameImportItem.getDeveloper().equals("N/A")) {
             boolean developerExists = false;
             while(!developerExists) {
                 HashMap<String, Object> parameters = new HashMap<>();
-                parameters.put("developerName", game.getDeveloper().trim());
-                parameters.put("gameId", game.getGameId());
-                parameters.put("gameName", game.getName());
-                parameters.put("platformName", game.getPlatform());
+                parameters.put("developerName", gameImportItem.getDeveloper().trim());
+                parameters.put("gameId", gameImportItem.getGameId());
+                parameters.put("gameName", gameImportItem.getName());
+                parameters.put("platformName", gameImportItem.getPlatform());
                 String queryString = "MATCH (d:Publisher {PublisherName:$developerName}), (game:Game {GameName:$gameName, GameId:$gameId})-[:ON_PLATFORM]-(p:Platform {PlatformName:$platformName}) " +
                         "SET d:Developer, d.DeveloperName = $developerName " +
                         "MERGE (d)<-[:MADE_BY]-(game) Return d";

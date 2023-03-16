@@ -17,7 +17,7 @@ public class Neo4JDatabaseHelper implements AutoCloseable{
         }
     }
 
-    private void initialize(){
+    private synchronized void initialize(){
         createConstraints();
         createBaseNodes();
         databaseProperties.isInitialized(true);

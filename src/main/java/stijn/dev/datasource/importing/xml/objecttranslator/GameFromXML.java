@@ -1,11 +1,10 @@
 package stijn.dev.datasource.importing.xml.objecttranslator;
 
 import nu.xom.*;
-import stijn.dev.datasource.*;
-import stijn.dev.datasource.importing.xml.*;
 import stijn.dev.datasource.importing.xml.interfaces.*;
 import stijn.dev.datasource.objects.items.*;
 import stijn.dev.datasource.records.*;
+import stijn.dev.util.*;
 
 import java.time.*;
 import java.util.*;
@@ -13,7 +12,7 @@ import java.util.*;
 public class GameFromXML implements IElementReader {
     private RomImportRecord rom;
 
-    public Game createGame(Element file) {
+    public GameImportItem createGame(Element file) {
         String region;
         if(rom.region().getValue().equals("N/A")){
             region = "USA";
@@ -34,7 +33,7 @@ public class GameFromXML implements IElementReader {
                 readElement(file.getFirstChildElement("Genres")).split(";")) {
             tags.add(tag.trim());
         }
-        return new Game(readElement(file.getFirstChildElement("Name")),
+        return new GameImportItem(readElement(file.getFirstChildElement("Name")),
                 rom.fullFilename().getValue(),
                 readElement(file.getFirstChildElement("DatabaseID")),
                 readElement(file.getFirstChildElement("Overview")),
@@ -52,7 +51,7 @@ public class GameFromXML implements IElementReader {
                 readElement(file.getFirstChildElement("ESRB")));
     }
 
-    public Game createGame(String status) {
+    public GameImportItem createGame(String status) {
         String region;
         if(rom.region().getValue().equals("N/A")){
             region = "USA";
@@ -69,7 +68,7 @@ public class GameFromXML implements IElementReader {
         tags.add(readElement(null));
 
         tags.add(readElement(null));
-        return new Game(rom.title().getValue(),
+        return new GameImportItem(rom.title().getValue(),
                 rom.fullFilename().getValue(),
                 readElement(null),
                 readElement(null),

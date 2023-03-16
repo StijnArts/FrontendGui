@@ -16,48 +16,48 @@ public class DatabaseHelper {
     private GameDAO gameDAO = new GameDAO();
     private PlatformXMLParser platformXMLParser = new PlatformXMLParser();
 
-    public void importRoms(ArrayBlockingQueue<Game> games){
+    public void importRoms(ArrayBlockingQueue<GameImportItem> gameImportItems){
         System.out.println("Importing Games into database...");
         ArrayList<String> platforms = new ArrayList<>();
-        synchronized (games) {
-            for (Game game : games) {
-                if (!platforms.contains(game.getPlatform())) {
-                    String platform = game.getPlatform();
+        synchronized (gameImportItems) {
+            for (GameImportItem gameImportItem : gameImportItems) {
+                if (!platforms.contains(gameImportItem.getPlatform())) {
+                    String platform = gameImportItem.getPlatform();
                     platforms.add(platform);
                     if (!platformDAO.checkIfPlatformExists(platform)) {
                         importPlatform(platform);
                     }
                 }
-                importGame(game);
+                importGame(gameImportItem);
             }
         }
         FrontEndApplication.importProcessIsRunning = false;
         System.out.println("Finished Importing game(s).");
     }
 
-    private void importGame(Game game) {
-            gameDAO.createInDatabaseGame(game);
-            publisherDAO.createPublisher(game);
-            createESRBRating(game);
-            developerDAO.createDeveloper(game);
-            createGameTags(game);
+    private void importGame(GameImportItem gameImportItem) {
+            gameDAO.createInDatabaseGame(gameImportItem);
+            publisherDAO.createPublisher(gameImportItem);
+            createESRBRating(gameImportItem);
+            developerDAO.createDeveloper(gameImportItem);
+            createGameTags(gameImportItem);
         //TODO add file with gallery categories
     }
 
-    private void createGameTags(Game game) {
-        for (String tag : game.getTags()) {
+    private void createGameTags(GameImportItem gameImportItem) {
+        for (String tag : gameImportItem.getTags()) {
             if(!"N/A".equals(tag)) {
-                tagDAO.createTag(game,tag);
+                tagDAO.createTag(gameImportItem,tag);
             }
         }
-        if(game.isCooperative()){
-            tagDAO.createTag(game,"Cooperative");
+        if(gameImportItem.isCooperative()){
+            tagDAO.createTag(gameImportItem,"Cooperative");
         }
     }
 
-    private void createESRBRating(Game game) {
-        if(!"N/A".equals(game.getESRBRating())){
-            esrbDAO.createESRBRating(game);
+    private void createESRBRating(GameImportItem gameImportItem) {
+        if(!"N/A".equals(gameImportItem.getESRBRating())){
+            esrbDAO.createESRBRating(gameImportItem);
         }
     }
 
@@ -67,5 +67,6 @@ public class DatabaseHelper {
         if(platformObject.getPublisher()!=null){
             publisherDAO.createPublisher(platformObject);
         }
+        System.out.println("Help Im looping");
     }
 }

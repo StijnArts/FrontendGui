@@ -19,7 +19,6 @@ public class XMLParser implements IElementReader {
             Element temp = (Element) current;
             data = ": "+temp.getFirstChildElement("FileName").getValue();
         }
-        System.out.println(current.getClass().getName()+data);
     }
 
     public static void printSpaces(int n){

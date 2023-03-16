@@ -9,10 +9,10 @@ import java.util.*;
 public class TagDAO {
 
     private Neo4JDatabaseHelper neo4JDatabaseHelper = new Neo4JDatabaseHelper();
-    public void createTag(Game game, String tag){
+    public void createTag(GameImportItem gameImportItem, String tag){
         HashMap<String, Object> parameters = new HashMap<>();
-        parameters.put("gameName", game.getName());
-        parameters.put("platformName",game.getPlatform());
+        parameters.put("gameName", gameImportItem.getName());
+        parameters.put("platformName", gameImportItem.getPlatform());
         parameters.put("tag", tag);
         neo4JDatabaseHelper.runQuery(new Query("MATCH (g:Game {GameName:$gameName})-[:ON_PLATFORM]-(p:Platform {PlatformName:$platformName}) " +
                 "MERGE (t:Tag {Name:$tag})" +

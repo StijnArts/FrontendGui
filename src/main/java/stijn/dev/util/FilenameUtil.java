@@ -10,7 +10,6 @@ public class FilenameUtil {
         ArrayList<String> fileExtensions = new ArrayList<>();
         for (File file : files) {
             fileExtensions.add(extractFileExtension(file).toLowerCase());
-            System.out.println(extractFileExtension(file).toLowerCase());
         }
         return fileExtensions;
     }

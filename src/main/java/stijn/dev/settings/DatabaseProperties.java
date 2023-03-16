@@ -25,10 +25,12 @@ public class DatabaseProperties {
     public void isInitialized(boolean state){
         properties.setProperty("isInitialized",String.valueOf(state));
         try {
-            properties.store(new FileWriter(filePath.toString()),null);
+            properties.store(new FileOutputStream("C:\\Users\\Stijn\\Desktop\\Front End project\\FrontendGui\\src\\main\\resources\\database.properties"),null);
+            filePath.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
     }
 
 }
