@@ -7,54 +7,56 @@ import stijn.dev.datasource.objects.items.*;
 import java.util.*;
 
 public class GameDAO {
-    private TerritoryDAO territoryDAO = new TerritoryDAO();
     private Neo4JDatabaseHelper neo4JDatabaseHelper = new Neo4JDatabaseHelper();
-    public void createInDatabaseGame(GameImportItem gameImportItem){
-        HashMap<String, Object> parameters = new HashMap<>();
-        parameters.put("gameName", gameImportItem.getName());
-        parameters.put("gameId", gameImportItem.getGameId());
-        parameters.put("gamePlatform", gameImportItem.getPlatform());
-        String queryString = "MATCH (p:Platform {PlatformName:$gamePlatform}) " +
-                "MERGE r = (g:Game {GameName:$gameName, " +
-                "GameId:$gameId, Description:$description, CommunityRating:$communityRating, " +
-                "CommunityRatingCount:$communityRatingCount, MaxPlayers:$MaxPlayers}) " +
-                "SET g.GamePath = $gamePath " +
-                "MERGE (g)-[:ON_PLATFORM]->(p) Return r";
-        if(gameFileAlreadyImportedForPlatform(parameters)){
-            queryString = "MATCH (p:Platform {PlatformName:$gamePlatform}) " +
-                    "CREATE r = (g:Game {GameName:$gameName, GamePath:$gamePath, " +
-                    "GameId:$gameId, Description:$description, CommunityRating:$communityRating, " +
-                    "CommunityRatingCount:$communityRatingCount, MaxPlayers:$MaxPlayers}) " +
-                    "MERGE (g)-[:ON_PLATFORM]->(p) Return r";
-        }
-        parameters.put("description", gameImportItem.getDescription());
-        parameters.put("gamePath", gameImportItem.getPath());
-        parameters.put("communityRating", gameImportItem.getCommunityRating());
-        parameters.put("communityRatingCount", gameImportItem.getCommunityRatingCount());
-        parameters.put("MaxPlayers", gameImportItem.getMaxPlayers());
-        Query query = new Query(queryString, parameters);
-        neo4JDatabaseHelper.runQuery(query);
-        territoryDAO.createReleaseDates(gameImportItem);
-    }
-
-    private boolean gameFileAlreadyImportedForPlatform(HashMap<String, Object> parameters) {
-        return !neo4JDatabaseHelper.runQuery(new Query(
-                "Match (g:Game {GameName:$gameName, GameId:$gameId}), (p:Platform {PlatformName:$gamePlatform})" +
-                        "MATCH (g)-[r:ON_PLATFORM]->(p) RETURN r", parameters)).hasNext();
-    }
-
+    private TriviaDAO triviaDAO = new TriviaDAO();
+    private PublisherDAO publisherDAO = new PublisherDAO();
+    private DeveloperDAO developerDAO = new DeveloperDAO();
+    private TagDAO tagDAO = new TagDAO();
+    private TerritoryDAO territoryDAO = new TerritoryDAO();
+    private StaffDAO staffDAO = new StaffDAO();
+    private AlternateNameDAO alternateNameDAO = new AlternateNameDAO();
+    private CharacterDAO characterDAO = new CharacterDAO();
+    private RelatedGameDAO relatedGameDAO = new RelatedGameDAO();
+    private AdditionalAppDAO additionalAppDAO = new AdditionalAppDAO();
+    private RatingDAO ratingDAO = new RatingDAO();
+    private PriorityDataDAO priorityDataDAO = new PriorityDataDAO();
+    private PlaymodeDAO playmodeDAO = new PlaymodeDAO();
     public ArrayList<Game> getGames(){
-        String query = "Match (g:Game)-[:ON_PLATFORM]-(p:Platform) Return g.GameName, g.GameId, g.Description, g.Theme, g.DefaultSummary, g.DefaultSortingName, " +
-                "g.LaunchParameters, g.GamePath, g.CommunityRating, g.CommunityRatingCount, g.MaxPlayers, g.HLTBStory, g.HLTBStoryAndExtra, g.HLTBCompletionist,p.PlatformName";
+        String query = "Match (g:Game)-[:ON_PLATFORM]-(p:Platform) " +
+                "Return g.GameName, g.GameId, g.Description, g.Theme, g.DefaultSummary, g.DefaultSortingTitle, " +
+                "g.LaunchParameters, g.GamePath, g.CommunityRating, g.CommunityRatingCount, g.MaxPlayers, g.HLTBStory, g.HLTBStoryAndExtra, g.HLTBCompletionist," +
+                "g.Cooperative, p.PlatformName";
         Result result = neo4JDatabaseHelper.runQuery(query);
         ArrayList<Game> gameItems = new ArrayList<>();
         while(result.hasNext()){
-            String gameData = "";
             Map<String, Object> row = result.next().asMap();
             Game game = createGameFromDatabase(row);
+            HashMap<String, Object> parameters = new HashMap<>();
+            parameters.put("gameName",game.getName());
+            parameters.put("platformName",game.getPlatform());
             gameItems.add(game);
+            //Metadata tab
+            game.setPlaymodes(playmodeDAO.getPlaymodes(parameters));
+            game.setSortingTitle(String.valueOf(row.get("g.DefaultSortingTitle")));
+            game.setPriority(priorityDataDAO.getPriority(parameters));
+            game.setSummary(String.valueOf(row.get("g.DefaultSummary")));
+            game.setTrivia(triviaDAO.getTrivia(parameters));
+            game.setPublisher(publisherDAO.getPublishers(parameters));
+            game.setDeveloper(developerDAO.getDevelopers(parameters));
+            game.setTags(tagDAO.getTags(parameters));
+            game.setReleaseDates(territoryDAO.getReleaseDates(parameters));
+            game.setStaff(staffDAO.getStaff(parameters));
+            game.setRatings(ratingDAO.getRatings(parameters));
+            game.setCharacters(characterDAO.getCharacters(parameters));
+            game.setAlternateNames(alternateNameDAO.getAlternateNames(parameters));
+            game.setRelatedGames(relatedGameDAO.getRelatedGames(parameters));
+            game.setAdditionalApps(additionalAppDAO.getAdditionalApps(parameters));
+            //Collection Tab
+            String seriesQuery;
+            String franchiseQuery;
+
             //TODO write queries to get all relationships for games
-            System.out.println(game.toString());
+            //System.out.println(game);
         }
         return gameItems;
     }
@@ -62,7 +64,7 @@ public class GameDAO {
     private Game createGameFromDatabase(Map<String, Object> row){
         return new Game(String.valueOf(row.get("g.GameName")), String.valueOf(row.get("g.GamePath")), String.valueOf(row.get("g.GameId")),
                 String.valueOf(row.get("g.Description")), String.valueOf(row.get("g.MaxPlayers")),
-                String.valueOf(row.get("g.GameId")), String.valueOf(row.get("p.PlatformName")), String.valueOf(row.get("g.GameId")),
-                Boolean.valueOf(String.valueOf(row.get("g.GameId"))), String.valueOf(row.get("g.GameId")));
+                String.valueOf(row.get("p.PlatformName")), String.valueOf(row.get("g.CommunityRating")), String.valueOf(row.get("g.CommunityRatingCount")),
+                Boolean.valueOf(String.valueOf(row.get("g.Cooperative"))));
     }
 }

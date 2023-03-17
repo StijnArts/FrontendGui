@@ -1,8 +1,5 @@
 package stijn.dev.datasource.objects.items;
 
-import stijn.dev.datasource.objects.collections.*;
-import stijn.dev.datasource.objects.items.data.*;
-
 import java.time.*;
 import java.util.*;
 

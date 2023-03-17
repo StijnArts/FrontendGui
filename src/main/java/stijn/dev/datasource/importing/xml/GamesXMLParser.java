@@ -40,4 +40,21 @@ public class GamesXMLParser extends XMLParser{
         System.out.println("Games Parsed: "+results.size());
         return results;
     }
+
+    public ArrayList<GameImportItem> parseGames(String gameTitle, String path, String region, String platform){
+        ArrayList<GameImportItem> results = new ArrayList<>();
+                Builder parser = new Builder();
+        Document doc = null;
+        try {
+            doc = parser.build(metadata);
+        Elements files = doc.getRootElement().getChildElements("Game");
+        GameSearchingProcess gameParsingProcess = new GameSearchingProcess(gameTitle, path, region, platform,files, results);
+        gameParsingProcess.run();
+        } catch (ParsingException e) {
+            System.out.println("Something went wrong parsing the document");
+        } catch (IOException e) {
+            System.out.println("Document not found!");
+        }
+        return results;
+    }
 }

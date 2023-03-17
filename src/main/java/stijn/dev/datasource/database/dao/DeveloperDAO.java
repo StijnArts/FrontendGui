@@ -38,4 +38,27 @@ public class DeveloperDAO {
         }
 
     }
+
+    public ArrayList<String> getDevelopers() {
+        String triviaQuery = "MATCH (p:Developer) RETURN p.DeveloperName";
+        Result result = neo4JDatabaseHelper.runQuery(new Query(triviaQuery));
+        ArrayList<String> developers = new ArrayList<>();
+        while(result.hasNext()) {
+            Map<String, Object> row = result.next().asMap();
+            developers.add(String.valueOf(row.get("p.DeveloperName")));
+        }
+        return developers;
+    }
+
+    public ArrayList<String> getDevelopers(HashMap<String, Object> parameters) {
+        String triviaQuery = "MATCH (g:Game{GameName:$gameName})-[:ON_PLATFORM]-(p:Platform{PlatformName:$platformName}), " +
+                "(g)-[:MADE_BY]-(d:Developer) RETURN d.DeveloperName";
+        Result result = neo4JDatabaseHelper.runQuery(new Query(triviaQuery,parameters));
+        ArrayList<String> developers = new ArrayList<>();
+        while(result.hasNext()) {
+            Map<String, Object> row = result.next().asMap();
+            developers.add(String.valueOf(row.get("d.DeveloperName")));
+        }
+        return developers;
+    }
 }

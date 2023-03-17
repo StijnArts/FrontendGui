@@ -1,4 +1,4 @@
-package stijn.dev.datasource.objects.items.data;
+package stijn.dev.datasource.objects.data;
 
 public class HowLongToBeatData {
     private int HLTBStoryAndExtra;

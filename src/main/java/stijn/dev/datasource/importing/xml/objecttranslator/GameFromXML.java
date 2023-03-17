@@ -86,6 +86,45 @@ public class GameFromXML implements IElementReader {
                 readElement(null));
     }
 
+    public GameImportItem createGame(Element file, String path, String importRegion, String platform) {
+        String region;
+        if (importRegion.equals("N/A")) {
+            region = "USA";
+        } else {
+            region = importRegion;
+        }
+        HashMap<String, LocalDate> releaseDates = new HashMap<>();
+        if (readElement(file.getFirstChildElement("ReleaseDate")).length() >= 10) {
+            if (DateValidator.isValid(readElement(file.getFirstChildElement("ReleaseDate")).substring(0, 10), "yyyy-MM-dd")) {
+                releaseDates.put(region, LocalDate.parse(readElement(file.getFirstChildElement("ReleaseDate")).substring(0, 10)));
+            }
+        } else {
+            releaseDates.put(region, LocalDate.parse("9999-12-31"));
+        }
+
+        ArrayList<String> tags = new ArrayList<>();
+        for (String tag :
+                readElement(file.getFirstChildElement("Genres")).split(";")) {
+            tags.add(tag.trim());
+        }
+        return new GameImportItem(readElement(file.getFirstChildElement("Name")),
+                path,
+                readElement(file.getFirstChildElement("DatabaseID")),
+                readElement(file.getFirstChildElement("Overview")),
+                releaseDates,
+                readElement(file.getFirstChildElement("MaxPlayers")),
+                tags,
+                readElement(file.getFirstChildElement("VideoURL")),
+                readElement(file.getFirstChildElement("WikipediaURL")),
+                readElement(file.getFirstChildElement("Developer")),
+                readElement(file.getFirstChildElement("Publisher")),
+                platform,
+                readElement(file.getFirstChildElement("CommunityRating")),
+                readElement(file.getFirstChildElement("CommunityRatingCount")),
+                Boolean.valueOf(readElement(file.getFirstChildElement("Cooperative"))),
+                readElement(file.getFirstChildElement("ESRB")));
+    }
+
     public void setRom(RomImportRecord rom) {
         this.rom = rom;
     }

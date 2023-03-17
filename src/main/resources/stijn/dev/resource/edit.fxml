@@ -40,7 +40,7 @@
                                        <center>
                                           <HBox prefHeight="100.0" prefWidth="200.0">
                                              <children>
-                                                <HBox prefHeight="338.0" prefWidth="340.0">
+                                                <HBox prefHeight="398.0" prefWidth="401.0">
                                                    <children>
                                                       <VBox prefHeight="338.0" prefWidth="142.0">
                                                          <children>
@@ -59,11 +59,6 @@
                                                                   <Insets bottom="4.0" top="12.0" />
                                                                </VBox.margin>
                                                             </Label>
-                                                            <Label text="Region:">
-                                                               <VBox.margin>
-                                                                  <Insets bottom="4.0" top="12.0" />
-                                                               </VBox.margin>
-                                                            </Label>
                                                             <Label text="Default Sorting Title:">
                                                                <VBox.margin>
                                                                   <Insets bottom="4.0" top="12.0" />
@@ -76,50 +71,35 @@
                                                             </Label>
                                                          </children>
                                                       </VBox>
-                                                      <VBox prefHeight="338.0" prefWidth="190.0">
+                                                      <VBox prefHeight="398.0" prefWidth="290.0">
                                                          <children>
                                                             <HBox>
                                                                <VBox.margin>
                                                                   <Insets top="8.0" />
                                                                </VBox.margin>
                                                                <children>
-                                                                  <ComboBox editable="true" prefHeight="25.0" prefWidth="150.0" visibleRowCount="99999" />
-                                                                  <Button mnemonicParsing="false" text="Edit">
-                                                                     <HBox.margin>
-                                                                        <Insets left="3.0" />
-                                                                     </HBox.margin>
-                                                                  </Button>
+                                                                  <ComboBox fx:id="developerComboCheckBox" editable="true" prefHeight="25.0" prefWidth="350.0" visibleRowCount="15" />
                                                                </children>
                                                             </HBox>
-                                                            <HBox>
+                                                            <HBox prefHeight="25.0" prefWidth="211.0">
                                                                <VBox.margin>
                                                                   <Insets top="8.0" />
                                                                </VBox.margin>
                                                                <children>
-                                                                  <ComboBox editable="true" prefHeight="25.0" prefWidth="150.0" visibleRowCount="99999" />
-                                                                  <Button mnemonicParsing="false" text="Edit">
-                                                                     <HBox.margin>
-                                                                        <Insets left="3.0" />
-                                                                     </HBox.margin>
-                                                                  </Button>
+                                                                  <ComboBox fx:id="publisherComboCheckBox" editable="true" prefHeight="25.0" prefWidth="289.0" visibleRowCount="15" />
                                                                </children>
                                                             </HBox>
-                                                            <TextField>
+                                                            <TextField fx:id="maxPlayersField">
                                                                <VBox.margin>
                                                                   <Insets top="8.0" />
                                                                </VBox.margin>
                                                             </TextField>
-                                                            <TextField>
+                                                            <TextField fx:id="defaultSortingTitleTextField">
                                                                <VBox.margin>
                                                                   <Insets top="8.0" />
                                                                </VBox.margin>
                                                             </TextField>
-                                                            <TextField>
-                                                               <VBox.margin>
-                                                                  <Insets top="8.0" />
-                                                               </VBox.margin>
-                                                            </TextField>
-                                                            <TextArea prefHeight="200.0" prefWidth="200.0">
+                                                            <TextArea prefHeight="267.0" prefWidth="269.0">
                                                                <VBox.margin>
                                                                   <Insets top="8.0" />
                                                                </VBox.margin>
@@ -134,7 +114,7 @@
                                                       <Insets bottom="6.0" />
                                                    </HBox.margin>
                                                 </HBox>
-                                                <HBox prefHeight="338.0" prefWidth="322.0">
+                                                <HBox prefHeight="404.0" prefWidth="392.0">
                                                    <children>
                                                       <VBox prefHeight="338.0" prefWidth="115.0">
                                                          <children>
@@ -148,18 +128,28 @@
                                                                   <Insets bottom="4.0" top="12.0" />
                                                                </VBox.margin>
                                                             </Label>
+                                                            <Label text="Ratings:">
+                                                               <VBox.margin>
+                                                                  <Insets bottom="4.0" top="12.0" />
+                                                               </VBox.margin>
+                                                            </Label>
+                                                            <Label text="Playmodes:">
+                                                               <VBox.margin>
+                                                                  <Insets bottom="4.0" top="12.0" />
+                                                               </VBox.margin>
+                                                            </Label>
                                                          </children>
                                                          <HBox.margin>
                                                             <Insets left="4.0" />
                                                          </HBox.margin></VBox>
-                                                      <VBox prefHeight="338.0" prefWidth="205.0">
+                                                      <VBox prefHeight="404.0" prefWidth="285.0">
                                                          <children>
                                                             <HBox>
                                                                <VBox.margin>
                                                                   <Insets top="8.0" />
                                                                </VBox.margin>
                                                                <children>
-                                                                  <ComboBox editable="true" prefWidth="150.0" visibleRowCount="99999" />
+                                                                  <ComboBox fx:id="platformComboBox" editable="true" maxHeight="600.0" prefHeight="25.0" prefWidth="230.0" visibleRowCount="15" />
                                                                   <Button mnemonicParsing="false" text="Edit">
                                                                      <HBox.margin>
                                                                         <Insets left="3.0" />
@@ -172,13 +162,34 @@
                                                                   <Insets top="8.0" />
                                                                </VBox.margin>
                                                                <children>
-                                                                  <PrefixSelectionComboBox prefHeight="25.0" prefWidth="150.0" />
+                                                                  <PrefixSelectionComboBox fx:id="priorityComboBox" prefHeight="25.0" prefWidth="230.0" typingDelay="15" />
                                                                   <Button mnemonicParsing="false" text="Edit">
                                                                      <HBox.margin>
                                                                         <Insets left="3.0" />
                                                                      </HBox.margin>
                                                                   </Button>
                                                                </children>
+                                                            </HBox>
+                                                            <HBox>
+                                                               <children>
+                                                                  <PrefixSelectionComboBox fx:id="ratingComboCheckBox" prefHeight="25.0" prefWidth="230.0" typingDelay="15" />
+                                                                  <Button mnemonicParsing="false" text="Edit">
+                                                                     <HBox.margin>
+                                                                        <Insets left="3.0" />
+                                                                     </HBox.margin>
+                                                                  </Button>
+                                                               </children>
+                                                               <VBox.margin>
+                                                                  <Insets top="8.0" />
+                                                               </VBox.margin>
+                                                            </HBox>
+                                                            <HBox>
+                                                               <children>
+                                                                  <PrefixSelectionComboBox fx:id="playmodesComboCheckbox" editable="true" maxHeight="600.0" prefHeight="25.0" prefWidth="288.0" visibleRowCount="15" />
+                                                               </children>
+                                                               <VBox.margin>
+                                                                  <Insets top="8.0" />
+                                                               </VBox.margin>
                                                             </HBox>
                                                          </children>
                                                          <HBox.margin>
@@ -195,21 +206,17 @@
                                        <top>
                                           <HBox prefHeight="18.0" prefWidth="626.0" BorderPane.alignment="CENTER">
                                              <children>
-                                                <Label prefHeight="17.0" prefWidth="100.0" text="Title:">
+                                                <Label prefHeight="17.0" prefWidth="121.0" text="Title:">
                                                    <HBox.margin>
                                                       <Insets top="4.0" />
                                                    </HBox.margin>
                                                 </Label>
-                                                <PrefixSelectionComboBox prefHeight="25.0" prefWidth="355.0">
+                                                <TextField fx:id="titleTextField" prefHeight="25.0" prefWidth="526.0" />
+                                                <Button mnemonicParsing="false" text="Search In Database">
                                                    <HBox.margin>
-                                                      <Insets />
+                                                      <Insets left="6.0" />
                                                    </HBox.margin>
-                                                </PrefixSelectionComboBox>
-                                                <TextField>
-                                                   <HBox.margin>
-                                                      <Insets left="12.0" />
-                                                   </HBox.margin>
-                                                </TextField>
+                                                </Button>
                                              </children>
                                              <BorderPane.margin>
                                                 <Insets left="12.0" right="12.0" top="8.0" />
@@ -222,7 +229,7 @@
                                  <content>
                                     <BorderPane>
                                        <center>
-                                          <TextArea fx:id="descriptionTextArea" prefHeight="353.0" prefWidth="626.0" />
+                                          <TextArea fx:id="descriptionTextArea" prefHeight="353.0" prefWidth="626.0" wrapText="true" />
                                        </center>
                                        <left>
                                           <AnchorPane prefHeight="171.0" prefWidth="12.0" BorderPane.alignment="CENTER" />
@@ -236,7 +243,7 @@
                                        <top>
                                           <BorderPane prefHeight="46.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                                              <center>
-                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="The gameImportItem's description, visible on the details screen." BorderPane.alignment="CENTER" />
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="The game's description, visible on the details screen." BorderPane.alignment="CENTER" />
                                              </center>
                                           </BorderPane>
                                        </top>
@@ -247,7 +254,7 @@
                                  <content>
                                     <BorderPane>
                                        <center>
-                                          <TableView2>
+                                          <TableView2 editable="true">
                                              <columns>
                                                 <TableColumn minWidth="100.0" prefWidth="-1.0" text="Alternate Name" />
                                                 <TableColumn minWidth="100.0" prefWidth="-1.0" text="Reason" />
@@ -258,7 +265,7 @@
                                        <top>
                                           <BorderPane prefHeight="46.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                                              <center>
-                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Alternate names for the gameImportItem. This can be set to be per region, or to be a community-made alternate name for the gameImportItem." BorderPane.alignment="CENTER" />
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Alternate names for the game. This can be set to be per region, or to be a community-made alternate name for the game." BorderPane.alignment="CENTER" />
                                              </center>
                                           </BorderPane>
                                        </top>
@@ -281,7 +288,7 @@
                                        <top>
                                           <BorderPane prefHeight="46.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                                              <center>
-                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Games that are related to this gameImportItem. Description typically lists the differences/improvments compared to the original version of the gameImportItem, or in the case of a different kind of relationship how it relates to said gameImportItem." textAlignment="CENTER" wrappingWidth="700.0" BorderPane.alignment="CENTER" />
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Games that are related to this game. Description typically lists the differences/improvements compared to the original version of the game, or in the case of a different kind of relationship how it relates to said game." textAlignment="CENTER" wrappingWidth="700.0" BorderPane.alignment="CENTER" />
                                              </center>
                                           </BorderPane>
                                        </top>
@@ -303,7 +310,7 @@
                                        <top>
                                           <BorderPane prefHeight="46.0" BorderPane.alignment="CENTER">
                                              <center>
-                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Additional Apps that you can run for your gameImportItem. Think server executables or a configuration application." textAlignment="CENTER" wrappingWidth="650.0" />
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Additional Apps that you can run for your game. Think server executables or a configuration application." textAlignment="CENTER" wrappingWidth="650.0" />
                                              </center>
                                           </BorderPane>
                                        </top>
@@ -324,7 +331,7 @@
                                        <top>
                                           <BorderPane prefHeight="46.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                                              <center>
-                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Trivia about the gameImportItem. The Trivia name needs to be unique per trivia fact, and it's recommended to use a prefix per item/collection. The trivia body is the actual fact that the trivia is about." textAlignment="CENTER" wrappingWidth="700.0" BorderPane.alignment="CENTER" />
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Trivia about the game. The Trivia name needs to be unique per trivia fact, and it's recommended to use a prefix per item/collection. The trivia body is the actual fact that the trivia is about." textAlignment="CENTER" wrappingWidth="700.0" BorderPane.alignment="CENTER" />
                                              </center>
                                           </BorderPane>
                                        </top>
@@ -338,7 +345,8 @@
                                           <TableView2 BorderPane.alignment="CENTER">
                                              <columns>
                                                 <TableColumn maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" text="ID" />
-                                                <TableColumn maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" text="Name" />
+                                                <TableColumn maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" text="First Name" />
+                                                <TableColumn prefWidth="75.0" text="Last Name" />
                                                 <TableColumn maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" text="Role" />
                                              </columns>
                                           </TableView2>
@@ -346,7 +354,7 @@
                                        <top>
                                           <BorderPane prefHeight="46.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                                              <center>
-                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="A list of staff that has worked on the gameImportItem. The ID should be unique, and it is recommended to use a recognizable prefix with it." BorderPane.alignment="CENTER" />
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="A list of staff that has worked on the game. The ID should be unique, and it is recommended to use a recognizable prefix with it." BorderPane.alignment="CENTER" />
                                              </center>
                                           </BorderPane>
                                        </top>
@@ -369,7 +377,7 @@
                                        <top>
                                           <BorderPane prefHeight="46.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                                              <center>
-                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="A list of characters that are featured in the gameImportItem. The ID should be unique, and it is recommended to use a recognizable prefix with it." BorderPane.alignment="CENTER" />
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="A list of characters that are featured in the game. The ID should be unique, and it is recommended to use a recognizable prefix with it." BorderPane.alignment="CENTER" />
                                              </center>
                                           </BorderPane>
                                        </top>
@@ -390,7 +398,7 @@
                                        <top>
                                           <BorderPane prefHeight="46.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                                              <center>
-                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="A list of tags that the gameImportItem belongs to." BorderPane.alignment="CENTER" />
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="A list of tags that the game belongs to." BorderPane.alignment="CENTER" />
                                              </center>
                                           </BorderPane>
                                        </top>
@@ -411,7 +419,7 @@
                                        <top>
                                           <BorderPane prefHeight="46.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                                              <center>
-                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="The release dates of the current gameImportItem per territory." BorderPane.alignment="CENTER" />
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="The release dates of the current game per territory." BorderPane.alignment="CENTER" />
                                              </center>
                                           </BorderPane>
                                        </top>

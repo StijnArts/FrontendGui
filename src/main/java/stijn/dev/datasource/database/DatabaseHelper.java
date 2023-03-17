@@ -11,9 +11,9 @@ public class DatabaseHelper {
     private PlatformDAO platformDAO = new PlatformDAO();
     private PublisherDAO publisherDAO = new PublisherDAO();
     private TagDAO tagDAO = new TagDAO();
-    private EsrbDAO esrbDAO = new EsrbDAO();
+    private RatingDAO ratingDAO = new RatingDAO();
     private DeveloperDAO developerDAO = new DeveloperDAO();
-    private GameDAO gameDAO = new GameDAO();
+    private GameImportItemDAO gameImportItemDAO = new GameImportItemDAO();
     private PlatformXMLParser platformXMLParser = new PlatformXMLParser();
 
     public void importRoms(ArrayBlockingQueue<GameImportItem> gameImportItems){
@@ -36,7 +36,7 @@ public class DatabaseHelper {
     }
 
     private void importGame(GameImportItem gameImportItem) {
-            gameDAO.createInDatabaseGame(gameImportItem);
+            gameImportItemDAO.createInDatabaseGame(gameImportItem);
             publisherDAO.createPublisher(gameImportItem);
             createESRBRating(gameImportItem);
             developerDAO.createDeveloper(gameImportItem);
@@ -57,7 +57,7 @@ public class DatabaseHelper {
 
     private void createESRBRating(GameImportItem gameImportItem) {
         if(!"N/A".equals(gameImportItem.getESRBRating())){
-            esrbDAO.createESRBRating(gameImportItem);
+            ratingDAO.createRating(gameImportItem);
         }
     }
 

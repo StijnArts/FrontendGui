@@ -63,4 +63,27 @@ public class PublisherDAO {
             }
         }
     }
+
+    public ArrayList<String> getPublishers(){
+        String triviaQuery = "MATCH (p:Publisher) RETURN p.PublisherName";
+        Result result = neo4JDatabaseHelper.runQuery(new Query(triviaQuery));
+        ArrayList<String> publishers = new ArrayList<>();
+        while(result.hasNext()) {
+            Map<String, Object> row = result.next().asMap();
+            publishers.add(String.valueOf(row.get("p.PublisherName")));
+        }
+        return publishers;
+    }
+
+    public ArrayList<String> getPublishers(HashMap<String, Object> parameters){
+        String triviaQuery = "MATCH (p:Publisher)-[:PUBLISHED_BY]-(g:Game{GameName:$gameName})-[:ON_PLATFORM]-(pl:Platform{PlatformName:$platformName}) " +
+                "RETURN p.PublisherName";
+        Result result = neo4JDatabaseHelper.runQuery(new Query(triviaQuery,parameters));
+        ArrayList<String> publishers = new ArrayList<>();
+        while(result.hasNext()) {
+            Map<String, Object> row = result.next().asMap();
+            publishers.add(String.valueOf(row.get("p.PublisherName")));
+        }
+        return publishers;
+    }
 }

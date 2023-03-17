@@ -16,4 +16,17 @@ public class GameTitleMatcher {
         return StringUtils.stripAccents(gameTitle).toLowerCase().contains(StringUtils.stripAccents(segment.toLowerCase()))
                 && platform.equals(rom.scrapeAsPlatform().getValue());
     }
+
+    public static boolean isContainedInTitle(String gameTitle, String title) {
+        return StringUtils.stripAccents(gameTitle).toLowerCase().contains(StringUtils.stripAccents(title.toLowerCase()));
+    }
+
+    public static boolean isExactMatch(String gameTitle, String title) {
+        return StringUtils.stripAccents(gameTitle).toLowerCase().matches(StringUtils.stripAccents(title.toLowerCase()));
+    }
+
+    public static boolean segmentMatchesPartOfGameTitle(String gameTitle, String platform, String segment, String platformImport) {
+        return StringUtils.stripAccents(gameTitle).toLowerCase().contains(StringUtils.stripAccents(segment.toLowerCase()))
+                && platform.equals(platformImport);
+    }
 }

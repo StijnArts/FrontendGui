@@ -3,6 +3,7 @@ package stijn.dev.datasource.database.dao;
 import org.neo4j.driver.*;
 import stijn.dev.datasource.database.*;
 import stijn.dev.datasource.objects.items.*;
+import stijn.dev.util.*;
 
 import java.time.*;
 import java.util.*;
@@ -19,7 +20,7 @@ public class TerritoryDAO {
                 releaseDateParameters.put("locale", locale);
                 neo4JDatabaseHelper.runQuery(new Query("MATCH (g:Game {GameName:$gameName})-[:ON_PLATFORM]-(p:Platform {PlatformName:$platformName}) " +
                         "MERGE (t:Territory {Name:$locale}) " +
-                        "MERGE (g)-[:RELEASED_IN {Territory:$releaseDate}]->(t)",releaseDateParameters));
+                        "MERGE (g)-[:RELEASED_IN {ReleaseDate:$releaseDate}]->(t)",releaseDateParameters));
             }
         }
     }
@@ -32,7 +33,20 @@ public class TerritoryDAO {
             releaseDateParameters.put("locale", locale);
             neo4JDatabaseHelper.runQuery(new Query("MATCH (p:Platform {PlatformName:$platformName})" +
                     "MERGE (t:Territory {Name:$locale}) " +
-                    "MERGE (p)-[:RELEASED_IN {Territory:$releaseDate}]->(t)",releaseDateParameters));
+                    "MERGE (p)-[:RELEASED_IN {ReleaseDate:$releaseDate}]->(t)",releaseDateParameters));
         }
+    }
+
+    public HashMap<String, LocalDate> getReleaseDates(HashMap<String, Object> parameters) {
+        String releaseDateQuery = "MATCH (g:Game{GameName:$gameName})-[:ON_PLATFORM]-(p:Platform{PlatformName:$platformName}), " +
+                "(g)-[r:RELEASED_IN]-(t:Territory) RETURN t.Name, r.ReleaseDate";
+        Result result = neo4JDatabaseHelper.runQuery(new Query(releaseDateQuery,parameters));
+        HashMap<String, LocalDate> tags = new HashMap<>();
+        while(result.hasNext()) {
+            Map<String, Object> row = result.next().asMap();
+            tags.put(String.valueOf(row.get("t.Name")),
+                    LocalDate.parse(String.valueOf(row.get("r.ReleaseDate"))));
+        }
+        return tags;
     }
 }

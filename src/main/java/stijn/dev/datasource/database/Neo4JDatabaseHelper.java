@@ -25,6 +25,62 @@ public class Neo4JDatabaseHelper implements AutoCloseable{
     }
 
     private void createBaseNodes() {
+        createGalleryNodes();
+        createBasePriorityNodes();
+        createRatingNodes();
+        createMultiplayerTypeNodes();
+    }
+
+    private void createMultiplayerTypeNodes() {
+        runQuery("MERGE (g:Playmode {Name: 'Singleplayer'}) return g");
+        runQuery("MERGE (g:Playmode {Name: 'Online Multiplayer'}) return g");
+        runQuery("MERGE (g:Playmode {Name: 'Local Multiplayer'}) return g");
+        runQuery("MERGE (g:Playmode {Name: 'Online Co-op'}) return g");
+        runQuery("MERGE (g:Playmode {Name: 'Local Co-op'}) return g");
+    }
+
+    private void createRatingNodes() {
+        runQuery("MERGE (g:Rating {Rating: 'RP - Rating Pending', Organization: 'ESRB'}) return g");
+        runQuery("MERGE (g:Rating {Rating: 'RP - Rating Pending – Likely Mature 17+', Organization: 'ESRB'}) return g");
+        runQuery("MERGE (g:Rating {Rating: 'E - Everyone', Organization: 'ESRB'}) return g");
+        runQuery("MERGE (g:Rating {Rating: 'E10+ - Everyone 10+', Organization: 'ESRB'}) return g");
+        runQuery("MERGE (g:Rating {Rating: 'T - Teen', Organization: 'ESRB'}) return g");
+        runQuery("MERGE (g:Rating {Rating: 'M - Mature 17+', Organization: 'ESRB'}) return g");
+        runQuery("MERGE (g:Rating {Rating: 'AO - Adults Only', Organization: 'ESRB'}) return g");
+        runQuery("MERGE (g:Rating {Rating: 'EC - Early Childhood', Organization: 'ESRB'}) return g");
+        runQuery("MERGE (g:Rating {Rating: '3', Organization: 'PEGI'}) return g");
+        runQuery("MERGE (g:Rating {Rating: '7', Organization: 'PEGI'}) return g");
+        runQuery("MERGE (g:Rating {Rating: '12', Organization: 'PEGI'}) return g");
+        runQuery("MERGE (g:Rating {Rating: '16', Organization: 'PEGI'}) return g");
+        runQuery("MERGE (g:Rating {Rating: '18', Organization: 'PEGI'}) return g");
+        runQuery("MERGE (g:Rating {Rating: 'Bad Language', Organization: 'PEGI'}) return g");
+        runQuery("MERGE (g:Rating {Rating: 'Discrimination', Organization: 'PEGI'}) return g");
+        runQuery("MERGE (g:Rating {Rating: 'Drugs', Organization: 'PEGI'}) return g");
+        runQuery("MERGE (g:Rating {Rating: 'Fear/Horror', Organization: 'PEGI'}) return g");
+        runQuery("MERGE (g:Rating {Rating: 'Gambling', Organization: 'PEGI'}) return g");
+        runQuery("MERGE (g:Rating {Rating: 'Sex', Organization: 'PEGI'}) return g");
+        runQuery("MERGE (g:Rating {Rating: 'Violence', Organization: 'PEGI'}) return g");
+        runQuery("MERGE (g:Rating {Rating: 'In-Game Purchases', Organization: 'PEGI'}) return g");
+        runQuery("MERGE (g:Rating {Rating: '!', Organization: 'PEGI'}) return g");
+        runQuery("MERGE (g:Rating {Rating: 'Online', Organization: 'PEGI'}) return g");
+        runQuery("MERGE (g:Rating {Rating: 'All Ages', Organization: 'CERO'}) return g");
+        runQuery("MERGE (g:Rating {Rating: 'Ages 12 and up', Organization: 'CERO'}) return g");
+        runQuery("MERGE (g:Rating {Rating: 'Ages 15 and up', Organization: 'CERO'}) return g");
+        runQuery("MERGE (g:Rating {Rating: 'Ages 17 and up', Organization: 'CERO'}) return g");
+        runQuery("MERGE (g:Rating {Rating: 'Ages 18 and up only', Organization: 'CERO'}) return g");
+        runQuery("MERGE (g:Rating {Rating: 'Educational/Database', Organization: 'CERO'}) return g");
+        runQuery("MERGE (g:Rating {Rating: 'CERO Regulations-Compatible', Organization: 'CERO'}) return g");
+        runQuery("MERGE (g:Rating {Rating: 'Rating Scheduled', Organization: 'CERO'}) return g");
+        runQuery("MERGE (g:Rating {Rating: 'Bad Language', Organization: 'CERO'}) return g");
+    }
+
+    private void createBasePriorityNodes() {
+        runQuery("MERGE (g:Priority {UniqueName: 'Filler', Priority: 3}) return g");
+        runQuery("MERGE (g:Priority {UniqueName: 'Classic', Priority: 2}) return g");
+        runQuery("MERGE (g:Priority {UniqueName: 'Staple', Priority: 1}) return g");
+    }
+
+    private void createGalleryNodes() {
         runQuery("MERGE (g:GalleryCategory {UniqueName: 'NTSCFrontCover', Name: 'Front Cover (NTSC)'}) return g");
         runQuery("MERGE (g:GalleryCategory {UniqueName: 'JPFrontCover', Name: 'Front Cover (JP)'}) return g");
         runQuery("MERGE (g:GalleryCategory {UniqueName: 'PALFrontCover', Name: 'Front Cover (PAL)'}) return g");

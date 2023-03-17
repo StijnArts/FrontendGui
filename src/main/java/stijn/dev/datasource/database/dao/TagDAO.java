@@ -19,4 +19,17 @@ public class TagDAO {
                 "MERGE (g)-[:HAS_TAG]->(t)",
                 parameters));
     }
+
+    public ArrayList<String> getTags(HashMap<String, Object> parameters) {
+        String tagQuery = "MATCH (t:Tag)-[:HAS_TAG]-(g:Game{GameName:$gameName})-[:ON_PLATFORM]-(p:Platform{PlatformName:$platformName}) RETURN t.Name";
+        Result result = neo4JDatabaseHelper.runQuery(new Query(tagQuery,parameters));
+        ArrayList<String> tags = new ArrayList<>();
+        while(result.hasNext()) {
+            Map<String, Object> row = result.next().asMap();
+            tags.add(String.valueOf(row.get("t.Name")));
+        }
+        return tags;
+    }
+
+
 }
