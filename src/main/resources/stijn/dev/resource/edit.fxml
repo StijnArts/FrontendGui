@@ -185,7 +185,7 @@
                                                             </HBox>
                                                             <HBox>
                                                                <children>
-                                                                  <PrefixSelectionComboBox fx:id="playmodesComboCheckbox" editable="true" maxHeight="600.0" prefHeight="25.0" prefWidth="288.0" visibleRowCount="15" />
+                                                                  <ComboBox fx:id="playModesComboCheckbox" editable="true" maxHeight="600.0" prefHeight="25.0" prefWidth="288.0" visibleRowCount="15" />
                                                                </children>
                                                                <VBox.margin>
                                                                   <Insets top="8.0" />
@@ -254,13 +254,7 @@
                                  <content>
                                     <BorderPane>
                                        <center>
-                                          <TableView2 editable="true">
-                                             <columns>
-                                                <TableColumn minWidth="100.0" prefWidth="-1.0" text="Alternate Name" />
-                                                <TableColumn minWidth="100.0" prefWidth="-1.0" text="Reason" />
-                                                <TableColumn minWidth="100.0" prefWidth="-1.0" text="Value" />
-                                             </columns>
-                                          </TableView2>
+                                          <TableView2 fx:id="alternateNamesTable" editable="true" />
                                        </center>
                                        <top>
                                           <BorderPane prefHeight="46.0" prefWidth="200.0" BorderPane.alignment="CENTER">
@@ -276,14 +270,7 @@
                                  <content>
                                     <BorderPane>
                                        <center>
-                                          <TableView2>
-                                             <columns>
-                                                <TableColumn maxWidth="-1.0" minWidth="100.0" prefWidth="-1.0" text="Game" />
-                                                <TableColumn maxWidth="-1.0" minWidth="100.0" prefWidth="-1.0" text="Relationship" />
-                                                <TableColumn minWidth="50.0" prefWidth="-1.0" text="Edit" />
-                                                <TableColumn maxWidth="-1.0" minWidth="100.0" prefWidth="-1.0" text="Description" />
-                                             </columns>
-                                          </TableView2>
+                                          <TableView2 fx:id="relatedGameTable" />
                                        </center>
                                        <top>
                                           <BorderPane prefHeight="46.0" prefWidth="200.0" BorderPane.alignment="CENTER">
@@ -299,13 +286,7 @@
                                  <content>
                                     <BorderPane>
                                        <center>
-                                          <TableView2>
-                                             <columns>
-                                                <TableColumn minWidth="100.0" prefWidth="-1.0" text="Name" />
-                                                <TableColumn minWidth="100.0" prefWidth="-1.0" text="Path" />
-                                                <TableColumn minWidth="100.0" prefWidth="-1.0" text="Arguments" />
-                                             </columns>
-                                          </TableView2>
+                                          <TableView2 fx:id="additionalAppsTable" />
                                        </center>
                                        <top>
                                           <BorderPane prefHeight="46.0" BorderPane.alignment="CENTER">
@@ -321,7 +302,7 @@
                                  <content>
                                     <BorderPane>
                                        <center>
-                                          <TableView2>
+                                          <TableView2 fx:id="triviaTable">
                                              <columns>
                                                 <TableColumn maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" text="Trivia Name" />
                                                 <TableColumn maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" text="Trivia Body" />
@@ -342,7 +323,7 @@
                                  <content>
                                     <BorderPane prefHeight="200.0" prefWidth="200.0">
                                        <center>
-                                          <TableView2 BorderPane.alignment="CENTER">
+                                          <TableView2 fx:id="staffTable" BorderPane.alignment="CENTER">
                                              <columns>
                                                 <TableColumn maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" text="ID" />
                                                 <TableColumn maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" text="First Name" />
@@ -365,12 +346,13 @@
                                  <content>
                                     <BorderPane prefHeight="200.0" prefWidth="200.0">
                                        <center>
-                                          <TableView2 BorderPane.alignment="CENTER">
+                                          <TableView2 fx:id="characterTable" BorderPane.alignment="CENTER">
                                              <columns>
                                                 <TableColumn minWidth="100.0" prefWidth="-1.0" text="ID" />
                                                 <TableColumn minWidth="100.0" prefWidth="-1.0" text="Name" />
                                                 <TableColumn minWidth="100.0" prefWidth="-1.0" text="Role" />
                                                 <TableColumn minWidth="50.0" prefWidth="-1.0" text="Edit" />
+                                                <TableColumn prefWidth="75.0" text="Voice Actor" />
                                              </columns>
                                           </TableView2>
                                        </center>
@@ -409,12 +391,7 @@
                                  <content>
                                     <BorderPane prefHeight="200.0" prefWidth="200.0">
                                        <center>
-                                          <TableView2 BorderPane.alignment="CENTER">
-                                             <columns>
-                                                <TableColumn minWidth="100.0" prefWidth="-1.0" text="Territory" />
-                                                <TableColumn minWidth="100.0" prefWidth="-1.0" text="Date" />
-                                             </columns>
-                                          </TableView2>
+                                          <TableView2 fx:id="releaseDatesTable" BorderPane.alignment="CENTER" />
                                        </center>
                                        <top>
                                           <BorderPane prefHeight="46.0" prefWidth="200.0" BorderPane.alignment="CENTER">

@@ -12,7 +12,7 @@ public class Game extends Item{
     private String path;
     private String gameId;
     private String description;
-    private HashMap<String, LocalDate> releaseDates;
+    private ArrayList<ReleaseDate> releaseDates;
     private String maxPlayers;
     private ArrayList<String> tags;
     private ArrayList<String> playmodes;
@@ -199,11 +199,11 @@ public class Game extends Item{
         this.description = description;
     }
 
-    public HashMap<String, LocalDate> getReleaseDates() {
+    public ArrayList<ReleaseDate> getReleaseDates() {
         return releaseDates;
     }
 
-    public void setReleaseDates(HashMap<String, LocalDate> releaseDates) {
+    public void setReleaseDates(ArrayList<ReleaseDate> releaseDates) {
         this.releaseDates = releaseDates;
     }
 

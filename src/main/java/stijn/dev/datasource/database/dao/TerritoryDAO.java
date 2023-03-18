@@ -2,6 +2,7 @@ package stijn.dev.datasource.database.dao;
 
 import org.neo4j.driver.*;
 import stijn.dev.datasource.database.*;
+import stijn.dev.datasource.objects.data.*;
 import stijn.dev.datasource.objects.items.*;
 import stijn.dev.util.*;
 
@@ -37,16 +38,27 @@ public class TerritoryDAO {
         }
     }
 
-    public HashMap<String, LocalDate> getReleaseDates(HashMap<String, Object> parameters) {
-        String releaseDateQuery = "MATCH (g:Game{GameName:$gameName})-[:ON_PLATFORM]-(p:Platform{PlatformName:$platformName}), " +
-                "(g)-[r:RELEASED_IN]-(t:Territory) RETURN t.Name, r.ReleaseDate";
+    public ArrayList<ReleaseDate> getReleaseDates(HashMap<String, Object> parameters) {
+        String releaseDateQuery = "MATCH (t:Territory)-[r:RELEASED_IN]-(g:Game{GameName:$gameName})-[:ON_PLATFORM]-(p:Platform{PlatformName:$platformName}) " +
+                "RETURN t.Name, r.ReleaseDate";
         Result result = neo4JDatabaseHelper.runQuery(new Query(releaseDateQuery,parameters));
-        HashMap<String, LocalDate> tags = new HashMap<>();
+        ArrayList<ReleaseDate> releaseDates = new ArrayList<>();
         while(result.hasNext()) {
             Map<String, Object> row = result.next().asMap();
-            tags.put(String.valueOf(row.get("t.Name")),
-                    LocalDate.parse(String.valueOf(row.get("r.ReleaseDate"))));
+            releaseDates.add(new ReleaseDate(String.valueOf(row.get("t.Name")),
+                    LocalDate.parse(String.valueOf(row.get("r.ReleaseDate")))));
         }
-        return tags;
+        return releaseDates;
+    }
+
+    public ArrayList<String> getTerritories(){
+        String releaseDateQuery = "MATCH (t:Territory) RETURN t.Name";
+        Result result = neo4JDatabaseHelper.runQuery(new Query(releaseDateQuery));
+        ArrayList<String> territories = new ArrayList<>();
+        while(result.hasNext()) {
+            Map<String, Object> row = result.next().asMap();
+            territories.add(String.valueOf(row.get("t.Name")));
+        }
+        return territories;
     }
 }

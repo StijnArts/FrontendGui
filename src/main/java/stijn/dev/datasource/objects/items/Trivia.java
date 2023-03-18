@@ -1,26 +1,36 @@
 package stijn.dev.datasource.objects.items;
 
+import javafx.beans.property.*;
+
 public class Trivia {
-    private String triviaID;
-    private String fact;
+    private StringProperty triviaID;
+    private StringProperty fact;
     public Trivia(String triviaID, String fact){
-        this.triviaID = triviaID;
-        this.fact = fact;
+        this.triviaID = new SimpleStringProperty(triviaID);
+        this.fact = new SimpleStringProperty(fact);
     }
 
-    public String getTriviaID() {
+    public StringProperty triviaIDProperty() {
+        return triviaID;
+    }
+
+    public StringProperty factProperty() {
+        return fact;
+    }
+
+    public StringProperty getTriviaID() {
         return triviaID;
     }
 
     public void setTriviaID(String triviaID) {
-        this.triviaID = triviaID;
+        this.triviaID.set(triviaID);
     }
 
-    public String getFact() {
+    public StringProperty getFact() {
         return fact;
     }
 
     public void setFact(String fact) {
-        this.fact = fact;
+        this.fact.set(fact);
     }
 }

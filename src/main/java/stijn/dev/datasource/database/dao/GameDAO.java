@@ -1,7 +1,9 @@
 package stijn.dev.datasource.database.dao;
 
+import javafx.beans.property.*;
 import org.neo4j.driver.*;
 import stijn.dev.datasource.database.*;
+import stijn.dev.datasource.objects.data.*;
 import stijn.dev.datasource.objects.items.*;
 
 import java.util.*;
@@ -57,6 +59,18 @@ public class GameDAO {
 
             //TODO write queries to get all relationships for games
             //System.out.println(game);
+        }
+        return gameItems;
+    }
+
+    public ArrayList<RelatedGameEntry> getRelatedGamesOptions() {
+        String query = "Match (g:Game)-[:ON_PLATFORM]-(p:Platform) " +
+                "Return g.GameName, p.PlatformName";
+        Result result = neo4JDatabaseHelper.runQuery(query);
+        ArrayList<RelatedGameEntry> gameItems = new ArrayList<>();
+        while (result.hasNext()) {
+            Map<String, Object> row = result.next().asMap();
+            gameItems.add(new RelatedGameEntry(String.valueOf(row.get("g.GameName")), String.valueOf(row.get("p.PlatformName"))));
         }
         return gameItems;
     }

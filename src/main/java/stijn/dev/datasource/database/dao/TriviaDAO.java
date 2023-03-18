@@ -20,4 +20,15 @@ public class TriviaDAO {
         }
         return trivia;
     }
+
+    public HashMap<String, String> getTrivia(){
+        String triviaQuery = "MATCH (t:Trivia) RETURN t.TriviaID, t.Fact";
+        Result result = neo4JDatabaseHelper.runQuery(new Query(triviaQuery));
+        HashMap<String, String> trivia = new HashMap<>();
+        while(result.hasNext()) {
+            Map<String, Object> row = result.next().asMap();
+            trivia.put(String.valueOf(row.get("t.TriviaID")),String.valueOf(row.get("t.Fact")));
+        }
+        return trivia;
+    }
 }

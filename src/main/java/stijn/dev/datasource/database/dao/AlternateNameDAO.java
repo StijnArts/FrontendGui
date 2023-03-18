@@ -22,7 +22,7 @@ public class AlternateNameDAO {
         Result regionAlternateNamesResult = neo4JDatabaseHelper.runQuery(new Query(regionAlternateNamesQuery,parameters));
         while(regionAlternateNamesResult.hasNext()) {
             Map<String, Object> row = regionAlternateNamesResult.next().asMap();
-            alternateNames.add(new AlternateNameRegion(String.valueOf(row.get("a.AlternateNameID")),String.valueOf(row.get("a.Name")),
+            alternateNames.add(new AlternateName(String.valueOf(row.get("a.AlternateNameID")),String.valueOf(row.get("a.Name")),
                     String.valueOf(row.get("t.Name"))));
         }
         return alternateNames;

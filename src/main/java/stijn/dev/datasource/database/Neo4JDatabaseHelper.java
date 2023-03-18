@@ -29,6 +29,47 @@ public class Neo4JDatabaseHelper implements AutoCloseable{
         createBasePriorityNodes();
         createRatingNodes();
         createMultiplayerTypeNodes();
+        createRelationshipNodes();
+        createStaffRoleNodes();
+        createCharacterRolesNodes();
+    }
+
+    private void createCharacterRolesNodes() {
+        runQuery("MERGE (s:CharacterRole {Name: 'Protagonist'}) return s");
+        runQuery("MERGE (s:CharacterRole {Name: 'Antagonist'}) return s");
+        runQuery("MERGE (s:CharacterRole {Name: 'Love Interest'}) return s");
+        runQuery("MERGE (s:CharacterRole {Name: 'Confidant'}) return s");
+        runQuery("MERGE (s:CharacterRole {Name: 'Supporting'}) return s");
+        runQuery("MERGE (s:CharacterRole {Name: 'Foil'}) return s");
+    }
+
+    private void createStaffRoleNodes() {
+        runQuery("MERGE (s:StaffRole {Name: 'Game Designer'}) return s");
+        runQuery("MERGE (s:StaffRole {Name: 'Systems Designer'}) return s");
+        runQuery("MERGE (s:StaffRole {Name: 'Level Designer'}) return s");
+        runQuery("MERGE (s:StaffRole {Name: 'Game Programmer'}) return s");
+        runQuery("MERGE (s:StaffRole {Name: 'AI Programmer'}) return s");
+        runQuery("MERGE (s:StaffRole {Name: 'Gameplay Engineer'}) return s");
+        runQuery("MERGE (s:StaffRole {Name: 'Game Artist'}) return s");
+        runQuery("MERGE (s:StaffRole {Name: 'Character Artist'}) return s");
+        runQuery("MERGE (s:StaffRole {Name: 'Environment Artist'}) return s");
+        runQuery("MERGE (s:StaffRole {Name: 'Asset Artist'}) return s");
+        runQuery("MERGE (s:StaffRole {Name: 'Art Director'}) return s");
+        runQuery("MERGE (s:StaffRole {Name: 'Game Director'}) return s");
+        runQuery("MERGE (s:StaffRole {Name: 'FX Artist'}) return s");
+        runQuery("MERGE (s:StaffRole {Name: 'Concept Artist'}) return s");
+        runQuery("MERGE (s:StaffRole {Name: 'Voice Actor'}) return s");
+    }
+
+    private void createRelationshipNodes() {
+        runQuery("MERGE (r:Relationship {Name: 'Port'}) return r");
+        runQuery("MERGE (r:Relationship {Name: 'Spiritual Successor'}) return r");
+        runQuery("MERGE (r:Relationship {Name: 'Remaster'}) return r");
+        runQuery("MERGE (r:Relationship {Name: 'Sequel'}) return r");
+        runQuery("MERGE (r:Relationship {Name: 'Prequel'}) return r");
+        runQuery("MERGE (r:Relationship {Name: 'Counterpart'}) return r");
+        runQuery("MERGE (r:Relationship {Name: 'Remake'}) return r");
+        runQuery("MERGE (r:Relationship {Name: 'Port'}) return r");
     }
 
     private void createMultiplayerTypeNodes() {

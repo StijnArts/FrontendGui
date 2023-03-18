@@ -1,37 +1,39 @@
 package stijn.dev.datasource.objects.data;
 
+import javafx.beans.property.*;
+
 public class AdditionalApp {
-    private String path;
-    private String name;
-    private String arguments;
+    private StringProperty path;
+    private StringProperty name;
+    private StringProperty arguments;
 
     public AdditionalApp(String path, String name, String arguments) {
-        this.path = path;
-        this.name = name;
-        this.arguments = arguments;
+        this.path = new SimpleStringProperty(path);
+        this.name = new SimpleStringProperty(name);
+        this.arguments = new SimpleStringProperty(arguments);
     }
 
-    public String getPath() {
+    public StringProperty getPath() {
         return path;
     }
 
-    public void setPath(String path) {
+    public void setPath(StringProperty path) {
         this.path = path;
     }
 
-    public String getName() {
+    public StringProperty getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(StringProperty name) {
         this.name = name;
     }
 
-    public String getArguments() {
+    public StringProperty getArguments() {
         return arguments;
     }
 
-    public void setArguments(String arguments) {
+    public void setArguments(StringProperty arguments) {
         this.arguments = arguments;
     }
 }
