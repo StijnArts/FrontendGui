@@ -26,11 +26,11 @@ public class Trivia {
         this.triviaID.set(triviaID);
     }
 
-    public StringProperty getFact() {
-        return fact;
+    public String getFact() {
+        return fact.get();
     }
 
-    public void setFact(String fact) {
-        this.fact.set(fact);
+    public void setFact(StringProperty fact) {
+        this.fact = fact;
     }
 }

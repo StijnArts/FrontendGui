@@ -1,5 +1,6 @@
 package stijn.dev.datasource.database.dao;
 
+import javafx.beans.property.*;
 import org.neo4j.driver.*;
 import stijn.dev.datasource.database.*;
 import stijn.dev.datasource.objects.items.*;
@@ -20,9 +21,20 @@ public class TagDAO {
                 parameters));
     }
 
-    public ArrayList<String> getTags(HashMap<String, Object> parameters) {
+    public ArrayList<Tag> getTags(HashMap<String, Object> parameters) {
         String tagQuery = "MATCH (t:Tag)-[:HAS_TAG]-(g:Game{GameName:$gameName})-[:ON_PLATFORM]-(p:Platform{PlatformName:$platformName}) RETURN t.Name";
         Result result = neo4JDatabaseHelper.runQuery(new Query(tagQuery,parameters));
+        ArrayList<Tag> tags = new ArrayList<>();
+        while(result.hasNext()) {
+            Map<String, Object> row = result.next().asMap();
+            tags.add(new Tag(String.valueOf(row.get("t.Name"))));
+        }
+        return tags;
+    }
+
+    public ArrayList<String> getTags() {
+        String tagQuery = "MATCH (t:Tag) RETURN t.Name";
+        Result result = neo4JDatabaseHelper.runQuery(new Query(tagQuery));
         ArrayList<String> tags = new ArrayList<>();
         while(result.hasNext()) {
             Map<String, Object> row = result.next().asMap();

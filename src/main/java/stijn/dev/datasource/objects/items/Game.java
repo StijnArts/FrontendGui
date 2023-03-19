@@ -1,5 +1,6 @@
 package stijn.dev.datasource.objects.items;
 
+import javafx.beans.property.*;
 import stijn.dev.datasource.objects.collections.*;
 import stijn.dev.datasource.objects.data.*;
 
@@ -14,7 +15,7 @@ public class Game extends Item{
     private String description;
     private ArrayList<ReleaseDate> releaseDates;
     private String maxPlayers;
-    private ArrayList<String> tags;
+    private ArrayList<Tag> tags;
     private ArrayList<String> playmodes;
     private ArrayList<AlternateName> alternateNames;
     private ArrayList<RelatedGame> relatedGames;
@@ -215,12 +216,16 @@ public class Game extends Item{
         this.maxPlayers = maxPlayers;
     }
 
-    public ArrayList<String> getTags() {
+    public ArrayList<Tag> getTags() {
         return tags;
     }
 
-    public void setTags(ArrayList<String> tags) {
+    public void setTags(ArrayList<Tag> tags) {
         this.tags = tags;
+    }
+
+    public void setRating(ArrayList<String> rating) {
+        this.rating = rating;
     }
 
     public ArrayList<Staff> getStaff() {

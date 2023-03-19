@@ -2,24 +2,23 @@ package stijn.dev.datasource.objects.items;
 
 import javafx.beans.property.*;
 
+import java.util.*;
+
 public class Character {
     private StringProperty characterID;
-    private StringProperty firstName;
-    private StringProperty lastName;
+    private StringProperty name;
     private StringProperty role;
     private StringProperty voiceActor;
 
-    public Character(String characterID, String firstName, String lastName) {
+    public Character(String characterID, String name) {
         this.characterID = new SimpleStringProperty(characterID);
-        this.firstName = new SimpleStringProperty(firstName);
-        this.lastName = new SimpleStringProperty(lastName);
+        this.name = new SimpleStringProperty(name);
     }
 
-    public Character(String characterID, String firstName, String lastName, String role, String voiceActor) {
+    public Character(String characterID, String name, String role, String voiceActor) {
         this.characterID = new SimpleStringProperty(characterID);
-        this.firstName = new SimpleStringProperty(firstName);
-        this.lastName = new SimpleStringProperty(lastName);
         this.role = new SimpleStringProperty(role);
+        this.name = new SimpleStringProperty(name);
         this.voiceActor = new SimpleStringProperty(voiceActor);
     }
 
@@ -47,28 +46,16 @@ public class Character {
         this.characterID.set(characterID);
     }
 
-    public String getFirstName() {
-        return firstName.get();
+    public String getName() {
+        return name.get();
     }
 
-    public StringProperty firstNameProperty() {
-        return firstName;
+    public StringProperty nameProperty() {
+        return name;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName.set(firstName);
-    }
-
-    public String getLastName() {
-        return lastName.get();
-    }
-
-    public StringProperty lastNameProperty() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName.set(lastName);
+    public void setName(String name) {
+        this.name.set(name);
     }
 
     public String getRole() {

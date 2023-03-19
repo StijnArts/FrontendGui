@@ -15,7 +15,8 @@ public class AlternateNameDAO {
         ArrayList<AlternateName> alternateNames = new ArrayList<>();
         while(communityAlternateNamesResult.hasNext()) {
             Map<String, Object> row = communityAlternateNamesResult.next().asMap();
-            alternateNames.add(new AlternateName(String.valueOf(row.get("a.AlternateNameID")),String.valueOf(row.get("a.Name"))));
+            alternateNames.add(new AlternateName(String.valueOf(row.get("a.AlternateNameID")),String.valueOf(row.get("a.Name")),
+                    "Community"));
         }
         String regionAlternateNamesQuery = "MATCH (g:Game{GameName:$gameName})-[:ON_PLATFORM]-(p:Platform{PlatformName:$platformName}), " +
                 "(g)-[a:ALTERNATE_NAME]-(t:Territory) RETURN a.AlternateNameID, a.Name, t.Name";

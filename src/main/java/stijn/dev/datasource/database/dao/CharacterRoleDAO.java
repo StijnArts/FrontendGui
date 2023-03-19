@@ -18,4 +18,16 @@ public class CharacterRoleDAO {
         }
         return staff;
     }
+
+    public ArrayList<String> getCharacterRoles(HashMap<String, Object> parameters) {
+        String staffQuery = "MATCH (s:Character{CharacterID:$characterID})-[f:FEATURED_IN]-(g:Game{GameName:$gameName})-[:ON_PLATFORM]-(p:Platform{PlatformName:$platformName}) " +
+                "RETURN f.Role";
+        Result result = neo4JDatabaseHelper.runQuery(new Query(staffQuery,parameters));
+        ArrayList<String> roles = new ArrayList<>();
+        while(result.hasNext()) {
+            Map<String, Object> row = result.next().asMap();
+            roles.add(String.valueOf(row.get("f.Role")));
+        }
+        return roles;
+    }
 }

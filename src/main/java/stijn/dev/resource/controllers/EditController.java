@@ -4,6 +4,7 @@ import javafx.beans.binding.*;
 import javafx.beans.property.*;
 import javafx.beans.value.*;
 import javafx.collections.*;
+import javafx.event.*;
 import javafx.fxml.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
@@ -50,6 +51,8 @@ public class EditController {
     @FXML
     TableView2 characterTable;
     @FXML
+    TableView2 tagTable;
+    @FXML
     TextField maxPlayersField;
     @FXML
     TextField titleTextField;
@@ -75,6 +78,7 @@ public class EditController {
     private StaffRoleDAO staffRoleDAO = new StaffRoleDAO();
     private CharacterDAO characterDAO = new CharacterDAO();
     private CharacterRoleDAO characterRoleDAO = new CharacterRoleDAO();
+    private TagDAO tagDAO = new TagDAO();
     private HashMap<String, RelatedGameEntry> relatedGameMap = new HashMap<>();
 
     public static EditController create(FXMLLoader loader, Game gameImportItem){
@@ -90,6 +94,7 @@ public class EditController {
         configureAdditionalAppsTable();
         configureReleaseDatesTable();
         configureTriviaTable();
+        configureTagTable();
         configurePublisherComboCheckBox();
         configureDeveloperComboCheckBox();
         configureRatingComboCheckBox();
@@ -105,6 +110,55 @@ public class EditController {
         configureCharacterTable();
     }
 
+    private void configureTagTable() {
+        tagTable.setEditable(true);
+        ObservableList<String> tagOptions = FXCollections.observableList(tagDAO.getTags());
+        ObservableList<Tag> tags = FXCollections.observableList(game.getTags());
+        tagTable.setItems(tags);
+        tagTable.getItems().add(new Tag(""));
+        TableColumn2<Tag, StringProperty> tagColumn = new FilteredTableColumn<>("Tag");
+        tagColumn.setCellValueFactory(i-> {
+            final StringProperty value = i.getValue().nameProperty();
+            return Bindings.createObjectBinding(()->value);
+        });
+        tagColumn.setCellFactory(col -> {
+            TableCell<Tag,StringProperty> c = new TableCell<>();
+            final Button button = new Button("Edit");
+            //TODO make button open edit screen for the relationship in the cell
+            //button.setOnAction();
+            final BorderPane borderPane = new BorderPane();
+            final ComboBox<String> comboBox = new ComboBox<>(tagOptions);
+            final HBox hBox = new HBox(5, comboBox,button);
+            borderPane.centerProperty().setValue(hBox);
+            comboBox.setEditable(true);
+            comboBox.valueProperty().addListener(new ChangeListener<String>() {
+                @Override
+                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+                    if(comboBox.getValue()!=null&&!comboBox.getValue().isBlank()){
+                        c.getTableView().getItems().get(c.getIndex()).setName(comboBox.getValue());
+                        if(c.getTableView().getItems().size()-1==c.getIndex()){
+                            c.getTableView().getItems().add(new Tag(""));
+                        }
+                    } else{
+                        c.getTableView().getItems().get(c.getIndex()).setName(null);
+                    }
+                }
+            });
+            c.itemProperty().addListener(((observableValue, oldValue, newValue) -> {
+                if(oldValue != null){
+                    comboBox.valueProperty().unbindBidirectional(oldValue);
+                }
+                if(newValue != null){
+                    comboBox.valueProperty().bindBidirectional(newValue);
+                }
+            }));
+            c.graphicProperty().bind(Bindings.when(c.emptyProperty()).then((Node)null).otherwise(hBox));
+            return c;
+        });
+        tagColumn.setEditable(true);
+        tagTable.getColumns().setAll(tagColumn);
+    }
+
     private void configureStaffTable() {
         staffTable.setEditable(true);
         ArrayList<Staff> staff = game.getStaff();
@@ -118,74 +172,78 @@ public class EditController {
         ObservableList<String> staffRoles = FXCollections.observableList(staffRoleDAO.getStaffRoles());
         ObservableList<Staff> staffObservable = FXCollections.observableList(staff);
         staffTable.setItems(staffObservable);
+        ArrayList<String> temp = new ArrayList<>();
         staffTable.getItems().add(new Staff("","","",""));
         TableColumn2<Staff,String> firstNameColumn = new FilteredTableColumn<>("First Name");
-        firstNameColumn.setEditable(false);
+        firstNameColumn.setEditable(true);
         firstNameColumn.setCellValueFactory(p->p.getValue().firstNameProperty());
         firstNameColumn.setCellFactory(TextField2TableCell.forTableColumn());
+        firstNameColumn.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Staff,String>>() {
+            @Override
+            public void handle(TableColumn.CellEditEvent<Staff,String> event) {
+                if(!event.getNewValue().isBlank()){
+                    if(event.getTableView().getItems().size()-1==event.getTablePosition().getRow()){
+                        event.getTableView().getItems().add(new Staff("","",""));
+                    }
+                }
+                event.getTableView().getItems().get(event.getTablePosition().getRow()).setFirstName(event.getNewValue());
+            }
+        });
         TableColumn2<Staff,String> lastNameColumn = new FilteredTableColumn<>("Last Name");
-        lastNameColumn.setEditable(false);
-        lastNameColumn.setCellValueFactory(p->p.getValue().firstNameProperty());
+        lastNameColumn.setEditable(true);
+        lastNameColumn.setCellValueFactory(p->p.getValue().lastNameProperty());
         lastNameColumn.setCellFactory(TextField2TableCell.forTableColumn());
-        TableColumn2<Staff,StringProperty> roleColumn = new FilteredTableColumn<>("Role");
-        roleColumn.setEditable(true);
+        lastNameColumn.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Staff,String>>() {
+            @Override
+            public void handle(TableColumn.CellEditEvent<Staff,String> event) {
+                if(!event.getNewValue().isBlank()){
+                    if(event.getTableView().getItems().size()-1==event.getTablePosition().getRow()){
+                        event.getTableView().getItems().add(new Staff("","",""));
+                    }
+                }
+                event.getTableView().getItems().get(event.getTablePosition().getRow()).setLastName(event.getNewValue());
+            }
+        });
+        TableColumn2<Staff, StringProperty> roleColumn = new FilteredTableColumn<>("Role");
         roleColumn.setCellValueFactory(i-> {
             final StringProperty value = i.getValue().roleProperty();
             return Bindings.createObjectBinding(()->value);
         });
         roleColumn.setCellFactory(col -> {
-            TableCell<Staff,StringProperty> tableCell = new TableCell<>();
+            TableCell<Staff,StringProperty> c = new TableCell<>();
             final BorderPane borderPane = new BorderPane();
             final Button button = new Button("Edit");
             //TODO make button open edit screen for the relationship in the cell
             //button.setOnAction();
-            final ComboBox<ComboBoxItemWrap<String>> comboBox = new ComboBox<>(FXCollections.observableList(generateComboBoxItemWrappers(staffRoles)));
+            final ComboBox<String> comboBox = new ComboBox<>(staffRoles);
             final HBox hBox = new HBox(5, comboBox,button);
-            hBox.autosize();
-            hBox.setPrefWidth(300);
             borderPane.centerProperty().setValue(hBox);
             comboBox.setEditable(true);
-            ComboBoxAutocompleteUtil.autoCompleteComboBoxPlus(comboBox, (typedText, itemToCompare) -> itemToCompare.getItem().toLowerCase().contains(typedText.toLowerCase()));
-            comboBox.valueProperty().addListener(new ChangeListener<ComboBoxItemWrap<String>>() {
+            c.itemProperty().addListener(((observableValue, oldValue, newValue) -> {
+                if(oldValue != null){
+                    comboBox.valueProperty().unbindBidirectional(oldValue);
+                }
+                if(newValue != null){
+                    comboBox.valueProperty().bindBidirectional(newValue);
+                }
+            }));
+            comboBox.valueProperty().addListener(new ChangeListener<String>() {
                 @Override
-                public void changed(ObservableValue<? extends ComboBoxItemWrap<String>> observableValue, ComboBoxItemWrap<String> stringComboBoxItemWrap, ComboBoxItemWrap<String> t1) {
-                    tableCell.getTableView().getItems().get(tableCell.getIndex()).setRole(comboBox.getValue().getItem());
+                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+                    if(comboBox.getValue()!=null&&!comboBox.getValue().isBlank()){
+                        c.getTableView().getItems().get(c.getIndex()).setRole(comboBox.getValue());
+                        if(c.getTableView().getItems().size()-1==c.getIndex()){
+                            c.getTableView().getItems().add(new Staff("","","",""));
+                        }
+                    } else{
+                        c.getTableView().getItems().get(c.getIndex()).setRole(comboBox.getValue());
+                    }
                 }
             });
-            comboBox.setCellFactory(c->{
-                ListCell<ComboBoxItemWrap<String>> cell = new ListCell<>(){
-                    boolean initialized = false;
-                    @Override
-                    protected void updateItem(ComboBoxItemWrap<String> item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if(!empty){
-                            final CheckBox checkBox = new CheckBox(item.toString());
-                            checkBox.selectedProperty().bind(item.checkProperty());
-                            if(!initialized){
-                                if(game.getDeveloper().contains(item.getItem())){
-                                    item.checkProperty().set(true);
-                                }
-                                initialized = true;
-                            }
-                            setGraphic(checkBox);
-                        }
-                    }
-                };
-
-                cell.addEventFilter(MouseEvent.MOUSE_RELEASED, mouseEvent -> {
-                    cell.getItem().checkProperty().set(!cell.getItem().checkProperty().get());
-                    StringBuilder stringBuilder = new StringBuilder();
-                    comboBox.getItems().filtered(f->f.getCheck()).forEach(p->{
-                        stringBuilder.append("; "+p.getItem());
-                    });
-                    final String string = stringBuilder.toString();
-                    comboBox.setValue(new ComboBoxItemWrap<String>(string.substring(Integer.min(2, string.length()))));
-                });
-                return cell;
-            });
-            tableCell.graphicProperty().bind(Bindings.when(tableCell.emptyProperty()).then((Node)null).otherwise(hBox));
-            return tableCell;
+            c.graphicProperty().bind(Bindings.when(c.emptyProperty()).then((Node)null).otherwise(hBox));
+            return c;
         });
+        roleColumn.setEditable(true);
         TableColumn2<Staff, StringProperty> staffIDColumn = new FilteredTableColumn<>("Staff ID");
         staffIDColumn.setCellValueFactory(i-> {
             final StringProperty value = i.getValue().staffIDProperty();
@@ -193,19 +251,40 @@ public class EditController {
         });
         staffIDColumn.setCellFactory(col -> {
             TableCell<Staff,StringProperty> c = new TableCell<>();
+            final Button button = new Button("Edit");
+            //TODO make button open edit screen for the relationship in the cell
+            //button.setOnAction();
             final BorderPane borderPane = new BorderPane();
             final ComboBox<String> comboBox = new ComboBox<>(staffOptions);
-            borderPane.centerProperty().setValue(comboBox);
+            final HBox hBox = new HBox(5, comboBox,button);
+            borderPane.centerProperty().setValue(hBox);
             comboBox.setEditable(true);
+            c.itemProperty().addListener(((observableValue, oldValue, newValue) -> {
+                if(oldValue != null){
+                    comboBox.valueProperty().unbindBidirectional(oldValue);
+                }
+                if(newValue != null){
+                    comboBox.valueProperty().bindBidirectional(newValue);
+                }
+            }));
             comboBox.valueProperty().addListener(new ChangeListener<String>() {
                 @Override
                 public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
-                    c.getTableView().getItems().get(c.getIndex()).setStaffID(comboBox.getValue());
-                    c.getTableView().getItems().get(c.getIndex()).setFirstName(staffHashMap.get(comboBox.valueProperty().get()).getFirstName());
-                    c.getTableView().getItems().get(c.getIndex()).setFirstName(staffHashMap.get(comboBox.valueProperty().get()).getLastName());
+                    if(comboBox.getValue()!=null&&!comboBox.getValue().isBlank()){
+                        c.getTableView().getItems().get(c.getIndex()).setStaffID(comboBox.getValue());
+                        c.getTableView().getItems().get(c.getIndex()).setFirstName(staffHashMap.get(comboBox.valueProperty().get()).getFirstName());
+                        c.getTableView().getItems().get(c.getIndex()).setLastName(staffHashMap.get(comboBox.valueProperty().get()).getLastName());
+                        if(c.getTableView().getItems().size()-1==c.getIndex()){
+                            c.getTableView().getItems().add(new Staff("","","",""));
+                        }
+                    } else{
+                        c.getTableView().getItems().get(c.getIndex()).setStaffID(comboBox.getValue());
+                        c.getTableView().getItems().get(c.getIndex()).setFirstName(null);
+                        c.getTableView().getItems().get(c.getIndex()).setLastName(null);
+                    }
                 }
             });
-            c.graphicProperty().bind(Bindings.when(c.emptyProperty()).then((Node)null).otherwise(comboBox));
+            c.graphicProperty().bind(Bindings.when(c.emptyProperty()).then((Node)null).otherwise(hBox));
             return c;
         });
         staffIDColumn.setEditable(true);
@@ -225,73 +304,62 @@ public class EditController {
         ObservableList<String> characterRoles = FXCollections.observableList(characterRoleDAO.getCharacterRoles());
         ObservableList<Character> characterObservable = FXCollections.observableList(character);
         characterTable.setItems(characterObservable);
-        characterTable.getItems().add(new Character("","",""));
-        TableColumn2<Character,String> firstNameColumn = new FilteredTableColumn<>("FirstName");
-        firstNameColumn.setEditable(false);
-        firstNameColumn.setCellValueFactory(p->p.getValue().firstNameProperty());
-        firstNameColumn.setCellFactory(TextField2TableCell.forTableColumn());
-        TableColumn2<Character,String> lastNameColumn = new FilteredTableColumn<>("Last Name");
-        lastNameColumn.setEditable(false);
-        lastNameColumn.setCellValueFactory(p->p.getValue().firstNameProperty());
-        lastNameColumn.setCellFactory(TextField2TableCell.forTableColumn());
-        TableColumn2<Character,StringProperty> roleColumn = new FilteredTableColumn<>("Role");
-        roleColumn.setEditable(true);
+        characterTable.getItems().add(new Character("",""));
+        TableColumn2<Character,String> nameColumn = new FilteredTableColumn<>("Name");
+        nameColumn.setEditable(true);
+        nameColumn.setCellValueFactory(p->p.getValue().nameProperty());
+        nameColumn.setCellFactory(TextField2TableCell.forTableColumn());
+        nameColumn.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Character,String>>() {
+            @Override
+            public void handle(TableColumn.CellEditEvent<Character,String> event) {
+                if(!event.getNewValue().isBlank()){
+                    if(event.getTableView().getItems().size()-1==event.getTablePosition().getRow()){
+                        event.getTableView().getItems().add(new Character("",""));
+                    }
+                }
+                event.getTableView().getItems().get(event.getTablePosition().getRow()).setName(event.getNewValue());
+            }
+        });
+        TableColumn2<Character, StringProperty> roleColumn = new FilteredTableColumn<>("Role");
         roleColumn.setCellValueFactory(i-> {
             final StringProperty value = i.getValue().roleProperty();
             return Bindings.createObjectBinding(()->value);
         });
         roleColumn.setCellFactory(col -> {
-            TableCell<Character,StringProperty> tableCell = new TableCell<>();
-            final BorderPane borderPane = new BorderPane();
+            TableCell<Character,StringProperty> c = new TableCell<>();
             final Button button = new Button("Edit");
             //TODO make button open edit screen for the relationship in the cell
             //button.setOnAction();
-            final ComboBox<ComboBoxItemWrap<String>> comboBox = new ComboBox<>(FXCollections.observableList(generateComboBoxItemWrappers(characterRoles)));
+            final BorderPane borderPane = new BorderPane();
+            final ComboBox<String> comboBox = new ComboBox<>(characterRoles);
             final HBox hBox = new HBox(5, comboBox,button);
-            hBox.autosize();
             borderPane.centerProperty().setValue(hBox);
             comboBox.setEditable(true);
-            ComboBoxAutocompleteUtil.autoCompleteComboBoxPlus(comboBox, (typedText, itemToCompare) -> itemToCompare.getItem().toLowerCase().contains(typedText.toLowerCase()));
-            comboBox.valueProperty().addListener(new ChangeListener<ComboBoxItemWrap<String>>() {
+            comboBox.valueProperty().addListener(new ChangeListener<String>() {
                 @Override
-                public void changed(ObservableValue<? extends ComboBoxItemWrap<String>> observableValue, ComboBoxItemWrap<String> stringComboBoxItemWrap, ComboBoxItemWrap<String> t1) {
-                    tableCell.getTableView().getItems().get(tableCell.getIndex()).setVoiceActor(comboBox.getValue().toString());
+                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+                    if(comboBox.getValue()!=null&&!comboBox.getValue().isBlank()){
+                        c.getTableView().getItems().get(c.getIndex()).setRole(comboBox.getValue());
+                        if(c.getTableView().getItems().size()-1==c.getIndex()){
+                            c.getTableView().getItems().add(new Character("","","",""));
+                        }
+                    } else{
+                        c.getTableView().getItems().get(c.getIndex()).setRole(null);
+                    }
                 }
             });
-            comboBox.setCellFactory(c->{
-                ListCell<ComboBoxItemWrap<String>> cell = new ListCell<>(){
-                    boolean initialized = false;
-                    @Override
-                    protected void updateItem(ComboBoxItemWrap<String> item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if(!empty){
-                            final CheckBox checkBox = new CheckBox(item.toString());
-                            checkBox.selectedProperty().bind(item.checkProperty());
-                            if(!initialized){
-                                if(game.getDeveloper().contains(item.getItem())){
-                                    item.checkProperty().set(true);
-                                }
-                                initialized = true;
-                            }
-                            setGraphic(checkBox);
-                        }
-                    }
-                };
-
-                cell.addEventFilter(MouseEvent.MOUSE_RELEASED, mouseEvent -> {
-                    cell.getItem().checkProperty().set(!cell.getItem().checkProperty().get());
-                    StringBuilder stringBuilder = new StringBuilder();
-                    comboBox.getItems().filtered(f->f.getCheck()).forEach(p->{
-                        stringBuilder.append("; "+p.getItem());
-                    });
-                    final String string = stringBuilder.toString();
-                    comboBox.setValue(new ComboBoxItemWrap<String>(string.substring(Integer.min(2, string.length()))));
-                });
-                return cell;
-            });
-            tableCell.graphicProperty().bind(Bindings.when(tableCell.emptyProperty()).then((Node)null).otherwise(hBox));
-            return tableCell;
+            c.itemProperty().addListener(((observableValue, oldValue, newValue) -> {
+                if(oldValue != null){
+                    comboBox.valueProperty().unbindBidirectional(oldValue);
+                }
+                if(newValue != null){
+                    comboBox.valueProperty().bindBidirectional(newValue);
+                }
+            }));
+            c.graphicProperty().bind(Bindings.when(c.emptyProperty()).then((Node)null).otherwise(hBox));
+            return c;
         });
+        roleColumn.setEditable(true);
         TableColumn2<Character, StringProperty> characterIDColumn = new FilteredTableColumn<>("Character ID");
         characterIDColumn.setCellValueFactory(i-> {
             final StringProperty value = i.getValue().characterIDProperty();
@@ -299,30 +367,49 @@ public class EditController {
         });
         characterIDColumn.setCellFactory(col -> {
             TableCell<Character,StringProperty> c = new TableCell<>();
+            final Button button = new Button("Edit");
+            //TODO make button open edit screen for the relationship in the cell
+            //button.setOnAction();
             final BorderPane borderPane = new BorderPane();
             final ComboBox<String> comboBox = new ComboBox<>(characterOptions);
-            borderPane.centerProperty().setValue(comboBox);
+            final HBox hBox = new HBox(5, comboBox,button);
+            borderPane.centerProperty().setValue(hBox);
             comboBox.setEditable(true);
             comboBox.valueProperty().addListener(new ChangeListener<String>() {
                 @Override
                 public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
-                    c.getTableView().getItems().get(c.getIndex()).setCharacterID(comboBox.getValue());
-                    c.getTableView().getItems().get(c.getIndex()).setFirstName(characterHashMap.get(comboBox.valueProperty().get()).getFirstName());
-                    c.getTableView().getItems().get(c.getIndex()).setFirstName(characterHashMap.get(comboBox.valueProperty().get()).getLastName());
+                    if(comboBox.getValue()!=null&&!comboBox.getValue().isBlank()){
+                        c.getTableView().getItems().get(c.getIndex()).setCharacterID(comboBox.getValue());
+                        c.getTableView().getItems().get(c.getIndex()).setName(characterHashMap.get(comboBox.valueProperty().get()).getName());
+                        if(c.getTableView().getItems().size()-1==c.getIndex()){
+                            c.getTableView().getItems().add(new Character("","","",""));
+                        }
+                    } else{
+                        c.getTableView().getItems().get(c.getIndex()).setCharacterID(comboBox.getValue());
+                        c.getTableView().getItems().get(c.getIndex()).setName(null);
+                    }
                 }
             });
-            c.graphicProperty().bind(Bindings.when(c.emptyProperty()).then((Node)null).otherwise(comboBox));
+            c.itemProperty().addListener(((observableValue, oldValue, newValue) -> {
+                if(oldValue != null){
+                    comboBox.valueProperty().unbindBidirectional(oldValue);
+                }
+                if(newValue != null){
+                    comboBox.valueProperty().bindBidirectional(newValue);
+                }
+            }));
+            c.graphicProperty().bind(Bindings.when(c.emptyProperty()).then((Node)null).otherwise(hBox));
             return c;
         });
         characterIDColumn.setEditable(true);
         TableColumn2<Character,StringProperty> voiceActorColumn = new FilteredTableColumn<>("Voice Actor");
         voiceActorColumn.setEditable(true);
         voiceActorColumn.setCellValueFactory(i-> {
-            final StringProperty value = i.getValue().roleProperty();
+            final StringProperty value = i.getValue().voiceActorProperty();
             return Bindings.createObjectBinding(()->value);
         });
         voiceActorColumn.setCellFactory(col -> {
-            TableCell<Character,StringProperty> tableCell = new TableCell<>();
+            TableCell<Character,StringProperty> c = new TableCell<>();
             final BorderPane borderPane = new BorderPane();
             final Button button = new Button("Edit");
             //TODO make button open edit screen for the relationship in the cell
@@ -333,28 +420,57 @@ public class EditController {
             borderPane.centerProperty().setValue(hBox);
             comboBox.setEditable(true);
             ComboBoxAutocompleteUtil.autoCompleteComboBoxPlus(comboBox, (typedText, itemToCompare) -> itemToCompare.toLowerCase().contains(typedText.toLowerCase()));
+            c.itemProperty().addListener(((observableValue, oldValue, newValue) -> {
+                if(oldValue != null){
+                    comboBox.valueProperty().unbindBidirectional(oldValue);
+                }
+                if(newValue != null){
+                    comboBox.valueProperty().bindBidirectional(newValue);
+                }
+            }));
             comboBox.valueProperty().addListener(new ChangeListener<String>() {
                 @Override
                 public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
-                    tableCell.getTableView().getItems().get(tableCell.getIndex()).setVoiceActor(comboBox.getValue().toString());
+                    if(comboBox.getValue()!=null&&!comboBox.getValue().isBlank()){
+                        c.getTableView().getItems().get(c.getIndex()).setCharacterID(comboBox.getValue());
+                        c.getTableView().getItems().get(c.getIndex()).setName(characterHashMap.get(comboBox.valueProperty().get()).getName());
+                        if(c.getTableView().getItems().size()-1==c.getIndex()){
+                            c.getTableView().getItems().add(new Character("","","",""));
+                        }
+                    } else{
+                        c.getTableView().getItems().get(c.getIndex()).setCharacterID(comboBox.getValue());
+                        c.getTableView().getItems().get(c.getIndex()).setName(null);
+                    }
                 }
             });
-            tableCell.graphicProperty().bind(Bindings.when(tableCell.emptyProperty()).then((Node) null).otherwise(hBox));
-            return tableCell;
+            c.graphicProperty().bind(Bindings.when(c.emptyProperty()).then((Node) null).otherwise(hBox));
+            return c;
         });
-        characterTable.getColumns().setAll(characterIDColumn,firstNameColumn,lastNameColumn,roleColumn,voiceActorColumn);
+        characterTable.getColumns().setAll(characterIDColumn,nameColumn,roleColumn,voiceActorColumn);
     }
 
     private void configureTriviaTable() {
         triviaTable.setEditable(true);
         triviaTable.setItems(FXCollections.observableList(game.getTrivia()));
-        triviaTable.getItems().add(new Trivia("",""));
+        Trivia blank = new Trivia("","");
+        triviaTable.getItems().add(blank);
         HashMap<String, String> triviaHashmap = triviaDAO.getTrivia();
         ObservableList<String> triviaIDs = FXCollections.observableList(triviaHashmap.keySet().stream().toList());
         TableColumn2<Trivia,String> factColumn = new FilteredTableColumn<>("Fact");
         factColumn.setEditable(true);
-        factColumn.setCellValueFactory(p->p.getValue().getFact());
+        factColumn.setCellValueFactory(p -> p.getValue().factProperty());
         factColumn.setCellFactory(TextField2TableCell.forTableColumn());
+        factColumn.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Trivia, String>>() {
+            @Override
+            public void handle(TableColumn.CellEditEvent<Trivia, String> event) {
+                if(!event.getNewValue().isBlank()){
+                    if(event.getTableView().getItems().size()-1==event.getTablePosition().getRow()){
+                        event.getTableView().getItems().add(new Trivia("",""));
+                    }
+                }
+                event.getTableView().getItems().get(event.getTablePosition().getRow()).setFact(new SimpleStringProperty(event.getNewValue()));
+            }
+        });
         TableColumn2<Trivia, StringProperty> triviaIdColumn = new FilteredTableColumn<>("Trivia ID");
         triviaIdColumn.setCellValueFactory(i-> {
             final StringProperty value = i.getValue().getTriviaID();
@@ -366,11 +482,26 @@ public class EditController {
             final ComboBox<String> comboBox = new ComboBox<>(triviaIDs);
             borderPane.centerProperty().setValue(comboBox);
             comboBox.setEditable(true);
+            c.itemProperty().addListener(((observableValue, oldValue, newValue) -> {
+                if(oldValue != null){
+                    comboBox.valueProperty().unbindBidirectional(oldValue);
+                }
+                if(newValue != null){
+                    comboBox.valueProperty().bindBidirectional(newValue);
+                }
+            }));
             comboBox.valueProperty().addListener(new ChangeListener<String>() {
                 @Override
                 public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
-                    c.getTableView().getItems().get(c.getIndex()).setTriviaID(comboBox.getValue());
-                    c.getTableView().getItems().get(c.getIndex()).setFact(triviaHashmap.get(comboBox.valueProperty().get()));
+                    if(comboBox.getValue()!=null&&!comboBox.getValue().isBlank()) {
+                        c.getTableView().getItems().get(c.getIndex()).setTriviaID(comboBox.getValue());
+                        c.getTableView().getItems().get(c.getIndex()).setFact(new SimpleStringProperty(triviaHashmap.get(comboBox.valueProperty().get())));
+                        if(c.getTableView().getItems().size()-1==c.getIndex()){
+                            c.getTableView().getItems().add(new Trivia("",""));
+                        }
+                    } else {
+                        c.getTableView().getItems().get(c.getIndex()).setFact(null);
+                    }
                 }
             });
             c.graphicProperty().bind(Bindings.when(c.emptyProperty()).then((Node)null).otherwise(comboBox));
@@ -408,31 +539,55 @@ public class EditController {
             comboBox.valueProperty().addListener(new ChangeListener<String>() {
                 @Override
                 public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
-                    c.getTableView().getItems().get(c.getIndex()).setTerritory(new SimpleStringProperty(comboBox.getValue()));
+                    if(comboBox.getValue()!=null&&!comboBox.getValue().isBlank()) {
+                        c.getTableView().getItems().get(c.getIndex()).setTerritory(new SimpleStringProperty(comboBox.getValue()));
+                        if(c.getTableView().getItems().size()-1==c.getIndex()){
+                            c.getTableView().getItems().add(new ReleaseDate("",null));
+                        }
+                    } else {
+                        c.getTableView().getItems().get(c.getIndex()).setTerritory(new SimpleStringProperty(comboBox.getValue()));
+                    }
                 }
             });
             c.graphicProperty().bind(Bindings.when(c.emptyProperty()).then((Node)null).otherwise(comboBox));
             return c;
         });
-        TableColumn2<ReleaseDate, ObjectProperty<LocalDate>> dateColumn = new FilteredTableColumn<>("Territory");
+        TableColumn2<ReleaseDate, ObjectProperty<LocalDate>> dateColumn = new FilteredTableColumn<>("Release Date");
         dateColumn.setCellValueFactory(i-> {
             final ObjectProperty<LocalDate> value = i.getValue().getDate();
             return Bindings.createObjectBinding(()->value);
         });
         dateColumn.setCellFactory(col -> {
+            //TODO fix date not being read from game.
             TableCell<ReleaseDate,ObjectProperty<LocalDate>> c = new TableCell<>();
             final BorderPane borderPane = new BorderPane();
             final DatePicker datePicker = new DatePicker();
             borderPane.centerProperty().setValue(datePicker);
+            c.itemProperty().addListener(((observableValue, oldValue, newValue) -> {
+                if(oldValue != null){
+                    datePicker.valueProperty().unbindBidirectional(oldValue);
+                }
+                if(newValue != null){
+                    datePicker.valueProperty().bindBidirectional(newValue);
+                }
+            }));
             datePicker.valueProperty().addListener(new ChangeListener<LocalDate>() {
                 @Override
                 public void changed(ObservableValue<? extends LocalDate> observableValue, LocalDate localDate, LocalDate t1) {
-                    c.getTableView().getItems().get(c.getIndex()).setDate(new SimpleObjectProperty<LocalDate>(datePicker.getValue()));
+                    if(datePicker.getValue()!=null) {
+                        c.getTableView().getItems().get(c.getIndex()).setDate(new SimpleObjectProperty<>(datePicker.getValue()));
+                        if(c.getTableView().getItems().size()-1==c.getIndex()){
+                            c.getTableView().getItems().add(new ReleaseDate("",null));
+                        }
+                    } else {
+                        c.getTableView().getItems().get(c.getIndex()).setDate(new SimpleObjectProperty<>(datePicker.getValue()));
+                    }
                 }
             });
             c.graphicProperty().bind(Bindings.when(c.emptyProperty()).then((Node)null).otherwise(datePicker));
             return c;
         });
+        dateColumn.setEditable(true);
         releaseDatesTable.getColumns().setAll(territoryColumn,dateColumn);
 
     }
@@ -449,14 +604,47 @@ public class EditController {
         nameColumn.setEditable(true);
         nameColumn.setCellValueFactory(c->c.getValue().getName());
         nameColumn.setCellFactory(TextField2TableCell.forTableColumn());
+        nameColumn.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<AdditionalApp,String>>() {
+            @Override
+            public void handle(TableColumn.CellEditEvent<AdditionalApp,String> event) {
+                if(!event.getNewValue().isBlank()){
+                    if(event.getTableView().getItems().size()-1==event.getTablePosition().getRow()){
+                        event.getTableView().getItems().add(new AdditionalApp("","",""));
+                    }
+                }
+                event.getTableView().getItems().get(event.getTablePosition().getRow()).setName(new SimpleStringProperty(event.getNewValue()));
+            }
+        });
         TableColumn2<AdditionalApp,String> pathColumn = new FilteredTableColumn<>("Path");
         pathColumn.setEditable(true);
-        pathColumn.setCellValueFactory(c->c.getValue().getName());
+        pathColumn.setCellValueFactory(c->c.getValue().getPath());
         pathColumn.setCellFactory(TextField2TableCell.forTableColumn());
+        pathColumn.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<AdditionalApp,String>>() {
+            @Override
+            public void handle(TableColumn.CellEditEvent<AdditionalApp,String> event) {
+                if(!event.getNewValue().isBlank()){
+                    if(event.getTableView().getItems().size()-1==event.getTablePosition().getRow()){
+                        event.getTableView().getItems().add(new AdditionalApp("","",""));
+                    }
+                }
+                event.getTableView().getItems().get(event.getTablePosition().getRow()).setPath(new SimpleStringProperty(event.getNewValue()));
+            }
+        });
         TableColumn2<AdditionalApp,String> argumentsColumn = new FilteredTableColumn<>("Arguments");
         argumentsColumn.setEditable(true);
-        argumentsColumn.setCellValueFactory(c->c.getValue().getName());
+        argumentsColumn.setCellValueFactory(c->c.getValue().getArguments());
         argumentsColumn.setCellFactory(TextField2TableCell.forTableColumn());
+        argumentsColumn.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<AdditionalApp,String>>() {
+            @Override
+            public void handle(TableColumn.CellEditEvent<AdditionalApp,String> event) {
+                if(!event.getNewValue().isBlank()){
+                    if(event.getTableView().getItems().size()-1==event.getTablePosition().getRow()){
+                        event.getTableView().getItems().add(new AdditionalApp("","",""));
+                    }
+                }
+                event.getTableView().getItems().get(event.getTablePosition().getRow()).setArguments(new SimpleStringProperty(event.getNewValue()));
+            }
+        });
         nameColumn.setPrefWidth(200);
         pathColumn.setPrefWidth(200);
         argumentsColumn.setPrefWidth(200);
@@ -505,7 +693,14 @@ public class EditController {
             comboBox.valueProperty().addListener(new ChangeListener<String>() {
                 @Override
                 public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
-                    c.getTableView().getItems().get(c.getIndex()).setRelatedGameEntry(new SimpleStringProperty(comboBox.getValue()));
+                    if(comboBox.getValue()!=null&&!comboBox.getValue().isBlank()&&!"()".equals(comboBox.getValue().trim())) {
+                        c.getTableView().getItems().get(c.getIndex()).setRelatedGameEntry(new SimpleStringProperty(comboBox.getValue()));
+                        if(c.getTableView().getItems().size()-1==c.getIndex()){
+                            c.getTableView().getItems().add(new RelatedGame("","","",""));
+                        }
+                    } else {
+                        c.getTableView().getItems().get(c.getIndex()).setRelatedGameEntry(new SimpleStringProperty(comboBox.getValue()));
+                    }
                 }
             });
             c.graphicProperty().bind(Bindings.when(c.emptyProperty()).then((Node)null).otherwise(hBox));
@@ -529,10 +724,25 @@ public class EditController {
             borderPane.centerProperty().setValue(hBox);
             comboBox.setEditable(true);
             ComboBoxAutocompleteUtil.autoCompleteComboBoxPlus(comboBox, (typedText, itemToCompare) -> itemToCompare.toLowerCase().contains(typedText.toLowerCase()));
+            c.itemProperty().addListener(((observableValue, oldValue, newValue) -> {
+                if(oldValue != null){
+                    comboBox.valueProperty().unbindBidirectional(oldValue);
+                }
+                if(newValue != null){
+                    comboBox.valueProperty().bindBidirectional(newValue);
+                }
+            }));
             comboBox.valueProperty().addListener(new ChangeListener<String>() {
                 @Override
                 public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
-                    c.getTableView().getItems().get(c.getIndex()).setRelationship(new SimpleStringProperty(comboBox.getValue()));
+                    if(comboBox.getValue()!=null&&!comboBox.getValue().isBlank()) {
+                        c.getTableView().getItems().get(c.getIndex()).setRelationship(new SimpleStringProperty(comboBox.getValue()));
+                        if(c.getTableView().getItems().size()-1==c.getIndex()){
+                            c.getTableView().getItems().add(new RelatedGame("","","",""));
+                        }
+                    } else {
+                        c.getTableView().getItems().get(c.getIndex()).setRelationship(new SimpleStringProperty(comboBox.getValue()));
+                    }
                 }
             });
             c.graphicProperty().bind(Bindings.when(c.emptyProperty()).then((Node)null).otherwise(hBox));
@@ -543,6 +753,17 @@ public class EditController {
         relationshipDescriptionColumn.setEditable(true);
         relationshipDescriptionColumn.setCellValueFactory(c->c.getValue().getDescription());
         relationshipDescriptionColumn.setCellFactory(TextAreaTableCell.forTableColumn());
+        relationshipDescriptionColumn.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<RelatedGame, String>>() {
+            @Override
+            public void handle(TableColumn.CellEditEvent<RelatedGame, String> event) {
+                if(!event.getNewValue().isBlank()){
+                    if(event.getTableView().getItems().size()-1==event.getTablePosition().getRow()){
+                        event.getTableView().getItems().add(new RelatedGame("","","",""));
+                    }
+                }
+                event.getTableView().getItems().get(event.getTablePosition().getRow()).setDescription(new SimpleStringProperty(event.getNewValue()));
+            }
+        });
         relationshipDescriptionColumn.setPrefWidth(400);
         relatedGameTable.getColumns().setAll(relatedGameColumn,relationshipColumn,relationshipDescriptionColumn);
     }
@@ -561,6 +782,17 @@ public class EditController {
         alternateNameIdColumn.setEditable(true);
         alternateNameIdColumn.setCellValueFactory(p->p.getValue().getAlternateNameID());
         alternateNameIdColumn.setCellFactory(TextField2TableCell.forTableColumn());
+        alternateNameIdColumn.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<AlternateName,String>>() {
+            @Override
+            public void handle(TableColumn.CellEditEvent<AlternateName,String> event) {
+                if(!event.getNewValue().isBlank()){
+                    if(event.getTableView().getItems().size()-1==event.getTablePosition().getRow()){
+                        event.getTableView().getItems().add(new AlternateName("","",""));
+                    }
+                }
+                event.getTableView().getItems().get(event.getTablePosition().getRow()).setAlternateNameID(event.getNewValue());
+            }
+        });
         TableColumn2<AlternateName, StringProperty> reasonColumn = new FilteredTableColumn<>("Reason");
         reasonColumn.setCellValueFactory(i-> {
             final StringProperty value = i.getValue().getRegion();
@@ -580,6 +812,19 @@ public class EditController {
                     comboBox.valueProperty().bindBidirectional(newValue);
                 }
             }));
+            comboBox.valueProperty().addListener(new ChangeListener<String>() {
+                @Override
+                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+                    if(comboBox.getValue()!=null&&!comboBox.getValue().isBlank()&&!"()".equals(comboBox.getValue().trim())) {
+                        c.getTableView().getItems().get(c.getIndex()).setRegion(comboBox.getValue());
+                        if(c.getTableView().getItems().size()-1==c.getIndex()){
+                            c.getTableView().getItems().add(new AlternateName("","",""));
+                        }
+                    } else {
+                        c.getTableView().getItems().get(c.getIndex()).setRegion(null);
+                    }
+                }
+            });
             c.graphicProperty().bind(Bindings.when(c.emptyProperty()).then((Node)null).otherwise(comboBox));
             return c;
         });
@@ -587,6 +832,17 @@ public class EditController {
         valueColumn.setEditable(true);
         valueColumn.setCellValueFactory(p->p.getValue().getAlternateName());
         valueColumn.setCellFactory(TextField2TableCell.forTableColumn());
+        valueColumn.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<AlternateName,String>>() {
+            @Override
+            public void handle(TableColumn.CellEditEvent<AlternateName,String> event) {
+                if(!event.getNewValue().isBlank()){
+                    if(event.getTableView().getItems().size()-1==event.getTablePosition().getRow()){
+                        event.getTableView().getItems().add(new AlternateName("","",""));
+                    }
+                }
+                event.getTableView().getItems().get(event.getTablePosition().getRow()).setAlternateName(event.getNewValue());
+            }
+        });
         alternateNamesTable.getColumns().setAll(alternateNameIdColumn,reasonColumn,valueColumn);
     }
 

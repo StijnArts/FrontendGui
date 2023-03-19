@@ -7,6 +7,7 @@ import stijn.dev.datasource.objects.items.*;
 import java.util.*;
 
 public class StaffDAO {
+    private StaffRoleDAO staffRoleDAO = new StaffRoleDAO();
     private Neo4JDatabaseHelper neo4JDatabaseHelper = new Neo4JDatabaseHelper();
     //TODO make roles an array that is filled with the roles of the staff for the game.
     public ArrayList<Staff> getStaff(HashMap<String, Object> parameters) {
@@ -16,8 +17,11 @@ public class StaffDAO {
         ArrayList<Staff> staff = new ArrayList<>();
         while(result.hasNext()) {
             Map<String, Object> row = result.next().asMap();
-            staff.add(new Staff(String.valueOf(row.get("s.StaffID")),String.valueOf(row.get("s.FirstName")),
-                    String.valueOf(row.get("s.LastName")),String.valueOf(row.get("w.Role"))));
+                HashMap<String, Object> staffParameters = new HashMap<>();
+                staffParameters.put("staffID",String.valueOf(row.get("s.StaffID")));
+                staffParameters.putAll(parameters);
+                staff.add(new Staff(String.valueOf(row.get("s.StaffID")),String.valueOf(row.get("s.FirstName")),
+                        String.valueOf(row.get("s.LastName")),String.valueOf(row.get("w.Role"))));
         }
         return staff;
     }

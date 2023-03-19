@@ -2,6 +2,8 @@ package stijn.dev.datasource.objects.items;
 
 import javafx.beans.property.*;
 
+import java.util.*;
+
 public class Staff {
     private StringProperty StaffID;
     private StringProperty FirstName;
@@ -19,6 +21,7 @@ public class Staff {
         StaffID = new SimpleStringProperty(staffID);
         FirstName = new SimpleStringProperty(firstName);
         LastName = new SimpleStringProperty(lastName);
+        this.role = new SimpleStringProperty("");
     }
 
     public String getStaffID() {
@@ -49,6 +52,10 @@ public class Staff {
         return LastName.get();
     }
 
+    public StringProperty lastNameProperty() {
+        return LastName;
+    }
+
     public String getRole() {
         return role.get();
     }
@@ -59,10 +66,6 @@ public class Staff {
 
     public void setRole(String role) {
         this.role.set(role);
-    }
-
-    public StringProperty lastNameProperty() {
-        return LastName;
     }
 
     public void setLastName(String lastName) {

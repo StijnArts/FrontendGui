@@ -370,7 +370,7 @@
                                  <content>
                                     <BorderPane prefHeight="200.0" prefWidth="200.0">
                                        <center>
-                                          <TableView2 BorderPane.alignment="CENTER">
+                                          <TableView2 fx:id="tagTable" BorderPane.alignment="CENTER">
                                              <columns>
                                                 <TableColumn minWidth="100.0" prefWidth="-1.0" text="Name" />
                                                 <TableColumn minWidth="50.0" prefWidth="-1.0" text="Edit" />
