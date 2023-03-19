@@ -460,8 +460,8 @@
    <bottom>
       <AnchorPane prefHeight="40.0" prefWidth="650.0" BorderPane.alignment="CENTER">
          <children>
-            <Button layoutX="754.0" layoutY="8.0" mnemonicParsing="false" text="Exit" />
-            <Button layoutX="14.0" layoutY="8.0" mnemonicParsing="false" text="Save" />
+            <Button fx:id="exitButton" layoutX="754.0" layoutY="8.0" mnemonicParsing="false" text="Exit" />
+            <Button fx:id="saveButton" layoutX="14.0" layoutY="8.0" mnemonicParsing="false" onAction="#save" text="Save" />
          </children>
       </AnchorPane>
    </bottom>

@@ -25,7 +25,6 @@ public class Game extends Item{
     private String wikipediaURL;
     private String communityRating;
     private String communityRatingCount;
-    private boolean cooperative;
     private ArrayList<String> rating;
     //Relationships
     private String platform;
@@ -48,7 +47,7 @@ public class Game extends Item{
     public Game(String name, String path, String gameId,
                 String description,
                 String maxPlayers, String platform,
-                String communityRating, String communityRatingCount, boolean cooperative) {
+                String communityRating, String communityRatingCount) {
         this.name = name;
         this.path = path;
         this.gameId = gameId;
@@ -57,7 +56,23 @@ public class Game extends Item{
         this.platform = platform;
         this.communityRating = communityRating;
         this.communityRatingCount=communityRatingCount;
-        this.cooperative =cooperative;
+    }
+
+    public Game(Game that){
+        this(that.getName(),that.getPath(),that.getGameId(),that.getDescription(),that.getMaxPlayers(),that.getPlatform(),
+                that.getCommunityRating(),that.getCommunityRatingCount());
+        this.publisher = new ArrayList<>(that.getPublisher());
+        this.developer = new ArrayList<>(that.getDeveloper());
+        this.tags = new ArrayList(that.getTags());
+        this.releaseDates = new ArrayList(that.getReleaseDates());
+        this.playmodes = new ArrayList(that.getPlaymodes());
+        this.alternateNames = new ArrayList(that.getAlternateNames());
+        this.relatedGames = new ArrayList(that.getRelatedGames());
+        this.additionalApps = new ArrayList<>(that.getAdditionalApps());
+        this.rating = new ArrayList<>(that.getRatings());
+        this.staff = new ArrayList<>(that.getStaff());
+        this.characters = new ArrayList<>(that.getCharacters());
+        this.trivia = new ArrayList<>(that.getTrivia());
     }
 
     public HowLongToBeatData getHLTBData() {
@@ -96,7 +111,7 @@ public class Game extends Item{
         this.playmodes = playmodes;
     }
 
-    public ArrayList<String> getRating() {
+    public ArrayList<String> getRatings() {
         return rating;
     }
 
@@ -268,18 +283,6 @@ public class Game extends Item{
         this.communityRatingCount = communityRatingCount;
     }
 
-    public boolean isCooperative() {
-        return cooperative;
-    }
-
-    public void setCooperative(boolean cooperative) {
-        this.cooperative = cooperative;
-    }
-
-    public ArrayList<String> getRatings() {
-        return rating;
-    }
-
     public void setRatings(ArrayList<String> rating) {
         this.rating = rating;
     }
@@ -353,7 +356,6 @@ public class Game extends Item{
                 ", wikipediaURL='" + wikipediaURL + '\'' +
                 ", communityRating='" + communityRating + '\'' +
                 ", communityRatingCount='" + communityRatingCount + '\'' +
-                ", cooperative=" + cooperative +
                 ", ESRBRating='" + rating + '\'' +
                 ", platform='" + platform + '\'' +
                 ", developer=" + developer +

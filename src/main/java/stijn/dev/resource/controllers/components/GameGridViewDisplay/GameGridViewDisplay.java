@@ -43,7 +43,7 @@ public class GameGridViewDisplay extends AnchorPane {
                 Parent root = RootUtil.createRoot(loader);
                 Stage stage = new Stage();
                 Scene scene = new Scene(root);
-                EditController.create(loader, game);
+                EditController.create(loader, game, stage);
                 stage.setScene(scene);
                 stage.show();
             }

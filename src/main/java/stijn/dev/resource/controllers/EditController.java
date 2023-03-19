@@ -10,6 +10,7 @@ import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.stage.*;
 import org.controlsfx.control.tableview2.*;
 import org.controlsfx.control.tableview2.cell.*;
 import stijn.dev.datasource.database.dao.*;
@@ -60,6 +61,10 @@ public class EditController {
     TextField defaultSortingTitleTextField;
     @FXML
     TextArea descriptionTextArea;
+    @FXML
+    Button saveButton;
+    @FXML
+    Button exitButton;
     private Game game;
     private GamesXMLParser gamesXMLParser = new GamesXMLParser();
     private DeveloperDAO developerDAO = new DeveloperDAO();
@@ -80,15 +85,124 @@ public class EditController {
     private CharacterRoleDAO characterRoleDAO = new CharacterRoleDAO();
     private TagDAO tagDAO = new TagDAO();
     private HashMap<String, RelatedGameEntry> relatedGameMap = new HashMap<>();
+    private String coreChangeQuery;
+    private Game originalGame;
+    private Stage stage;
 
-    public static EditController create(FXMLLoader loader, Game gameImportItem){
+    public static EditController create(FXMLLoader loader, Game gameImportItem, Stage stage){
         EditController ec = loader.getController();
-        ec.configure(gameImportItem);
+        ec.configure(gameImportItem, stage);
         return ec;
     }
 
-    public void configure(Game gameImportItem){
+    public void save(){
+        HashMap<String, String> parameters = new HashMap<>();
+        parameters.put("gameName", originalGame.getName());
+        parameters.put("platformName", originalGame.getPlatform());
+        coreChangeQuery = "MATCH (g:Game{GameName:$gameName})-[:ON_PLATFORM]-(p:Platform{PlatformName:$platformName}) ";
+
+//        saveAlternateName();
+//        saveRelatedGames();
+//        saveAdditionalApps();
+//        saveTrivia();
+//        saveStaff();
+//        saveCharacters();
+//        saveTags();
+//        saveReleaseDates();
+        //Has to be done last
+        saveGeneral(parameters);
+        stage.close();
+    }
+
+    private void saveGeneral(HashMap<String, String> parameters) {
+        boolean setIntroduced = false;
+        int changeCount = 0;
+        String updateQuery = coreChangeQuery;
+        if(!game.getName().equals(originalGame.getName())&&game.getName()!=null){
+            if(!setIntroduced){
+                updateQuery = updateQuery + "Set ";
+                setIntroduced=true;
+            }
+            parameters.put("newGameName", game.getName());
+            updateQuery = updateQuery +"g.Name:$newGameName";
+            changeCount++;
+        }
+        if(game.getPriority()!=null){
+            if(!game.getPriority().getName().equals(originalGame.getPriority().getName())){
+                if(!setIntroduced){
+                    updateQuery = updateQuery + "Set ";
+                    setIntroduced=true;
+                }
+                if(changeCount>0){
+                    updateQuery = updateQuery +", ";
+                }
+                parameters.put("newPriority", game.getPriority().getName());
+                updateQuery = updateQuery +"g.Priority:$newPriority";
+                changeCount++;
+            }
+        }
+        if(game.getMaxPlayers()!=null){
+            if(!game.getMaxPlayers().equals(originalGame.getMaxPlayers())){
+                if(!setIntroduced){
+                    updateQuery = updateQuery + "Set ";
+                    setIntroduced=true;
+                }
+                if(changeCount>0){
+                    updateQuery = updateQuery +", ";
+                }
+                parameters.put("newMaxPlayers", game.getMaxPlayers());
+                updateQuery = updateQuery +"g.MaxPlayers:$newMaxPlayers";
+                changeCount++;
+            }
+        }
+        if(game.getSortingTitle()!=null){
+            if(!game.getSortingTitle().equals(originalGame.getSortingTitle())){
+                if(!setIntroduced){
+                    updateQuery = updateQuery + "Set ";
+                    setIntroduced=true;
+                }
+                if(changeCount>0){
+                    updateQuery = updateQuery +", ";
+                }
+                parameters.put("newSortingTitle", game.getSortingTitle());
+                updateQuery = updateQuery +"g.DefaultSortingTitle:$newSortingTitle";
+                changeCount++;
+            }
+        }
+        if(game.getSummary()!=null){
+            if(!game.getSummary().equals(originalGame.getSummary())){
+                if(!setIntroduced){
+                    updateQuery = updateQuery + "Set ";
+                    setIntroduced=true;
+                }
+                if(changeCount>0){
+                    updateQuery = updateQuery +", ";
+                }
+                parameters.put("newDefaultSummary", game.getSummary());
+                updateQuery = updateQuery +"g.DefaultSummary:$newDefaultSummary";
+                changeCount++;
+            }
+        }
+        if(game.getDescription()!=null){
+            if(!game.getDescription().equals(originalGame.getDescription())){
+                if(!setIntroduced){
+                    updateQuery = updateQuery + "Set ";
+                    setIntroduced=true;
+                }
+                if(changeCount>0){
+                    updateQuery = updateQuery +", ";
+                }
+                parameters.put("newDescription", game.getDescription());
+                updateQuery = updateQuery +"g.Description:$newDescription";
+            }
+        }
+        //TODO developer, publisher, ratings, playmodes, (preexisting changes), platform in that order
+        System.out.println(updateQuery);
+    }
+
+    public void configure(Game gameImportItem, Stage stage){
         this.game = gameImportItem;
+        this.originalGame = new Game(gameImportItem);
         configureAlternateNamesTable();
         configureRelatedGameTable();
         configureAdditionalAppsTable();
@@ -108,6 +222,7 @@ public class EditController {
         configureDescriptionTextArea();
         configureStaffTable();
         configureCharacterTable();
+        this.stage = stage;
     }
 
     private void configureTagTable() {
@@ -597,7 +712,7 @@ public class EditController {
         HashMap<String, Object> parameters = new HashMap<>();
         parameters.put("gameName",game.getName());
         parameters.put("platformName",game.getPlatform());
-        ObservableList<AdditionalApp> additionalApps = FXCollections.observableList(additionalAppDAO.getAdditionalApps(parameters));
+        ObservableList<AdditionalApp> additionalApps = FXCollections.observableList(game.getAdditionalApps());
         additionalAppsTable.setItems(additionalApps);
         additionalAppsTable.getItems().add(new AdditionalApp("","",""));
         TableColumn2<AdditionalApp,String> nameColumn = new FilteredTableColumn<>("Name");
@@ -664,7 +779,7 @@ public class EditController {
             options.add(platformAndGame);
         }
         ObservableList<String> games = FXCollections.observableList(options);
-        ObservableList<RelatedGame> relatedGames = FXCollections.observableList(relatedGameDAO.getRelatedGames(parameters));
+        ObservableList<RelatedGame> relatedGames = FXCollections.observableList(game.getRelatedGames());
         ObservableList<String> relationships = FXCollections.observableList(relationshipDAO.getRelationShips());
         relatedGameTable.setItems(relatedGames);
         relatedGameTable.getItems().add(new RelatedGame("","","",""));
@@ -775,7 +890,7 @@ public class EditController {
         parameters.put("platformName",game.getPlatform());
         ObservableList<String> territories = FXCollections.observableList(territoryDAO.getTerritories());
         territories.add("Community");
-        ObservableList<AlternateName> alternateNames = FXCollections.observableList(alternateNameDAO.getAlternateNames(parameters));
+        ObservableList<AlternateName> alternateNames = FXCollections.observableList(game.getAlternateNames());
         alternateNamesTable.setItems(alternateNames);
         alternateNamesTable.getItems().add(new AlternateName("","",""));
         TableColumn2<AlternateName,String> alternateNameIdColumn = new FilteredTableColumn<>("Alternate Name ID");
@@ -913,6 +1028,12 @@ public class EditController {
 
     public void configureTitleTextField(){
         titleTextField.setText(game.getName());
+        //TODO add check that game doesnt already exist on that console
+//        titleTextField.focusedProperty().addListener((arg0,oldValue, newValue)->{
+//            if(!newValue){
+//                if(gameExistsOnConsole())
+//            }
+//        });
     }
 
     private void configureDescriptionTextArea() {
@@ -1059,5 +1180,4 @@ public class EditController {
         }
         return comboBoxItemWraps;
     }
-
 }

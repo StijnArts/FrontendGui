@@ -27,7 +27,7 @@ public class GameDAO {
         String query = "Match (g:Game)-[:ON_PLATFORM]-(p:Platform) " +
                 "Return g.GameName, g.GameId, g.Description, g.Theme, g.DefaultSummary, g.DefaultSortingTitle, " +
                 "g.LaunchParameters, g.GamePath, g.CommunityRating, g.CommunityRatingCount, g.MaxPlayers, g.HLTBStory, g.HLTBStoryAndExtra, g.HLTBCompletionist," +
-                "g.Cooperative, p.PlatformName";
+                "p.PlatformName";
         Result result = neo4JDatabaseHelper.runQuery(query);
         ArrayList<Game> gameItems = new ArrayList<>();
         while(result.hasNext()){
@@ -78,7 +78,6 @@ public class GameDAO {
     private Game createGameFromDatabase(Map<String, Object> row){
         return new Game(String.valueOf(row.get("g.GameName")), String.valueOf(row.get("g.GamePath")), String.valueOf(row.get("g.GameId")),
                 String.valueOf(row.get("g.Description")), String.valueOf(row.get("g.MaxPlayers")),
-                String.valueOf(row.get("p.PlatformName")), String.valueOf(row.get("g.CommunityRating")), String.valueOf(row.get("g.CommunityRatingCount")),
-                Boolean.valueOf(String.valueOf(row.get("g.Cooperative"))));
+                String.valueOf(row.get("p.PlatformName")), String.valueOf(row.get("g.CommunityRating")), String.valueOf(row.get("g.CommunityRatingCount")));
     }
 }
