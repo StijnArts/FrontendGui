@@ -11,8 +11,11 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.stage.*;
+import javafx.util.*;
 import org.controlsfx.control.tableview2.*;
 import org.controlsfx.control.tableview2.cell.*;
+import org.neo4j.driver.*;
+import stijn.dev.datasource.database.*;
 import stijn.dev.datasource.database.dao.*;
 import stijn.dev.datasource.importing.xml.*;
 import stijn.dev.datasource.objects.data.*;
@@ -54,6 +57,8 @@ public class EditController {
     @FXML
     TableView2 tagTable;
     @FXML
+    BorderPane warningBorderpane;
+    @FXML
     TextField maxPlayersField;
     @FXML
     TextField titleTextField;
@@ -88,7 +93,7 @@ public class EditController {
     private String coreChangeQuery;
     private Game originalGame;
     private Stage stage;
-
+    private Neo4JDatabaseHelper neo4JDatabaseHelper = new Neo4JDatabaseHelper();
     public static EditController create(FXMLLoader loader, Game gameImportItem, Stage stage){
         EditController ec = loader.getController();
         ec.configure(gameImportItem, stage);
@@ -96,10 +101,14 @@ public class EditController {
     }
 
     public void save(){
-        HashMap<String, String> parameters = new HashMap<>();
+        HashMap<String, Object> parameters = new HashMap<>();
         parameters.put("gameName", originalGame.getName());
         parameters.put("platformName", originalGame.getPlatform());
         coreChangeQuery = "MATCH (g:Game{GameName:$gameName})-[:ON_PLATFORM]-(p:Platform{PlatformName:$platformName}) ";
+        saveDevelopers(parameters);
+        savePublishers(parameters);
+        saveRatings(parameters);
+        savePlayModes(parameters);
 
 //        saveAlternateName();
 //        saveRelatedGames();
@@ -110,11 +119,62 @@ public class EditController {
 //        saveTags();
 //        saveReleaseDates();
         //Has to be done last
-        saveGeneral(parameters);
+        //saveGeneral(parameters);
+        //savePlatformAndTitle();
         stage.close();
     }
 
-    private void saveGeneral(HashMap<String, String> parameters) {
+    private void savePlayModes(HashMap<String, Object> parameters) {
+        String query = "MATCH (g:Game{GameName:$gameName})-[:ON_PLATFORM]-(p:Platform{PlatformName:$platformName}), (g)-[r:HAS_RATING]-(:Rating) DELETE r";
+        neo4JDatabaseHelper.runQuery(new Query(query,parameters));
+        for (String playMode : playModesComboCheckbox.getValue().itemProperty().getValue().split("; ")) {
+            HashMap<String, Object> playModeParameters = new HashMap<>();
+            playModeParameters.putAll(parameters);
+            playModeParameters.put("name",playMode);
+            playmodeDAO.createPlayMode(playModeParameters);
+        }
+    }
+
+    private void saveRatings(HashMap<String, Object> parameters) {
+        String query = "MATCH (g:Game{GameName:$gameName})-[:ON_PLATFORM]-(p:Platform{PlatformName:$platformName}), (g)-[r:HAS_RATING]-(:Rating) DELETE r";
+        neo4JDatabaseHelper.runQuery(new Query(query,parameters));
+        String[] ratings = ratingComboCheckBox.getValue().itemProperty().getValue().split("; ");
+        for (String rating : ratings) {
+            HashMap<String, Object> ratingParameters = new HashMap<>();
+            ratingParameters.putAll(parameters);
+            ratingParameters.put("organization",rating.split(": ")[0]);
+            ratingParameters.put("rating",rating.split(": ")[1]);
+            ratingDAO.createRating(ratingParameters);
+        }
+    }
+
+    private void saveDevelopers(HashMap<String, Object> parameters) {
+        String query = "MATCH (g:Game{GameName:$gameName})-[:ON_PLATFORM]-(p:Platform{PlatformName:$platformName}), (g)-[r:MADE_BY]-(:Developer) DELETE r";
+        neo4JDatabaseHelper.runQuery(new Query(query,parameters));
+        for (String developer : developerComboCheckBox.getValue().itemProperty().getValue().split("; ")) {
+            if(!developer.isBlank()&&!developer.trim().equals(";")){
+                HashMap<String, Object> developerParameters = new HashMap<>();
+                developerParameters.putAll(parameters);
+                developerParameters.put("developerName",developer.trim());
+                developerDAO.createDeveloper(developerParameters);
+            }
+        }
+    }
+
+    private void savePublishers(HashMap<String, Object> parameters) {
+        String query = "MATCH (g:Game{GameName:$gameName})-[:ON_PLATFORM]-(p:Platform{PlatformName:$platformName}), (g)-[r:PUBLISHED_BY]-(:Publisher) DELETE r";
+        neo4JDatabaseHelper.runQuery(new Query(query,parameters));
+        for (String publisher : publisherComboCheckBox.getValue().itemProperty().getValue().split("; ")) {
+            if(!publisher.isBlank()&&!publisher.trim().equals(";")){
+                HashMap<String, Object> publisherParameters = new HashMap<>();
+                publisherParameters.putAll(parameters);
+                publisherParameters.put("publisherName",publisher.trim());
+                publisherDAO.createPublisher(publisherParameters);
+            }
+        }
+    }
+    
+    private void saveGeneral(HashMap<String, Object> parameters) {
         boolean setIntroduced = false;
         int changeCount = 0;
         String updateQuery = coreChangeQuery;
@@ -201,6 +261,7 @@ public class EditController {
     }
 
     public void configure(Game gameImportItem, Stage stage){
+        warningBorderpane.setVisible(false);
         this.game = gameImportItem;
         this.originalGame = new Game(gameImportItem);
         configureAlternateNamesTable();
@@ -968,12 +1029,27 @@ public class EditController {
     }
 
     private void configurePlaymodeComboCheckBox() {
-        ObservableList<ComboBoxItemWrap<String>> options = FXCollections.observableList(generateComboBoxItemWrappers(playmodeDAO.getPlaymodes()));
+        ObservableList<ComboBoxItemWrap<String>> options = FXCollections.observableList(generateComboBoxItemWrappers(playmodeDAO.getPlayModes()));
         String publisherValue = "";
         for (String publisher : game.getPlaymodes()) {
             publisherValue += publisher + "; ";
         }
         playModesComboCheckbox.setValue(new ComboBoxItemWrap<>(publisherValue));
+        playModesComboCheckbox.setConverter(new StringConverter<ComboBoxItemWrap<String>>() {
+            @Override
+            public String toString(ComboBoxItemWrap<String> stringComboBoxItemWrap) {
+                return stringComboBoxItemWrap.itemProperty().getValue();
+            }
+
+            @Override
+            public ComboBoxItemWrap<String> fromString(String s) {
+                return new ComboBoxItemWrap<String>(s);
+            }
+        });
+        playModesComboCheckbox.focusedProperty().addListener(((observableValue, aBoolean, t1) -> {
+            playModesComboCheckbox.setValue(new ComboBoxItemWrap<>(playModesComboCheckbox.getValue().itemProperty().getValue()));
+        }));
+
         playModesComboCheckbox.setCellFactory(c->{
             ListCell<ComboBoxItemWrap<String>> cell = new ListCell<>(){
                 boolean initialized = false;
@@ -1028,12 +1104,23 @@ public class EditController {
 
     public void configureTitleTextField(){
         titleTextField.setText(game.getName());
-        //TODO add check that game doesnt already exist on that console
-//        titleTextField.focusedProperty().addListener((arg0,oldValue, newValue)->{
-//            if(!newValue){
-//                if(gameExistsOnConsole())
-//            }
-//        });
+        //TODO add check that game doesnt already exist on selected console
+        titleTextField.focusedProperty().addListener((arg0,oldValue, newValue)->{
+            if(!newValue){
+                if(gameExistsOnConsole()){
+                    warningBorderpane.setVisible(true);
+                    saveButton.setDisable(true);
+                } else{
+                    warningBorderpane.setVisible(false);
+                    saveButton.setDisable(false);
+                }
+            }
+        });
+    }
+
+    private boolean gameExistsOnConsole() {
+        return false;
+        //TODO implement
     }
 
     private void configureDescriptionTextArea() {
@@ -1047,15 +1134,37 @@ public class EditController {
         platformComboBox.setItems(options);
         platformComboBox.setValue(game.getPlatform());
         ComboBoxAutocompleteUtil.autoCompleteComboBoxPlus(platformComboBox, (typedText, itemToCompare) -> itemToCompare.toLowerCase().contains(typedText.toLowerCase()));
+        platformComboBox.focusedProperty().addListener((arg0,oldValue, newValue)->{
+            if(!newValue){
+                if(gameExistsOnConsole()){
+                    warningBorderpane.setVisible(true);
+                    saveButton.setDisable(true);
+                } else{
+                    warningBorderpane.setVisible(false);
+                    saveButton.setDisable(false);
+                }
+            }
+        });
     }
 
     public void configureRatingComboCheckBox(){
         ObservableList<ComboBoxItemWrap<String>> options = FXCollections.observableList(generateComboBoxItemWrappers(ratingDAO.getRatings()));
-        String publisherValue = "";
-        for (String publisher : game.getRatings()) {
-            publisherValue += publisher + "; ";
+        String ratingValue = "";
+        for (String rating : game.getRatings()) {
+            ratingValue += rating + "; ";
         }
-        ratingComboCheckBox.setValue(new ComboBoxItemWrap<>(publisherValue));
+        ratingComboCheckBox.setValue(new ComboBoxItemWrap<>(ratingValue));
+        ratingComboCheckBox.setConverter(new StringConverter<ComboBoxItemWrap<String>>() {
+            @Override
+            public String toString(ComboBoxItemWrap<String> stringComboBoxItemWrap) {
+                return stringComboBoxItemWrap.itemProperty().getValue();
+            }
+
+            @Override
+            public ComboBoxItemWrap<String> fromString(String s) {
+                return new ComboBoxItemWrap<String>(s);
+            }
+        });
         ratingComboCheckBox.setCellFactory(c->{
             ListCell<ComboBoxItemWrap<String>> cell = new ListCell<>(){
                 boolean initialized = false;
@@ -1084,6 +1193,7 @@ public class EditController {
                 });
                 final String string = stringBuilder.toString();
                 ratingComboCheckBox.setValue(new ComboBoxItemWrap<String>(string.substring(Integer.min(2, string.length()))));
+                ratingComboCheckBox.tooltipProperty().setValue(new Tooltip(string.substring(Integer.min(2, string.length()))));
             });
             return cell;
         });
@@ -1097,6 +1207,17 @@ public class EditController {
             publisherValue += publisher + "; ";
         }
         publisherComboCheckBox.setValue(new ComboBoxItemWrap<>(publisherValue));
+        publisherComboCheckBox.setConverter(new StringConverter<ComboBoxItemWrap<String>>() {
+            @Override
+            public String toString(ComboBoxItemWrap<String> stringComboBoxItemWrap) {
+                return stringComboBoxItemWrap.itemProperty().getValue();
+            }
+
+            @Override
+            public ComboBoxItemWrap<String> fromString(String s) {
+                return new ComboBoxItemWrap<String>(s);
+            }
+        });
         publisherComboCheckBox.setCellFactory(c->{
             ListCell<ComboBoxItemWrap<String>> cell = new ListCell<>(){
                 boolean initialized = false;
@@ -1125,9 +1246,13 @@ public class EditController {
                 });
                 final String string = stringBuilder.toString();
                 publisherComboCheckBox.setValue(new ComboBoxItemWrap<String>(string.substring(Integer.min(2, string.length()))));
+                publisherComboCheckBox.tooltipProperty().setValue(new Tooltip(string.substring(Integer.min(2, string.length()))));
             });
             return cell;
         });
+        publisherComboCheckBox.focusedProperty().addListener(((observableValue, aBoolean, t1) -> {
+            publisherComboCheckBox.setValue(new ComboBoxItemWrap<>(publisherComboCheckBox.getValue().itemProperty().getValue()));
+        }));
         publisherComboCheckBox.setItems(options);
     }
 
@@ -1137,6 +1262,20 @@ public class EditController {
         for (String publisher : game.getDeveloper()) {
             publisherValue += publisher + "; ";
         }
+        developerComboCheckBox.setConverter(new StringConverter<ComboBoxItemWrap<String>>() {
+                    @Override
+                    public String toString(ComboBoxItemWrap<String> stringComboBoxItemWrap) {
+                        return stringComboBoxItemWrap.itemProperty().getValue();
+                    }
+
+                    @Override
+                    public ComboBoxItemWrap<String> fromString(String s) {
+                        return new ComboBoxItemWrap<String>(s);
+                    }
+                });
+        developerComboCheckBox.focusedProperty().addListener(((observableValue, aBoolean, t1) -> {
+            developerComboCheckBox.setValue(new ComboBoxItemWrap<>(developerComboCheckBox.getValue().itemProperty().getValue()));
+        }));
         developerComboCheckBox.setValue(new ComboBoxItemWrap<>(publisherValue));
         developerComboCheckBox.setCellFactory(c->{
             ListCell<ComboBoxItemWrap<String>> cell = new ListCell<>(){
@@ -1169,6 +1308,7 @@ public class EditController {
             });
             return cell;
         });
+
         developerComboCheckBox.setItems(options);
     }
 

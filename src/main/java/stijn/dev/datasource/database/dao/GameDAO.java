@@ -1,6 +1,5 @@
 package stijn.dev.datasource.database.dao;
 
-import javafx.beans.property.*;
 import org.neo4j.driver.*;
 import stijn.dev.datasource.database.*;
 import stijn.dev.datasource.objects.data.*;
@@ -38,7 +37,7 @@ public class GameDAO {
             parameters.put("platformName",game.getPlatform());
             gameItems.add(game);
             //Metadata tab
-            game.setPlaymodes(playmodeDAO.getPlaymodes(parameters));
+            game.setPlaymodes(playmodeDAO.getPlayModes(parameters));
             game.setSortingTitle(String.valueOf(row.get("g.DefaultSortingTitle")));
             game.setPriority(priorityDataDAO.getPriority(parameters));
             game.setSummary(String.valueOf(row.get("g.DefaultSummary")));

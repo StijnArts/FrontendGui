@@ -6,9 +6,6 @@ public class ComboBoxItemWrap<T> {
     private BooleanProperty check = new SimpleBooleanProperty(false);
     private ObjectProperty<T> item = new SimpleObjectProperty<>();
 
-    public ComboBoxItemWrap() {
-    }
-
     public ComboBoxItemWrap(T item) {
         this.item.set(item);
     }

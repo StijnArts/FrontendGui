@@ -15,7 +15,14 @@ public class RatingDAO {
         parameters.put("platformName", gameImportItem.getPlatform());
         parameters.put("rating", gameImportItem.getESRBRating());
         neo4JDatabaseHelper.runQuery(new Query("MATCH (g:Game {GameName:$gameName})-[:ON_PLATFORM]-(p:Platform {PlatformName:$platformName}) " +
-                "MERGE (e:Rating {Organization:'ESRB', Rating:$rating})" +
+                "MERGE (e:Rating {Organization:'ESRB', Rating:$rating}) " +
+                "MERGE (g)-[:HAS_RATING]->(e)",
+                parameters));
+    }
+
+    public void createRating(HashMap<String, Object> parameters){
+        neo4JDatabaseHelper.runQuery(new Query("MATCH (g:Game {GameName:$gameName})-[:ON_PLATFORM]-(p:Platform {PlatformName:$platformName}) " +
+                "MERGE (e:Rating {Rating:$rating, Organization:$organization}) " +
                 "MERGE (g)-[:HAS_RATING]->(e)",
                 parameters));
     }

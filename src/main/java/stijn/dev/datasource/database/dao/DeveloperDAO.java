@@ -36,7 +36,28 @@ public class DeveloperDAO {
                 developerExists = exists.hasNext();
             }
         }
+    }
 
+    public void createDeveloper(HashMap<String, Object> parameters) {
+        boolean developerExists = false;
+        while(!developerExists) {
+            String queryString = "MATCH (d:Publisher {PublisherName:$developerName}), (game:Game {GameName:$gameName})-[:ON_PLATFORM]-(p:Platform {PlatformName:$platformName}) " +
+                    "SET d:Developer, d.DeveloperName = $developerName " +
+                    "MERGE (d)<-[:MADE_BY]-(game) Return d";
+            Result result = neo4JDatabaseHelper.runQuery(new Query(queryString, parameters));
+            if (!result.hasNext()) {
+                queryString = "Match (game:Game {GameName:$gameName})-[:ON_PLATFORM]-(p:Platform {PlatformName:$platformName}) " +
+                        "MERGE (n:Developer {DeveloperName:$developerName}) " +
+                        "MERGE r = (n)<-[:MADE_BY]-(game) Return r";
+                Query query = new Query(queryString, parameters);
+                neo4JDatabaseHelper.runQuery(query);
+            }
+            String checkExistsQuery = "MATCH (d:Developer {DeveloperName:$developerName})<-[r:MADE_BY]-(game:Game {GameName:$gameName})-[:ON_PLATFORM]-(p:Platform {PlatformName:$platformName})" +
+                    "Return r";
+            Query query = new Query(checkExistsQuery, parameters);
+            Result exists = neo4JDatabaseHelper.runQuery(query);
+            developerExists = exists.hasNext();
+        }
     }
 
     public ArrayList<String> getDevelopers() {

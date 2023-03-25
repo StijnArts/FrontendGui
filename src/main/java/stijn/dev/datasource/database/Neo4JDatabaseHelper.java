@@ -73,11 +73,11 @@ public class Neo4JDatabaseHelper implements AutoCloseable{
     }
 
     private void createMultiplayerTypeNodes() {
-        runQuery("MERGE (g:Playmode {Name: 'Singleplayer'}) return g");
-        runQuery("MERGE (g:Playmode {Name: 'Online Multiplayer'}) return g");
-        runQuery("MERGE (g:Playmode {Name: 'Local Multiplayer'}) return g");
-        runQuery("MERGE (g:Playmode {Name: 'Online Co-op'}) return g");
-        runQuery("MERGE (g:Playmode {Name: 'Local Co-op'}) return g");
+        runQuery("MERGE (g:PlayMode {Name: 'Singleplayer'}) return g");
+        runQuery("MERGE (g:PlayMode {Name: 'Online Multiplayer'}) return g");
+        runQuery("MERGE (g:PlayMode {Name: 'Local Multiplayer'}) return g");
+        runQuery("MERGE (g:PlayMode {Name: 'Online Co-op'}) return g");
+        runQuery("MERGE (g:PlayMode {Name: 'Local Co-op'}) return g");
     }
 
     private void createRatingNodes() {
