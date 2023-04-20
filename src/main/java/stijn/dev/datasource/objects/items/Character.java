@@ -13,6 +13,8 @@ public class Character {
     public Character(String characterID, String name) {
         this.characterID = new SimpleStringProperty(characterID);
         this.name = new SimpleStringProperty(name);
+        this.voiceActor = new SimpleStringProperty("");
+        this.role = new SimpleStringProperty("");
     }
 
     public Character(String characterID, String name, String role, String voiceActor) {
