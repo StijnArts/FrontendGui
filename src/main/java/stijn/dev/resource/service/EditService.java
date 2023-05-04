@@ -47,9 +47,10 @@ public class EditService {
 //        saveTags();
 //        saveReleaseDates();
         //Has to be done last
-        saveGeneral(coreChangeQuery, parameters,changedGame);
+        saveGeneral(coreChangeQuery, parameters,changedGame, editController);
         //savePlatformAndTitle();
         stage.close();
+        //TODO developer, publisher, ratings, playmodes, (preexisting changes), platform in that order
     }
     private void savePlayModes(HashMap<String, Object> parameters, EditController editController) {
         String query = "MATCH (g:Game{GameName:$gameName})-[:ON_PLATFORM]-(p:Platform{PlatformName:$platformName}), (g)-[r:HAS_RATING]-(:Rating) DELETE r";
@@ -67,11 +68,13 @@ public class EditService {
         neo4JDatabaseHelper.runQuery(new Query(query,parameters));
         String[] ratings = editController.getRatingComboCheckBox().getValue().itemProperty().getValue().split("; ");
         for (String rating : ratings) {
-            HashMap<String, Object> ratingParameters = new HashMap<>();
-            ratingParameters.putAll(parameters);
-            ratingParameters.put("organization",rating.split(": ")[0]);
-            ratingParameters.put("rating",rating.split(": ")[1]);
-            ratingDAO.createRating(ratingParameters);
+            if(!rating.isBlank()){
+                HashMap<String, Object> ratingParameters = new HashMap<>();
+                ratingParameters.putAll(parameters);
+                ratingParameters.put("organization",rating.split(": ")[0]);
+                ratingParameters.put("rating",rating.split(": ")[1]);
+                ratingDAO.createRating(ratingParameters);
+            }
         }
     }
 
@@ -101,23 +104,24 @@ public class EditService {
         }
     }
 
-    private void saveGeneral(String coreChangeQuery, HashMap<String, Object> parameters, Game game) {
+    private void saveGeneral(String coreChangeQuery, HashMap<String, Object> parameters, Game game, EditController editController) {
         parameters.put("newGameName", game.getName());
-        parameters.put("newPriority", game.getPriority().getName());
-        parameters.put("newMaxPlayers", game.getMaxPlayers());
-        parameters.put("newSortingTitle", game.getSortingTitle());
-        parameters.put("newDefaultSummary", game.getSummary());
-        parameters.put("newDescription", game.getDescription());
+        parameters.put("newMaxPlayers", editController.getMaxPlayersField().getText());
+        parameters.put("newSortingTitle", editController.getDefaultSortingTitleTextField().getText());
+        parameters.put("newDefaultSummary", editController.getSummaryTextArea().getText());
+        parameters.put("newDescription", editController.getDescriptionTextArea().getText());
         String updateQuery = coreChangeQuery;
         updateQuery = updateQuery + "Set ";
-        updateQuery = updateQuery +"g.Name:$newGameName, ";
-        updateQuery = updateQuery +"g.Priority:$newPriority, ";
-        updateQuery = updateQuery +"g.MaxPlayers:$newMaxPlayers, ";
-        updateQuery = updateQuery +"g.DefaultSortingTitle:$newSortingTitle, ";
-        updateQuery = updateQuery +"g.DefaultSummary:$newDefaultSummary, ";
-        updateQuery = updateQuery +"g.Description:$newDescription";
+        updateQuery = updateQuery +"g.Name=$newGameName, ";
+        if(editController.getPriorityComboBox().getValue().getName()!=null){
+            updateQuery = updateQuery +"g.Priority=$newPriority, ";
+            parameters.put("newPriority", editController.getPriorityComboBox().getValue().getName());
+        }
+        updateQuery = updateQuery +"g.MaxPlayers=$newMaxPlayers, ";
+        updateQuery = updateQuery +"g.DefaultSortingTitle=$newSortingTitle, ";
+        updateQuery = updateQuery +"g.DefaultSummary=$newDefaultSummary, ";
+        updateQuery = updateQuery +"g.Description=$newDescription";
         neo4JDatabaseHelper.runQuery(new Query(updateQuery,parameters));
-        //TODO developer, publisher, ratings, playmodes, (preexisting changes), platform in that order
         System.out.println(updateQuery);
     }
 }

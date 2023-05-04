@@ -62,10 +62,10 @@ public class EditPrepper {
         configurePriorityComboBox(editController);
         configureMaxPlayersField(editController);
         configureDefaultSortingTitleField(editController);
-        configureDefaultSummaryField(editController);
         configureDescriptionTextArea(editController);
         configureStaffTable(editController);
         configureCharacterTable(editController);
+        configureSummaryTextArea(editController);
     }
     private void configureTagTable(EditController editController) {
         editController.getTagTable().setEditable(true);
@@ -817,12 +817,6 @@ public class EditPrepper {
         editController.getAlternateNamesTable().getColumns().setAll(alternateNameIdColumn,reasonColumn,valueColumn);
     }
 
-    private void configureDefaultSummaryField(EditController editController) {
-        if(!"null".equals(editController.getGame().getSummary())){
-            editController.getMaxPlayersField().setText(editController.getGame().getSummary());
-        }
-    }
-
     private void configurePlaymodeComboCheckBox(EditController editController) {
         ObservableList<ComboBoxItemWrap<String>> options = FXCollections.observableList(generateComboBoxItemWrappers(playmodeDAO.getPlayModes()));
         String publisherValue = "";
@@ -882,7 +876,11 @@ public class EditPrepper {
     private void configurePriorityComboBox(EditController editController) {
         ObservableList<PriorityData> options = FXCollections.observableList(priorityDataDAO.getPriorities());
         editController.getPriorityComboBox().setItems(options);
-        editController.getPriorityComboBox().setValue(editController.getGame().getPriority());
+        if(editController.getGame().getPriority()!=null){
+            editController.getPriorityComboBox().setValue(editController.getGame().getPriority());
+        } else {
+            editController.getPriorityComboBox().setValue(new PriorityData());
+        }
     }
 
     private void configureMaxPlayersField(EditController editController) {
@@ -923,7 +921,11 @@ public class EditPrepper {
             editController.getDescriptionTextArea().setText(editController.getGame().getDescription());
         }
     }
-
+    private void configureSummaryTextArea(EditController editController) {
+        if(!"null".equals(editController.getGame().getSummary())){
+            editController.getSummaryTextArea().setText(editController.getGame().getSummary());
+        }
+    }
     public void configurePlatformComboBox(EditController editController){
         ObservableList<String> options = FXCollections.observableList(PlatformXMLParser.getPlatforms());
         editController.getPlatformComboBox().setItems(options);
@@ -943,6 +945,7 @@ public class EditPrepper {
     }
 
     public void configureRatingComboCheckBox(EditController editController){
+        //TODO fix ratings disappearing in the combobox selected bar
         ObservableList<ComboBoxItemWrap<String>> options = FXCollections.observableList(generateComboBoxItemWrappers(ratingDAO.getRatings()));
         String ratingValue = "";
         for (String rating : editController.getGame().getRatings()) {

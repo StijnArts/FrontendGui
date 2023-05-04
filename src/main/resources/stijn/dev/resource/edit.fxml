@@ -100,7 +100,7 @@
                                                                   <Insets top="8.0" />
                                                                </VBox.margin>
                                                             </TextField>
-                                                            <TextArea prefHeight="267.0" prefWidth="269.0">
+                                                            <TextArea fx:id="summaryTextArea" prefHeight="267.0" prefWidth="269.0">
                                                                <VBox.margin>
                                                                   <Insets top="8.0" />
                                                                </VBox.margin>

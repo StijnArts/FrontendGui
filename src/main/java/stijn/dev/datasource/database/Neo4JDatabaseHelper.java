@@ -102,7 +102,7 @@ public class Neo4JDatabaseHelper implements AutoCloseable{
         runQuery("MERGE (g:Rating {Rating: 'Sex', Organization: 'PEGI'}) return g");
         runQuery("MERGE (g:Rating {Rating: 'Violence', Organization: 'PEGI'}) return g");
         runQuery("MERGE (g:Rating {Rating: 'In-Game Purchases', Organization: 'PEGI'}) return g");
-        runQuery("MERGE (g:Rating {Rating: '!', Organization: 'PEGI'}) return g");
+        runQuery("MERGE (g:Rating {Rating: 'Exclamation', Organization: 'PEGI'}) return g");
         runQuery("MERGE (g:Rating {Rating: 'Online', Organization: 'PEGI'}) return g");
         runQuery("MERGE (g:Rating {Rating: 'All Ages', Organization: 'CERO'}) return g");
         runQuery("MERGE (g:Rating {Rating: 'Ages 12 and up', Organization: 'CERO'}) return g");

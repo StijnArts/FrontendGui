@@ -4,6 +4,8 @@ public class PriorityData {
     private String name;
     private int priority;
 
+    public PriorityData(){
+    }
     public PriorityData(String name, int priority) {
         this.name = name;
         this.priority = priority;
@@ -27,6 +29,10 @@ public class PriorityData {
 
     @Override
     public String toString() {
-        return name+", "+priority;
+        if(name!=null){
+            return name+", "+priority;
+        } else {
+            return "";
+        }
     }
 }

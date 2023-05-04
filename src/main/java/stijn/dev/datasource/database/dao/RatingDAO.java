@@ -21,9 +21,10 @@ public class RatingDAO {
     }
 
     public void createRating(HashMap<String, Object> parameters){
-        neo4JDatabaseHelper.runQuery(new Query("MATCH (g:Game {GameName:$gameName})-[:ON_PLATFORM]-(p:Platform {PlatformName:$platformName}) " +
-                "MERGE (e:Rating {Rating:$rating, Organization:$organization}) " +
-                "MERGE (g)-[:HAS_RATING]->(e)",
+        String query = "MATCH (g:Game {GameName:$gameName})-[:ON_PLATFORM]-(p:Platform {PlatformName:$platformName}), " +
+                "(e:Rating {Rating:$rating, Organization:$organization}) " +
+                "MERGE (g)-[:HAS_RATING]->(e)";
+        neo4JDatabaseHelper.runQuery(new Query(query,
                 parameters));
     }
 
