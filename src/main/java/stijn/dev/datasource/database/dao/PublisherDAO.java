@@ -68,6 +68,7 @@ public class PublisherDAO {
         boolean publisherExists = false;
         while(!publisherExists){
             String queryString = "MATCH (d:Developer {DeveloperName:$publisherName}), (game:Game {GameName:$gameName})-[:ON_PLATFORM]-(p:Platform {PlatformName:$platformName}) " +
+                    "WHERE ID(game) = $id " +
                     "SET d:Publisher, d.PublisherName = $publisherName " +
                     "MERGE (d)<-[:PUBLISHED_BY]-(game) Return d";
             Result result = neo4JDatabaseHelper.runQuery(new Query(queryString, parameters));
@@ -99,7 +100,8 @@ public class PublisherDAO {
     }
 
     public ArrayList<String> getPublishers(HashMap<String, Object> parameters){
-        String triviaQuery = "MATCH (p:Publisher)-[:PUBLISHED_BY]-(g:Game{GameName:$gameName})-[:ON_PLATFORM]-(pl:Platform{PlatformName:$platformName}) " +
+        String triviaQuery = "MATCH (p:Publisher)-[:PUBLISHED_BY]-(g:Game) " +
+                "WHERE ID(g) = $id " +
                 "RETURN p.PublisherName";
         Result result = neo4JDatabaseHelper.runQuery(new Query(triviaQuery,parameters));
         ArrayList<String> publishers = new ArrayList<>();

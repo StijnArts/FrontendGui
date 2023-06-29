@@ -6,7 +6,7 @@ import javafx.scene.*;
 import javafx.stage.*;
 import org.controlsfx.control.tableview2.*;
 import org.controlsfx.control.tableview2.cell.*;
-import stijn.dev.datasource.database.*;
+import stijn.dev.datasource.database.dao.*;
 import stijn.dev.datasource.importing.xml.*;
 import stijn.dev.datasource.records.*;
 import stijn.dev.resource.controllers.*;
@@ -16,10 +16,10 @@ import java.io.*;
 import java.util.*;
 
 public class ImportOverviewService {
-    private DatabaseHelper databaseHelper = new DatabaseHelper();
+    private ImportDAO importDAO = new ImportDAO();
     private GamesXMLParser parser = new GamesXMLParser();
     public void importRoms(ObservableList<RomImportRecord> roms, String importingAsPlatform, String scrapeAsPlatform){
-        databaseHelper.importRoms(parser.parseGames(roms,importingAsPlatform,scrapeAsPlatform));
+        importDAO.importRoms(parser.parseGames(roms,importingAsPlatform,scrapeAsPlatform));
     }
 
     public void onBack(Stage stage, Scene originalScene, String importingAsPlatform, String scrapeAsPlatform, List<File> files){

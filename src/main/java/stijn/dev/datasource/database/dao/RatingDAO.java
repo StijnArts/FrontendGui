@@ -20,16 +20,22 @@ public class RatingDAO {
                 parameters));
     }
 
-    public void createRating(HashMap<String, Object> parameters){
-        String query = "MATCH (g:Game {GameName:$gameName})-[:ON_PLATFORM]-(p:Platform {PlatformName:$platformName}), " +
-                "(e:Rating {Rating:$rating, Organization:$organization}) " +
+    public void createEdgeRating(HashMap<String, Object> parameters){
+        String query = "MATCH (g:Game) " +
+                "WHERE ID(g) = $id " +
+                "WITH g " +
+                "MATCH (e:Rating {Rating: $rating, Organization: $organization}) " +
                 "MERGE (g)-[:HAS_RATING]->(e)";
-        neo4JDatabaseHelper.runQuery(new Query(query,
-                parameters));
+        /*System.out.println("MATCH (g:Game {GameName: \""+parameters.get("gameName")+"\"})-[:ON_PLATFORM]-(p:Platform {PlatformName: \""+parameters.get("platformName")+"\"}) \n" +
+                "                WITH g \n" +
+                "                MATCH (e:Rating {Rating: \""+parameters.get("rating")+"\", Organization: \""+parameters.get("organization")+"\"}) \n" +
+                "                MERGE (g)-[:HAS_RATING]->(e)");*/
+        neo4JDatabaseHelper.runQuery(new Query(query, parameters));
     }
 
     public ArrayList<String> getRatings(HashMap<String, Object> parameters) {
-        String ESRBQuery = "MATCH (e:Rating)-[:HAS_RATING]-(g:Game{GameName:$gameName})-[:ON_PLATFORM]-(p:Platform{PlatformName:$platformName})" +
+        String ESRBQuery = "MATCH (e:Rating)-[:HAS_RATING]-(g:Game) " +
+                "WHERE ID(g) = $id " +
                 " RETURN e.Rating, e.Organization";
         Result result = neo4JDatabaseHelper.runQuery(new Query(ESRBQuery,parameters));
         ArrayList<String> ratings = new ArrayList<>();

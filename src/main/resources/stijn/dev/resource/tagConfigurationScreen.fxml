@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Text?>
+<?import org.controlsfx.control.tableview2.TableView2?>
+
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" fx:controller="stijn.dev.resource.controllers.TagConfigurationScreenController" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
+   <bottom>
+      <HBox prefHeight="48.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+         <children>
+            <HBox prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <Button mnemonicParsing="false" text="Save" onAction="#saveTags" translateX="10.0" translateY="10.0" />
+               </children>
+            </HBox>
+            <HBox prefHeight="100.0" prefWidth="200.0" />
+            <HBox nodeOrientation="RIGHT_TO_LEFT" prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <Button mnemonicParsing="false" text="Close" onAction="#closeDialog" translateX="10.0" translateY="10.0">
+                     <opaqueInsets>
+                        <Insets right="100.0" />
+                     </opaqueInsets>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </Button>
+               </children>
+            </HBox>
+         </children>
+      </HBox>
+   </bottom>
+   <center>
+      <TableView2 BorderPane.alignment="CENTER" fx:id="tagTable"/>
+   </center>
+   <top>
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Edit the tags used in the games database " BorderPane.alignment="CENTER">
+         <BorderPane.margin>
+            <Insets bottom="10.0" top="10.0" />
+         </BorderPane.margin>
+      </Text>
+   </top>
+</BorderPane>

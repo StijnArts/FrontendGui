@@ -1,6 +1,9 @@
 package stijn.dev.datasource.database;
 
 import org.neo4j.driver.*;
+import stijn.dev.datasource.database.dao.*;
+import stijn.dev.datasource.importing.xml.*;
+import stijn.dev.datasource.objects.items.*;
 import stijn.dev.settings.*;
 
 public class Neo4JDatabaseHelper implements AutoCloseable{
@@ -12,16 +15,26 @@ public class Neo4JDatabaseHelper implements AutoCloseable{
     private Driver driver;
     public Neo4JDatabaseHelper(){
         driver = GraphDatabase.driver(uri, AuthTokens.basic(user, password));
-        if(!databaseProperties.isInitialized()){
-            initialize();
-        }
     }
 
-    private synchronized void initialize(){
-        createConstraints();
-        createBaseNodes();
-        databaseProperties.isInitialized(true);
-        System.out.println("Database Has Been Initialized.");
+    public synchronized void initialize(){
+        if(!databaseProperties.isInitialized()) {
+            createConstraints();
+            createBaseNodes();
+            System.out.println("Database Has Been Initialized.");
+            PlatformDAO platformDAO = new PlatformDAO();
+            PlatformXMLParser platformXMLParser = new PlatformXMLParser();
+            for (String platformName :
+                    PlatformXMLParser.getPlatforms()) {
+                Platform platform = platformXMLParser.parsePlatform(platformName);
+                platformDAO.createPlatform(platform);
+                if(platform.getPublisher()!=null){
+                    PublisherDAO publisherDAO = new PublisherDAO();
+                    publisherDAO.createPublisher(platform);
+                }
+            }
+            databaseProperties.isInitialized(true);
+        }
     }
 
     private void createBaseNodes() {

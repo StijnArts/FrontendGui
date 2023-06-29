@@ -13,7 +13,6 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 <?import org.controlsfx.control.PrefixSelectionComboBox?>
 <?import org.controlsfx.control.tableview2.TableView2?>
@@ -151,7 +150,7 @@
                                                                </VBox.margin>
                                                                <children>
                                                                   <ComboBox fx:id="platformComboBox" editable="true" maxHeight="600.0" prefHeight="25.0" prefWidth="230.0" visibleRowCount="15" />
-                                                                  <Button mnemonicParsing="false" text="Edit">
+                                                                  <Button mnemonicParsing="false" onAction="#openPlatformEditScreen" text="Edit">
                                                                      <HBox.margin>
                                                                         <Insets left="3.0" />
                                                                      </HBox.margin>
@@ -164,7 +163,7 @@
                                                                </VBox.margin>
                                                                <children>
                                                                   <PrefixSelectionComboBox fx:id="priorityComboBox" prefHeight="25.0" prefWidth="230.0" typingDelay="15" />
-                                                                  <Button mnemonicParsing="false" text="Edit">
+                                                                  <Button mnemonicParsing="false" onAction="#openPriorityConfigScreen" text="Edit">
                                                                      <HBox.margin>
                                                                         <Insets left="3.0" />
                                                                      </HBox.margin>
@@ -174,7 +173,7 @@
                                                             <HBox>
                                                                <children>
                                                                   <PrefixSelectionComboBox fx:id="ratingComboCheckBox" prefHeight="25.0" prefWidth="230.0" typingDelay="15" />
-                                                                  <Button mnemonicParsing="false" text="Edit">
+                                                                  <Button mnemonicParsing="false" onAction="#openRatingSettingsScreen" text="Edit">
                                                                      <HBox.margin>
                                                                         <Insets left="3.0" />
                                                                      </HBox.margin>
@@ -186,7 +185,7 @@
                                                             </HBox>
                                                             <HBox>
                                                                <children>
-                                                                  <ComboBox fx:id="playModesComboCheckbox" editable="true" maxHeight="600.0" prefHeight="25.0" prefWidth="288.0" visibleRowCount="15" />
+                                                                  <ComboBox fx:id="playModesComboCheckbox" editable="true" maxHeight="600.0" prefHeight="25.0" prefWidth="270.0" visibleRowCount="15" />
                                                                </children>
                                                                <VBox.margin>
                                                                   <Insets top="8.0" />
@@ -210,15 +209,6 @@
                                                 <Insets left="12.0" right="12.0" top="8.0" />
                                              </BorderPane.margin>
                                              <children>
-                                                <BorderPane fx:id="warningBorderpane" prefHeight="13.0" prefWidth="776.0">
-                                                   <center>
-                                                      <Text fill="#eb1a1a" strokeType="OUTSIDE" strokeWidth="0.0" text="Game and platform Combination is not unique!" BorderPane.alignment="CENTER">
-                                                         <font>
-                                                            <Font name="System Bold" size="13.0" />
-                                                         </font>
-                                                      </Text>
-                                                   </center>
-                                                </BorderPane>
                                                 <HBox prefHeight="18.0" prefWidth="626.0">
                                                    <children>
                                                       <Label prefHeight="17.0" prefWidth="121.0" text="Title:">
@@ -226,12 +216,7 @@
                                                             <Insets top="4.0" />
                                                          </HBox.margin>
                                                       </Label>
-                                                      <TextField fx:id="titleTextField" prefHeight="25.0" prefWidth="526.0" />
-                                                      <Button mnemonicParsing="false" text="Search In Database">
-                                                         <HBox.margin>
-                                                            <Insets left="6.0" />
-                                                         </HBox.margin>
-                                                      </Button>
+                                                      <TextField fx:id="titleField" prefHeight="25.0" prefWidth="652.0" />
                                                    </children>
                                                 </HBox>
                                              </children>
@@ -472,11 +457,21 @@
 </TabPane>
     </center>
    <bottom>
-      <AnchorPane prefHeight="40.0" prefWidth="650.0" BorderPane.alignment="CENTER">
-         <children>
-            <Button fx:id="exitButton" layoutX="754.0" layoutY="8.0" mnemonicParsing="false" text="Exit" />
-            <Button fx:id="saveButton" layoutX="14.0" layoutY="8.0" mnemonicParsing="false" onAction="#save" text="Save" />
-         </children>
-      </AnchorPane>
+      <BorderPane prefHeight="49.0" prefWidth="800.0" BorderPane.alignment="CENTER">
+         <right>
+            <Button fx:id="exitButton" mnemonicParsing="false" onAction="#exit" text="Exit" BorderPane.alignment="CENTER">
+               <BorderPane.margin>
+                  <Insets right="10.0" />
+               </BorderPane.margin>
+            </Button>
+         </right>
+         <left>
+            <Button fx:id="saveButton" mnemonicParsing="false" onAction="#save" text="Save" BorderPane.alignment="CENTER">
+               <BorderPane.margin>
+                  <Insets left="10.0" />
+               </BorderPane.margin>
+            </Button>
+         </left>
+      </BorderPane>
    </bottom>
 </BorderPane>

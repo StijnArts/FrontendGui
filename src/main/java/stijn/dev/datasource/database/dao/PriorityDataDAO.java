@@ -10,8 +10,9 @@ public class PriorityDataDAO {
     private Neo4JDatabaseHelper neo4JDatabaseHelper = new Neo4JDatabaseHelper();
 
     public PriorityData getPriority(HashMap<String, Object> parameters) {
-        String ESRBQuery = "MATCH (p:Priority)-[:HAS_PRIORITY]-(g:Game{GameName:$gameName})-[:ON_PLATFORM]-(p:Platform{PlatformName:$platformName})" +
-                " RETURN p.UniqueName, p.Priority";
+        String ESRBQuery = "MATCH (p:Priority)-[:HAS_PRIORITY]-(g:Game) " +
+                "WHERE ID(g) = $id " +
+                "RETURN p.UniqueName, p.Priority";
         Result result = neo4JDatabaseHelper.runQuery(new Query(ESRBQuery,parameters));
         PriorityData priority = null;
         while(result.hasNext()) {

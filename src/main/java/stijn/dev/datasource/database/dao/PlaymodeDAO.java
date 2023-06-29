@@ -20,8 +20,10 @@ public class PlaymodeDAO {
                 parameters));
     }
 
-    public void createPlayMode(HashMap<String, Object> parameters){
+    public void createEdgePlayMode(HashMap<String, Object> parameters){
         neo4JDatabaseHelper.runQuery(new Query("MATCH (g:Game {GameName:$gameName})-[:ON_PLATFORM]-(p:Platform {PlatformName:$platformName}) " +
+                "WHERE ID(g) = $id " +
+                "WITH g " +
                 "Match (m:PlayMode {Name:$name})" +
                 "MERGE (g)-[:HAS_MODE]->(m)",
                 parameters));
@@ -39,9 +41,9 @@ public class PlaymodeDAO {
     }
 
     public ArrayList<String> getPlayModes(HashMap<String, Object> parameters) {
-        String ESRBQuery = "MATCH (p:PlayMode)-[:HAS_MODE]-(g:Game{GameName:$gameName})-[:ON_PLATFORM]-(p:Platform{PlatformName:$platformName})" +
-                " RETURN p.Name";
-        Result result = neo4JDatabaseHelper.runQuery(new Query(ESRBQuery,parameters));
+        String playmodeQuery = "MATCH (p:PlayMode)-[:HAS_MODE]-(g:Game) " +
+                "RETURN p.Name";
+        Result result = neo4JDatabaseHelper.runQuery(new Query(playmodeQuery,parameters));
         ArrayList<String> playmodes = new ArrayList<>();
         while(result.hasNext()) {
             Map<String, Object> row = result.next().asMap();

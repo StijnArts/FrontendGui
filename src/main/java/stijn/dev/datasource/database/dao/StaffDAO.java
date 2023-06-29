@@ -11,7 +11,8 @@ public class StaffDAO {
     private Neo4JDatabaseHelper neo4JDatabaseHelper = new Neo4JDatabaseHelper();
     //TODO make roles an array that is filled with the roles of the staff for the game.
     public ArrayList<Staff> getStaff(HashMap<String, Object> parameters) {
-        String staffQuery = "MATCH (s:Staff)-[w:WORKED_ON]-(g:Game{GameName:$gameName})-[:ON_PLATFORM]-(p:Platform{PlatformName:$platformName}) " +
+        String staffQuery = "MATCH (s:Staff)-[w:WORKED_ON]-(g:Game) " +
+                "WHERE ID(g) = $id " +
                 "RETURN s.StaffID, s.FirstName, s.LastName, w.Role";
         Result result = neo4JDatabaseHelper.runQuery(new Query(staffQuery,parameters));
         ArrayList<Staff> staff = new ArrayList<>();
@@ -47,5 +48,16 @@ public class StaffDAO {
             staff.add(String.valueOf(row.get("s.StaffID")));
         }
         return staff;
+    }
+
+    public void createStaffEdge(HashMap<String, Object> staffParameters) {
+        String query = "MATCH (g:Game) " +
+                "WHERE ID(g) = $id " +
+                "WITH g " +
+                "MERGE (s:Staff {StaffID:$staffId}) " +
+                "Set s.FirstName = $firstName, s.LastName = $lastName " +
+                "WITH g, s " +
+                "MERGE (g)<-[:WORKED_ON {Role:$role}]-(s)";
+        neo4JDatabaseHelper.runQuery(new Query(query, staffParameters));
     }
 }

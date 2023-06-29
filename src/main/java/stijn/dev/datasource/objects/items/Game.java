@@ -1,14 +1,13 @@
 package stijn.dev.datasource.objects.items;
 
-import javafx.beans.property.*;
 import stijn.dev.datasource.objects.collections.*;
 import stijn.dev.datasource.objects.data.*;
 
-import java.time.*;
 import java.util.*;
 
 public class Game extends Item{
     //Properties
+    private final String id;
     private String name;
     private String path;
     private String gameId;
@@ -44,10 +43,11 @@ public class Game extends Item{
     private ArrayList<String> franchises = new ArrayList<>();
     private ArrayList<String> playlists = new ArrayList<>();
     private ArrayList<String> timelineSteps = new ArrayList<>();
-    public Game(String name, String path, String gameId,
+    public Game(String id, String name, String path, String gameId,
                 String description,
                 String maxPlayers, String platform,
                 String communityRating, String communityRatingCount) {
+        this.id = id;
         this.name = name;
         this.path = path;
         this.gameId = gameId;
@@ -59,7 +59,7 @@ public class Game extends Item{
     }
 
     public Game(Game that){
-        this(that.getName(),that.getPath(),that.getGameId(),that.getDescription(),that.getMaxPlayers(),that.getPlatform(),
+        this(that.id, that.getName(),that.getPath(),that.getGameId(),that.getDescription(),that.getMaxPlayers(),that.getPlatform(),
                 that.getCommunityRating(),that.getCommunityRatingCount());
         this.publisher = new ArrayList<>(that.getPublisher());
         this.developer = new ArrayList<>(that.getDeveloper());
@@ -85,6 +85,10 @@ public class Game extends Item{
 
     public void setAdditionalApps(ArrayList<AdditionalApp> additionalApps) {
         this.additionalApps = additionalApps;
+    }
+
+    public String getDatabaseId() {
+        return id;
     }
 
     public String getLaunchParameters() {

@@ -2,7 +2,6 @@ package stijn.dev.datasource.database.dao;
 
 import org.neo4j.driver.*;
 import stijn.dev.datasource.database.*;
-import stijn.dev.datasource.objects.items.*;
 import stijn.dev.datasource.objects.items.Character;
 
 import java.util.*;
@@ -12,8 +11,9 @@ public class CharacterDAO {
     private CharacterRoleDAO characterRoleDAO = new CharacterRoleDAO();
     //TODO make roles an array that is filled with the roles of that character for the game.
     public ArrayList<Character> getCharacters(HashMap<String, Object> parameters) {
-        String characterQuery = "MATCH (g:Game{GameName:$gameName})-[:ON_PLATFORM]-(p:Platform{PlatformName:$platformName}), " +
-                "(g)-[f:FEATURED_IN]-(c:Character) RETURN c.CharacterID, c.Name, f.VoiceActor, f.Role";
+        String characterQuery = "MATCH (c:Character)-[f:FEATURED_IN]-(g:Game) " +
+                "WHERE ID(g) = $id " +
+                "RETURN c.CharacterID, c.Name, f.VoiceActor, f.Role";
         Result result = neo4JDatabaseHelper.runQuery(new Query(characterQuery,parameters));
         ArrayList<Character> characters = new ArrayList<>();
         ArrayList<String> addedCharacters = new ArrayList<>();
@@ -40,5 +40,27 @@ public class CharacterDAO {
             staff.add(new Character(String.valueOf(row.get("c.CharacterID")),String.valueOf(row.get("c.Name"))));
         }
         return staff;
+    }
+
+    public void createCharacterEdge(HashMap<String, Object> characterParameters) {
+        String query = "MATCH (g:Game) " +
+                "WHERE ID(g) = $id " +
+                "WITH g " +
+                "MERGE (c:Character {CharacterID:$characterId}) " +
+                "Set c.Name = $characterName " +
+                "WITH g, c " +
+                "MERGE (g)<-[:FEATURED_IN {Role:$role}]-(c)";
+        neo4JDatabaseHelper.runQuery(new Query(query, characterParameters));
+    }
+
+    public void createCharacterEdgeWithVoiceActor(HashMap<String, Object> characterParameters) {
+        String query = "MATCH (g:Game) " +
+                "WHERE ID(g) = $id " +
+                "WITH g " +
+                "MERGE (c:Character {CharacterID:$characterId}) " +
+                "Set c.Name = $characterName " +
+                "WITH g, c " +
+                "MERGE (g)<-[:FEATURED_IN {Role:$role, VoiceActor:$voiceActor}]-(c)";
+        neo4JDatabaseHelper.runQuery(new Query(query, characterParameters));
     }
 }
