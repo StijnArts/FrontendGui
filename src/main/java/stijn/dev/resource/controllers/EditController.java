@@ -1,16 +1,17 @@
 package stijn.dev.resource.controllers;
 
+import javafx.collections.*;
 import javafx.fxml.*;
+import javafx.scene.*;
 import javafx.scene.control.*;
-import javafx.scene.layout.*;
 import javafx.stage.*;
 import org.controlsfx.control.tableview2.*;
+import stijn.dev.datasource.database.dao.*;
 import stijn.dev.datasource.objects.data.*;
 import stijn.dev.datasource.objects.items.*;
 import stijn.dev.resource.controllers.components.*;
 import stijn.dev.resource.service.*;
-
-import java.util.*;
+import stijn.dev.util.javafx.*;
 
 public class EditController {
     @FXML
@@ -40,13 +41,11 @@ public class EditController {
     @FXML
     TableView2 characterTable;
     @FXML
-    TableView2 tagTable;
-    @FXML
-    BorderPane warningBorderpane;
+    TableView2<Tag> tagTable;
     @FXML
     TextField maxPlayersField;
     @FXML
-    TextField titleTextField;
+    TextField titleField;
     @FXML
     TextField defaultSortingTitleTextField;
     @FXML
@@ -62,23 +61,80 @@ public class EditController {
     private Stage stage;
     private EditService editService = new EditService();
     private EditPrepper editPrepper = new EditPrepper();
-    public static EditController create(FXMLLoader loader, Game gameImportItem, Stage stage){
+    private TagDAO tagDAO = new TagDAO();
+    private ObservableList<String> tagOptions;
+    private static MainController mainController;
+    public static EditController create(FXMLLoader loader, Game gameImportItem, Stage stage, MainController mainControllerIn){
         EditController ec = loader.getController();
         ec.configure(gameImportItem, stage);
+        mainController = mainControllerIn;
         return ec;
     }
 
     public void save(){
-        editService.saveChanges(game,originalGame,stage, this);
+        editService.saveChanges(originalGame, this);
+        mainController.refreshTable();
+        stage.close();
+    }
+
+    public void openPlatformEditScreen(){
+        //TODO open the platform edit screen
+    }
+
+    public void openPriorityConfigScreen(){
+        //TODO open the priority configuration screen
+    }
+
+    public void openRatingSettingsScreen(){
+        //TODO open rating edit screen
+    }
+
+    public void openGameRelationshipTypeScreen(){
+        //TODO open relationship Type screen
+    }
+
+    public void openStaffEditScreen(){
+        //TODO open staff edit screen
+    }
+
+    public void openStaffRoleConfigurationScreen(){
+        //TODO open role configurationScreen
+    }
+
+    public void openCharacterEditScreen(){
+        //TODO open character edit screen
+    }
+
+    public void openCharacterRoleConfigurationScreen(){
+        //TODO open character role configuration screen
+    }
+
+    public void openTagConfigurationScreen(){
+        FXMLLoader loader = FXMLLoaderUtil.createFMXLLoader("tagConfigurationScreen.fxml");
+        Parent root = RootUtil.createRoot(loader);
+        Stage stage = new Stage();
+        Scene scene = new Scene(root);
+        stage.initOwner(this.stage);
+        TagConfigurationScreenController.create(loader, stage, this);
+        stage.setScene(scene);
+        stage.show();
     }
 
     public void configure(Game gameImportItem, Stage stage){
-        warningBorderpane.setVisible(false);
         this.game = gameImportItem;
         this.originalGame = new Game(gameImportItem);
         this.stage = stage;
         editPrepper.configure(this);
     }
+
+    public void updateTags(){
+        tagOptions.removeAll();
+        tagOptions.setAll(FXCollections.observableList(tagDAO.getTags()));
+        game.setTags(tagDAO.getTags(Integer.valueOf(game.getDatabaseId())));
+        tagTable.setItems(FXCollections.observableList(tagDAO.getTags(Integer.valueOf(game.getDatabaseId()))));
+        tagTable.getItems().add(new Tag(""));
+    }
+
     public TextArea getSummaryTextArea() {
         return summaryTextArea;
     }
@@ -91,6 +147,15 @@ public class EditController {
     public TableView2 getAdditionalAppsTable() {
         return additionalAppsTable;
     }
+
+    public ObservableList<String> getTagOptions() {
+        return tagOptions;
+    }
+
+    public void setTagOptions(ObservableList<String> tagOptions) {
+        this.tagOptions = tagOptions;
+    }
+
     public TableView2 getTriviaTable() {
         return triviaTable;
     }
@@ -105,9 +170,6 @@ public class EditController {
     }
     public TableView2 getTagTable() {
         return tagTable;
-    }
-    public BorderPane getWarningBorderpane() {
-        return warningBorderpane;
     }
     public Button getSaveButton() {
         return saveButton;
@@ -154,13 +216,17 @@ public class EditController {
     public TextField getMaxPlayersField() {
         return maxPlayersField;
     }
-    public TextField getTitleTextField() {
-        return titleTextField;
+    public TextField getTitleField() {
+        return titleField;
     }
     public TextField getDefaultSortingTitleTextField() {
         return defaultSortingTitleTextField;
     }
     public TextArea getDescriptionTextArea() {
         return descriptionTextArea;
+    }
+
+    public void exit() {
+        stage.close();
     }
 }

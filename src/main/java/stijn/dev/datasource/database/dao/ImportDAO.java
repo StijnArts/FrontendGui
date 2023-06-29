@@ -1,13 +1,13 @@
-package stijn.dev.datasource.database;
+package stijn.dev.datasource.database.dao;
 
-import stijn.dev.datasource.database.dao.*;
 import stijn.dev.datasource.importing.xml.*;
 import stijn.dev.datasource.objects.items.*;
 import stijn.dev.resource.*;
+import stijn.dev.resource.controllers.*;
 
 import java.util.*;
 import java.util.concurrent.*;
-public class DatabaseHelper {
+public class ImportDAO {
     private PlatformDAO platformDAO = new PlatformDAO();
     private PublisherDAO publisherDAO = new PublisherDAO();
     private TagDAO tagDAO = new TagDAO();
@@ -18,13 +18,15 @@ public class DatabaseHelper {
 
     public void importRoms(ArrayBlockingQueue<GameImportItem> gameImportItems){
         System.out.println("Importing Games into database...");
+        //TODO option for force importing duplicate games
+        //TODO use the created Id for identification in creating all the nodes
         ArrayList<String> platforms = new ArrayList<>();
         synchronized (gameImportItems) {
             for (GameImportItem gameImportItem : gameImportItems) {
                 if (!platforms.contains(gameImportItem.getPlatform())) {
                     String platform = gameImportItem.getPlatform();
                     platforms.add(platform);
-                    if (!platformDAO.checkIfPlatformExists(platform)) {
+                    if (!platformDAO.platformExists(platform)) {
                         importPlatform(platform);
                     }
                 }
@@ -32,6 +34,7 @@ public class DatabaseHelper {
             }
         }
         FrontEndApplication.importProcessIsRunning = false;
+        MainController.gamesHaveBeenAdded.set(true);
         System.out.println("Finished Importing game(s).");
     }
 

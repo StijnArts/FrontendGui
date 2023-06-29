@@ -23,7 +23,7 @@ public class GameGridViewDisplay extends AnchorPane {
     private String imageLocation;
     private ContextMenu contextMenu = new ContextMenu();
 
-    public GameGridViewDisplay(Game gameImportItem, String imageLocation){
+    public GameGridViewDisplay(Game gameImportItem, String imageLocation, MainController mainController){
         this.game = gameImportItem;
         //TODO make it take in the image location of the game
         File file = new File(imageLocation);
@@ -43,7 +43,7 @@ public class GameGridViewDisplay extends AnchorPane {
                 Parent root = RootUtil.createRoot(loader);
                 Stage stage = new Stage();
                 Scene scene = new Scene(root);
-                EditController.create(loader, game, stage);
+                EditController.create(loader, game, stage, mainController);
                 stage.setScene(scene);
                 stage.show();
             }

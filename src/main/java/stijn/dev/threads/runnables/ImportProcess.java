@@ -40,4 +40,11 @@ public class ImportProcess implements Runnable{
         importProcessIsRunning =true;
         return thread;
     }
+
+    public static Thread createImportProcess(List<File> files, Node node){
+        ImportProcess importProcess = new ImportProcess(files, node);
+        Thread thread = new Thread(importProcess);
+        importProcessIsRunning =true;
+        return thread;
+    }
 }

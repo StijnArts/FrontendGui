@@ -37,7 +37,7 @@ public class AlternateName {
         this.alternateNameID = new SimpleStringProperty(alternateNameID);
     }
 
-    public StringProperty getRegion() {
+    public StringProperty getReason() {
         return region;
     }
 

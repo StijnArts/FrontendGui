@@ -1,57 +1,43 @@
 package stijn.dev.datasource.database;
 
-import org.neo4j.dbms.api.*;
-import org.neo4j.driver.Result;
 import org.neo4j.driver.*;
-import org.neo4j.graphdb.*;
+import stijn.dev.datasource.database.dao.*;
+import stijn.dev.datasource.importing.xml.*;
+import stijn.dev.datasource.objects.items.*;
 import stijn.dev.settings.*;
 
-import java.nio.file.Path;
-import java.util.logging.Logger;
-import java.util.logging.*;
-
 public class Neo4JDatabaseHelper implements AutoCloseable{
-    private static final String user = "neo4j";
-    private static final String password = "password";
-    private static final String uri = "bolt://localhost:7687";
-    private static final String databaseName = "";
+    private final String user = "neo4j";
+    private final String password = "password";
+    private final String uri = "bolt://localhost:7687";
     //TODO add indexes on nodes after import and edit
     private DatabaseProperties databaseProperties = new DatabaseProperties();
-    private static Driver driver;
-    private static GraphDatabaseService graphDatabaseService;
-    private static DatabaseManagementService databaseManagementService;
-
-    public static DatabaseManagementService getDatabaseManagementService(){
-        if(databaseManagementService == null){
-            Logger.getGlobal().log(Level.SEVERE, "DatabaseManagementsService is null, " +
-                    "please make sure to instantiate it before calling. Instantiating DatabaseManagementService..");
-            startDatabase();
-        }
-        return databaseManagementService;
-    }
-
-    public static void startDatabase(){
-        databaseManagementService = new DatabaseManagementServiceBuilder(Path.of("")).build();
-        if(!databaseManagementService.listDatabases().contains(databaseName)){
-            //create new
-            databaseManagementService.createDatabase(databaseName);
-            initialize();
-        }
-        //get existing
-        databaseManagementService.startDatabase(databaseName);
-        graphDatabaseService = databaseManagementService.database(databaseName);
-        registerShutdownHook(databaseManagementService);
+    private Driver driver;
+    public Neo4JDatabaseHelper(){
         driver = GraphDatabase.driver(uri, AuthTokens.basic(user, password));
     }
 
-    private synchronized static void initialize(){
-        createConstraints();
-        createBaseNodes();
-        //databaseProperties.isInitialized(true);
-        System.out.println("Database Has Been Initialized.");
+    public synchronized void initialize(){
+        if(!databaseProperties.isInitialized()) {
+            createConstraints();
+            createBaseNodes();
+            System.out.println("Database Has Been Initialized.");
+            PlatformDAO platformDAO = new PlatformDAO();
+            PlatformXMLParser platformXMLParser = new PlatformXMLParser();
+            for (String platformName :
+                    PlatformXMLParser.getPlatforms()) {
+                Platform platform = platformXMLParser.parsePlatform(platformName);
+                platformDAO.createPlatform(platform);
+                if(platform.getPublisher()!=null){
+                    PublisherDAO publisherDAO = new PublisherDAO();
+                    publisherDAO.createPublisher(platform);
+                }
+            }
+            databaseProperties.isInitialized(true);
+        }
     }
 
-    private static void createBaseNodes() {
+    private void createBaseNodes() {
         createGalleryNodes();
         createBasePriorityNodes();
         createRatingNodes();
@@ -61,7 +47,7 @@ public class Neo4JDatabaseHelper implements AutoCloseable{
         createCharacterRolesNodes();
     }
 
-    private static void createCharacterRolesNodes() {
+    private void createCharacterRolesNodes() {
         runQuery("MERGE (s:CharacterRole {Name: 'Protagonist'}) return s");
         runQuery("MERGE (s:CharacterRole {Name: 'Antagonist'}) return s");
         runQuery("MERGE (s:CharacterRole {Name: 'Love Interest'}) return s");
@@ -70,7 +56,7 @@ public class Neo4JDatabaseHelper implements AutoCloseable{
         runQuery("MERGE (s:CharacterRole {Name: 'Foil'}) return s");
     }
 
-    private static void createStaffRoleNodes() {
+    private void createStaffRoleNodes() {
         runQuery("MERGE (s:StaffRole {Name: 'Game Designer'}) return s");
         runQuery("MERGE (s:StaffRole {Name: 'Systems Designer'}) return s");
         runQuery("MERGE (s:StaffRole {Name: 'Level Designer'}) return s");
@@ -88,7 +74,7 @@ public class Neo4JDatabaseHelper implements AutoCloseable{
         runQuery("MERGE (s:StaffRole {Name: 'Voice Actor'}) return s");
     }
 
-    private static void createRelationshipNodes() {
+    private void createRelationshipNodes() {
         runQuery("MERGE (r:Relationship {Name: 'Port'}) return r");
         runQuery("MERGE (r:Relationship {Name: 'Spiritual Successor'}) return r");
         runQuery("MERGE (r:Relationship {Name: 'Remaster'}) return r");
@@ -99,7 +85,7 @@ public class Neo4JDatabaseHelper implements AutoCloseable{
         runQuery("MERGE (r:Relationship {Name: 'Port'}) return r");
     }
 
-    private static void createMultiplayerTypeNodes() {
+    private void createMultiplayerTypeNodes() {
         runQuery("MERGE (g:PlayMode {Name: 'Singleplayer'}) return g");
         runQuery("MERGE (g:PlayMode {Name: 'Online Multiplayer'}) return g");
         runQuery("MERGE (g:PlayMode {Name: 'Local Multiplayer'}) return g");
@@ -107,7 +93,7 @@ public class Neo4JDatabaseHelper implements AutoCloseable{
         runQuery("MERGE (g:PlayMode {Name: 'Local Co-op'}) return g");
     }
 
-    private static void createRatingNodes() {
+    private void createRatingNodes() {
         runQuery("MERGE (g:Rating {Rating: 'RP - Rating Pending', Organization: 'ESRB'}) return g");
         runQuery("MERGE (g:Rating {Rating: 'RP - Rating Pending – Likely Mature 17+', Organization: 'ESRB'}) return g");
         runQuery("MERGE (g:Rating {Rating: 'E - Everyone', Organization: 'ESRB'}) return g");
@@ -129,7 +115,7 @@ public class Neo4JDatabaseHelper implements AutoCloseable{
         runQuery("MERGE (g:Rating {Rating: 'Sex', Organization: 'PEGI'}) return g");
         runQuery("MERGE (g:Rating {Rating: 'Violence', Organization: 'PEGI'}) return g");
         runQuery("MERGE (g:Rating {Rating: 'In-Game Purchases', Organization: 'PEGI'}) return g");
-        runQuery("MERGE (g:Rating {Rating: 'Exclamation Mark', Organization: 'PEGI'}) return g");
+        runQuery("MERGE (g:Rating {Rating: 'Exclamation', Organization: 'PEGI'}) return g");
         runQuery("MERGE (g:Rating {Rating: 'Online', Organization: 'PEGI'}) return g");
         runQuery("MERGE (g:Rating {Rating: 'All Ages', Organization: 'CERO'}) return g");
         runQuery("MERGE (g:Rating {Rating: 'Ages 12 and up', Organization: 'CERO'}) return g");
@@ -142,13 +128,13 @@ public class Neo4JDatabaseHelper implements AutoCloseable{
         runQuery("MERGE (g:Rating {Rating: 'Bad Language', Organization: 'CERO'}) return g");
     }
 
-    private static void createBasePriorityNodes() {
+    private void createBasePriorityNodes() {
         runQuery("MERGE (g:Priority {UniqueName: 'Filler', Priority: 3}) return g");
         runQuery("MERGE (g:Priority {UniqueName: 'Classic', Priority: 2}) return g");
         runQuery("MERGE (g:Priority {UniqueName: 'Staple', Priority: 1}) return g");
     }
 
-    private static void createGalleryNodes() {
+    private void createGalleryNodes() {
         runQuery("MERGE (g:GalleryCategory {UniqueName: 'NTSCFrontCover', Name: 'Front Cover (NTSC)'}) return g");
         runQuery("MERGE (g:GalleryCategory {UniqueName: 'JPFrontCover', Name: 'Front Cover (JP)'}) return g");
         runQuery("MERGE (g:GalleryCategory {UniqueName: 'PALFrontCover', Name: 'Front Cover (PAL)'}) return g");
@@ -181,7 +167,7 @@ public class Neo4JDatabaseHelper implements AutoCloseable{
         runQuery("MERGE (g:GalleryCategory {UniqueName: 'Guide', Name: 'Guide'}) return g");
     }
 
-    private static void createConstraints(){
+    private void createConstraints(){
         runQuery("CREATE CONSTRAINT IF NOT EXISTS FOR (n:Developer)       REQUIRE n.DeveloperName   IS UNIQUE");
         runQuery("CREATE CONSTRAINT IF NOT EXISTS FOR (n:Publisher)       REQUIRE n.PublisherName   IS UNIQUE");
         runQuery("CREATE CONSTRAINT IF NOT EXISTS FOR (n:Territory)       REQUIRE n.TerritoryName   IS UNIQUE");
@@ -201,9 +187,9 @@ public class Neo4JDatabaseHelper implements AutoCloseable{
         driver.close();
     }
 
-    public static Result runQuery(String query){
+    public Result runQuery(String query){
         Session session = driver.session();
-        return session.run(new Query(query));
+          return session.run(new Query(query));
     }
 
     public Result runQuery(Query query){
@@ -213,20 +199,5 @@ public class Neo4JDatabaseHelper implements AutoCloseable{
 
     public Result wipeDatabase(){
         return runQuery("Match (n) Detach Delete (n)");
-    }
-
-    private static void registerShutdownHook( final DatabaseManagementService managementService )
-    {
-        // Registers a shutdown hook for the Neo4j instance so that it
-        // shuts down nicely when the VM exits (even if you "Ctrl-C" the
-        // running application).
-        Runtime.getRuntime().addShutdownHook( new Thread()
-        {
-            @Override
-            public void run()
-            {
-                managementService.shutdown();
-            }
-        } );
     }
 }

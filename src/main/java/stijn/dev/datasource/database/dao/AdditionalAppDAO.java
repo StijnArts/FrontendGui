@@ -10,8 +10,11 @@ public class AdditionalAppDAO {
     private Neo4JDatabaseHelper neo4JDatabaseHelper = new Neo4JDatabaseHelper();
 
     public ArrayList<AdditionalApp> getAdditionalApps(HashMap<String, Object> parameters) {
-        String characterQuery = "MATCH (g:Game{GameName:$gameName})-[:ON_PLATFORM]-(p:Platform{PlatformName:$platformName}), " +
-                "(g)-[a:ADDITIONAL_APP]-(g) RETURN a.Path, a.Name, a.Arguments";
+        String characterQuery = "MATCH (g:Game) " +
+                "WHERE ID(g) = $id " +
+                "WITH g " +
+                "MATCH (g)-[a:ADDITIONAL_APP]-(g) " +
+                "RETURN a.Path, a.Name, a.Arguments";
         Result result = neo4JDatabaseHelper.runQuery(new Query(characterQuery,parameters));
         ArrayList<AdditionalApp> staff = new ArrayList<>();
         while(result.hasNext()) {
@@ -20,5 +23,16 @@ public class AdditionalAppDAO {
                     String.valueOf(row.get("a.Arguments"))));
         }
         return staff;
+    }
+
+    public void createAdditionalApp(HashMap<String, Object> parameters) {
+        String query = "MATCH (g:Game) " +
+                "WHERE ID(g) = $id " +
+                "CREATE (g)-[:ADDITIONAL_APP {Path:$path, Name:$additionalAppName, Arguments:$arguments}]->(g)";
+        /*System.out.println("MATCH (g:Game {GameName: \""+parameters.get("gameName")+"\"})-[:ON_PLATFORM]-(p:Platform {PlatformName: \""+parameters.get("platformName")+"\"}) \n" +
+                "                WITH g \n" +
+                "                MATCH (e:Rating {Rating: \""+parameters.get("rating")+"\", Organization: \""+parameters.get("organization")+"\"}) \n" +
+                "                MERGE (g)-[:HAS_RATING]->(e)");*/
+        neo4JDatabaseHelper.runQuery(new Query(query, parameters));
     }
 }

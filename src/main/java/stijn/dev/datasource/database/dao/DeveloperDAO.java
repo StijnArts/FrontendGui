@@ -41,18 +41,21 @@ public class DeveloperDAO {
     public void createDeveloper(HashMap<String, Object> parameters) {
         boolean developerExists = false;
         while(!developerExists) {
-            String queryString = "MATCH (d:Publisher {PublisherName:$developerName}), (game:Game {GameName:$gameName})-[:ON_PLATFORM]-(p:Platform {PlatformName:$platformName}) " +
+            String queryString = "MATCH (d:Publisher {PublisherName:$developerName}), (game:Game) " +
+                    "WHERE ID(game) = $id " +
                     "SET d:Developer, d.DeveloperName = $developerName " +
                     "MERGE (d)<-[:MADE_BY]-(game) Return d";
             Result result = neo4JDatabaseHelper.runQuery(new Query(queryString, parameters));
             if (!result.hasNext()) {
-                queryString = "Match (game:Game {GameName:$gameName})-[:ON_PLATFORM]-(p:Platform {PlatformName:$platformName}) " +
+                queryString = "Match (game:Game) " +
+                        "WHERE ID(game) = $id " +
                         "MERGE (n:Developer {DeveloperName:$developerName}) " +
                         "MERGE r = (n)<-[:MADE_BY]-(game) Return r";
                 Query query = new Query(queryString, parameters);
                 neo4JDatabaseHelper.runQuery(query);
             }
-            String checkExistsQuery = "MATCH (d:Developer {DeveloperName:$developerName})<-[r:MADE_BY]-(game:Game {GameName:$gameName})-[:ON_PLATFORM]-(p:Platform {PlatformName:$platformName})" +
+            String checkExistsQuery = "MATCH (d:Developer {DeveloperName:$developerName})<-[r:MADE_BY]-(game:Game)" +
+                    "WHERE ID(game) = $id " +
                     "Return r";
             Query query = new Query(checkExistsQuery, parameters);
             Result exists = neo4JDatabaseHelper.runQuery(query);
@@ -72,8 +75,9 @@ public class DeveloperDAO {
     }
 
     public ArrayList<String> getDevelopers(HashMap<String, Object> parameters) {
-        String triviaQuery = "MATCH (g:Game{GameName:$gameName})-[:ON_PLATFORM]-(p:Platform{PlatformName:$platformName}), " +
-                "(g)-[:MADE_BY]-(d:Developer) RETURN d.DeveloperName";
+        String triviaQuery = "MATCH (d:Developer)-[:MADE_BY]-(g:Game) " +
+                "WHERE ID(g) = $id " +
+                "RETURN d.DeveloperName";
         Result result = neo4JDatabaseHelper.runQuery(new Query(triviaQuery,parameters));
         ArrayList<String> developers = new ArrayList<>();
         while(result.hasNext()) {

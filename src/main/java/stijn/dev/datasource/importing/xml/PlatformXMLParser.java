@@ -39,13 +39,18 @@ public class PlatformXMLParser extends XMLParser{
             for (Element element : files) {
                 if(platform.equals(element.getFirstChildElement("Name").getValue())){
                     HashMap<String, LocalDate> releaseDate = new HashMap<>();
-                    releaseDate.put("USA", LocalDate.parse(element.getFirstChildElement("ReleaseDate").getValue().substring(0,10)));
-                    specs.put("Cpu",element.getFirstChildElement("Cpu").getValue());
-                    specs.put("Memory",element.getFirstChildElement("Memory").getValue());
-                    specs.put("Graphics",element.getFirstChildElement("Graphics").getValue());
-                    specs.put("Sound",element.getFirstChildElement("Sound").getValue());
-                    specs.put("Display",element.getFirstChildElement("Display").getValue());
-                    specs.put("MediaType",element.getFirstChildElement("Media").getValue());
+                    if(element.getFirstChildElement("ReleaseDate")!=null){
+                        releaseDate.put("USA", LocalDate.parse(element.getFirstChildElement("ReleaseDate").getValue().substring(0,10)));
+                    } else {
+                        releaseDate.put("USA", null);
+                    }
+
+                    specs.put("Cpu",readElement(element.getFirstChildElement("Cpu")));
+                    specs.put("Memory",readElement(element.getFirstChildElement("Memory")));
+                    specs.put("Graphics",readElement(element.getFirstChildElement("Graphics")));
+                    specs.put("Sound",readElement(element.getFirstChildElement("Sound")));
+                    specs.put("Display",readElement(element.getFirstChildElement("Display")));
+                    specs.put("MediaType",readElement(element.getFirstChildElement("Media")));
 
                     platformObject = new Platform(readElement(element.getFirstChildElement("Name")),releaseDate,
                             readElement(element.getFirstChildElement("Developer")),readElement(element.getFirstChildElement("Notes")),

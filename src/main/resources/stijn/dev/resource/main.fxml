@@ -1,31 +1,101 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Accordion?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import org.controlsfx.control.GridView?>
 
-
 <BorderPane fx:id="mainBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="606.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stijn.dev.resource.controllers.MainController">
    <center>
-      <GridView fx:id="gamesGridView" BorderPane.alignment="CENTER" />
+      <TabPane BorderPane.alignment="CENTER">
+         <tabs>
+            <Tab text="Games">
+               <content>
+                  <BorderPane>
+                     <center>
+                        <GridView fx:id="gamesGridView" />
+                     </center>
+                     <right>
+                        <VBox fx:id="detailsPanel" prefHeight="498.0" prefWidth="219.0" BorderPane.alignment="CENTER" />
+                     </right>
+                  </BorderPane>
+               </content>
+            </Tab>
+            <Tab text="Platforms">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              </content>
+            </Tab>
+            <Tab text="Franchises">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              </content>
+            </Tab>
+            <Tab text="Series">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              </content>
+            </Tab>
+            <Tab text="Collections">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              </content>
+            </Tab>
+            <Tab text="Characters">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              </content>
+            </Tab>
+            <Tab text="Staff">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              </content>
+            </Tab>
+         </tabs>
+      </TabPane>
    </center>
-   <left>
-      <BorderPane prefHeight="400.0" prefWidth="125.0" BorderPane.alignment="CENTER">
-         <center>
-            <Accordion fx:id="overviewAccordion" BorderPane.alignment="CENTER" />
-         </center>
-      </BorderPane>
-   </left>
    <top>
-      <HBox fx:id="topControlBar" prefHeight="43.0" prefWidth="669.0" BorderPane.alignment="CENTER" />
+      <MenuBar prefHeight="25.0" prefWidth="951.0">
+        <menus>
+          <Menu mnemonicParsing="false" text="File">
+            <items>
+                  <SeparatorMenuItem mnemonicParsing="false" text="Game Data" />
+                  <MenuItem mnemonicParsing="false" text="Refresh Data" />
+              <MenuItem fx:id="importGamesMenuItem" mnemonicParsing="false" onAction="#importGames" text="Import Game(s)" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Edit">
+            <items>
+              <MenuItem mnemonicParsing="false" text="Delete" />
+            </items>
+          </Menu>
+            <Menu mnemonicParsing="false" text="Emulation">
+              <items>
+                <MenuItem mnemonicParsing="false" text="Action 1" />
+              </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Configuration">
+              <items>
+                <MenuItem mnemonicParsing="false" text="Configure Tags" onAction="#openEditTagsMenu"/>
+              </items>
+            </Menu>
+          <Menu mnemonicParsing="false" text="Help">
+            <items>
+              <MenuItem mnemonicParsing="false" text="About" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
    </top>
-   <right>
-      <VBox fx:id="detailsPanel" prefHeight="498.0" prefWidth="219.0" BorderPane.alignment="CENTER" />
-   </right>
    <bottom>
-      <VBox prefHeight="95.0" fx:id="bottomBar" prefWidth="1000.0" BorderPane.alignment="CENTER">
+      <VBox fx:id="bottomBar" prefHeight="95.0" prefWidth="1000.0" BorderPane.alignment="CENTER">
          <children>
             <HBox fx:id="progressBar" prefHeight="100.0" prefWidth="1000.0" />
             <HBox fx:id="bottomControlBar" prefHeight="100.0" prefWidth="200.0" />

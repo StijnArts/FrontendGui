@@ -9,19 +9,20 @@ import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
+import javafx.stage.*;
 import javafx.util.*;
 import org.controlsfx.control.tableview2.*;
 import org.controlsfx.control.tableview2.cell.*;
 import stijn.dev.datasource.database.dao.*;
 import stijn.dev.datasource.importing.xml.*;
 import stijn.dev.datasource.objects.data.*;
-import stijn.dev.datasource.objects.items.*;
 import stijn.dev.datasource.objects.items.Character;
+import stijn.dev.datasource.objects.items.*;
 import stijn.dev.resource.controllers.*;
 import stijn.dev.resource.controllers.components.*;
 import stijn.dev.util.javafx.*;
 
-import java.lang.*;
+import java.io.*;
 import java.time.*;
 import java.util.*;
 
@@ -67,9 +68,11 @@ public class EditPrepper {
         configureCharacterTable(editController);
         configureSummaryTextArea(editController);
     }
+
+
     private void configureTagTable(EditController editController) {
         editController.getTagTable().setEditable(true);
-        ObservableList<String> tagOptions = FXCollections.observableList(tagDAO.getTags());
+        editController.setTagOptions(FXCollections.observableList(tagDAO.getTags()));
         ObservableList<Tag> tags = FXCollections.observableList(editController.getGame().getTags());
         editController.getTagTable().setItems(tags);
         editController.getTagTable().getItems().add(new Tag(""));
@@ -81,13 +84,19 @@ public class EditPrepper {
         tagColumn.setCellFactory(col -> {
             TableCell<Tag,StringProperty> c = new TableCell<>();
             final Button button = new Button("Edit");
-            //TODO make button open edit screen for the relationship in the cell
-            //button.setOnAction();
             final BorderPane borderPane = new BorderPane();
-            final ComboBox<String> comboBox = new ComboBox<>(tagOptions);
+            final ComboBox<String> comboBox = new ComboBox<>(editController.getTagOptions());
             final HBox hBox = new HBox(5, comboBox,button);
             borderPane.centerProperty().setValue(hBox);
             comboBox.setEditable(true);
+            editController.getTagOptions().addListener((ListChangeListener<String>) change -> {
+                comboBox.setItems(editController.getTagOptions());
+                comboBox.itemsProperty().setValue(editController.getTagOptions());
+            });
+            button.setOnAction(event -> {
+                editController.openTagConfigurationScreen();
+            });
+
             comboBox.valueProperty().addListener(new ChangeListener<String>() {
                 @Override
                 public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
@@ -97,7 +106,7 @@ public class EditPrepper {
                             c.getTableView().getItems().add(new Tag(""));
                         }
                     } else{
-                        c.getTableView().getItems().get(c.getIndex()).setName(null);
+                        c.getTableView().getItems().get(c.getIndex()).setName("");
                     }
                 }
             });
@@ -129,7 +138,6 @@ public class EditPrepper {
         ObservableList<String> staffRoles = FXCollections.observableList(staffRoleDAO.getStaffRoles());
         ObservableList<Staff> staffObservable = FXCollections.observableList(staff);
         editController.getStaffTable().setItems(staffObservable);
-        ArrayList<String> temp = new ArrayList<>();
         editController.getStaffTable().getItems().add(new Staff("","","",""));
         TableColumn2<Staff,String> firstNameColumn = new FilteredTableColumn<>("First Name");
         firstNameColumn.setEditable(true);
@@ -170,8 +178,9 @@ public class EditPrepper {
             TableCell<Staff,StringProperty> c = new TableCell<>();
             final BorderPane borderPane = new BorderPane();
             final Button button = new Button("Edit");
-            //TODO make button open edit screen for the relationship in the cell
-            //button.setOnAction();
+            button.setOnAction(event -> {
+                editController.openStaffRoleConfigurationScreen();
+            });
             final ComboBox<String> comboBox = new ComboBox<>(staffRoles);
             final HBox hBox = new HBox(5, comboBox,button);
             borderPane.centerProperty().setValue(hBox);
@@ -209,8 +218,9 @@ public class EditPrepper {
         staffIDColumn.setCellFactory(col -> {
             TableCell<Staff,StringProperty> c = new TableCell<>();
             final Button button = new Button("Edit");
-            //TODO make button open edit screen for the relationship in the cell
-            //button.setOnAction();
+            button.setOnAction(event -> {
+                editController.openStaffEditScreen();
+            });
             final BorderPane borderPane = new BorderPane();
             final ComboBox<String> comboBox = new ComboBox<>(staffOptions);
             final HBox hBox = new HBox(5, comboBox,button);
@@ -295,8 +305,9 @@ public class EditPrepper {
         roleColumn.setCellFactory(col -> {
             TableCell<Character,StringProperty> c = new TableCell<>();
             final Button button = new Button("Edit");
-            //TODO make button open edit screen for the relationship in the cell
-            //button.setOnAction();
+            button.setOnAction(event -> {
+                editController.openCharacterRoleConfigurationScreen();
+            });
             final BorderPane borderPane = new BorderPane();
             final ComboBox<String> comboBox = new ComboBox<>(characterRoles);
             final HBox hBox = new HBox(5, comboBox,button);
@@ -335,8 +346,9 @@ public class EditPrepper {
         characterIDColumn.setCellFactory(col -> {
             TableCell<Character,StringProperty> c = new TableCell<>();
             final Button button = new Button("Edit");
-            //TODO make button open edit screen for the relationship in the cell
-            //button.setOnAction();
+            button.setOnAction(event -> {
+                editController.openCharacterEditScreen();
+            });
             final BorderPane borderPane = new BorderPane();
             final ComboBox<String> comboBox = new ComboBox<>(characterOptions);
             final HBox hBox = new HBox(5, comboBox,button);
@@ -384,8 +396,9 @@ public class EditPrepper {
             TableCell<Character,StringProperty> c = new TableCell<>();
             final BorderPane borderPane = new BorderPane();
             final Button button = new Button("Edit");
-            //TODO make button open edit screen for the relationship in the cell
-            //button.setOnAction();
+            button.setOnAction(event -> {
+                editController.openStaffEditScreen();
+            });
             final ComboBox<String> comboBox = new ComboBox<>(staff);
             final HBox hBox = new HBox(5, comboBox,button);
             hBox.autosize();
@@ -404,14 +417,12 @@ public class EditPrepper {
                 @Override
                 public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
                     if(comboBox.getValue()!=null&&!comboBox.getValue().isBlank()){
-                        c.getTableView().getItems().get(c.getIndex()).setCharacterID(comboBox.getValue());
-                        c.getTableView().getItems().get(c.getIndex()).setName(characterHashMap.get(comboBox.valueProperty().get()).getName());
+                        c.getTableView().getItems().get(c.getIndex()).setVoiceActor(comboBox.getValue());
                         if(c.getTableView().getItems().size()-1==c.getIndex()){
                             c.getTableView().getItems().add(new Character("","","",""));
                         }
                     } else{
-                        c.getTableView().getItems().get(c.getIndex()).setCharacterID(comboBox.getValue());
-                        c.getTableView().getItems().get(c.getIndex()).setName(null);
+                        c.getTableView().getItems().get(c.getIndex()).setVoiceActor("");
                     }
                 }
             });
@@ -489,6 +500,7 @@ public class EditPrepper {
         ObservableList<String> territories = FXCollections.observableList(territoryDAO.getTerritories());
         ObservableList<ReleaseDate> releaseDates = FXCollections.observableList(editController.getGame().getReleaseDates());
         editController.getReleaseDatesTable().setItems(releaseDates);
+        editController.getReleaseDatesTable().getItems().add(new ReleaseDate("",null));
         TableColumn2<ReleaseDate, StringProperty> territoryColumn = new FilteredTableColumn<>("Territory");
         territoryColumn.setCellValueFactory(i-> {
             final StringProperty value = i.getValue().getTerritory();
@@ -530,7 +542,6 @@ public class EditPrepper {
             return Bindings.createObjectBinding(()->value);
         });
         dateColumn.setCellFactory(col -> {
-            //TODO fix date not being read from game.
             TableCell<ReleaseDate,ObjectProperty<LocalDate>> c = new TableCell<>();
             final BorderPane borderPane = new BorderPane();
             final DatePicker datePicker = new DatePicker();
@@ -587,20 +598,64 @@ public class EditPrepper {
                 event.getTableView().getItems().get(event.getTablePosition().getRow()).setName(new SimpleStringProperty(event.getNewValue()));
             }
         });
-        TableColumn2<AdditionalApp,String> pathColumn = new FilteredTableColumn<>("Path");
+        TableColumn2<AdditionalApp,StringProperty> pathColumn = new FilteredTableColumn<>("Path");
         pathColumn.setEditable(true);
-        pathColumn.setCellValueFactory(c->c.getValue().getPath());
-        pathColumn.setCellFactory(TextField2TableCell.forTableColumn());
-        pathColumn.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<AdditionalApp,String>>() {
-            @Override
-            public void handle(TableColumn.CellEditEvent<AdditionalApp,String> event) {
-                if(!event.getNewValue().isBlank()){
-                    if(event.getTableView().getItems().size()-1==event.getTablePosition().getRow()){
-                        event.getTableView().getItems().add(new AdditionalApp("","",""));
+        pathColumn.setCellValueFactory(i-> {
+                    final StringProperty value = i.getValue().getPath();
+                    return Bindings.createObjectBinding(() -> value);
+                }
+        );
+        pathColumn.setCellFactory(col -> {
+            TableCell<AdditionalApp,StringProperty> c = new TableCell<>();
+            final BorderPane borderPane = new BorderPane();
+            final Button button = new Button("Browse..");
+            final TextField textField = new TextField();
+            final HBox hBox = new HBox(5, textField,button);
+            button.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    FileChooser fileChooser = new FileChooser();
+                    fileChooser.setTitle("Open App");
+                    File file = fileChooser.showOpenDialog(editController.getStage());
+                    if (file != null) {
+                        textField.setText(file.toPath().toAbsolutePath().toString());
                     }
                 }
-                event.getTableView().getItems().get(event.getTablePosition().getRow()).setPath(new SimpleStringProperty(event.getNewValue()));
+            });
+            hBox.autosize();
+            borderPane.centerProperty().setValue(hBox);
+            textField.setEditable(true);
+            textField.textProperty().addListener(new ChangeListener<String>() {
+                @Override
+                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+                    if(textField.getText()!=null&&!textField.getText().isBlank()) {
+                        c.getTableView().getItems().get(c.getIndex()).setPath(new SimpleStringProperty(textField.getText()));
+                        if(c.getTableView().getItems().size()-1==c.getIndex()){
+                            c.getTableView().getItems().add(new AdditionalApp("","",""));
+                        }
+                    } else {
+                        c.getTableView().getItems().get(c.getIndex()).setPath(new SimpleStringProperty(textField.getText()));
+                    }
+                }
+            });
+            c.itemProperty().addListener(((observableValue, oldValue, newValue) -> {
+                if(oldValue != null){
+                    textField.textProperty().unbindBidirectional(oldValue);
+                }
+                if(newValue != null){
+                    textField.textProperty().bindBidirectional(newValue);
+                }
+            }));
+            c.graphicProperty().bind(Bindings.when(c.emptyProperty()).then((Node)null).otherwise(hBox));
+            return c;
+        });
+        pathColumn.setOnEditCommit(event -> {
+            if(!event.getNewValue().getValue().isBlank()){
+                if(event.getTableView().getItems().size()-1==event.getTablePosition().getRow()){
+                    event.getTableView().getItems().add(new AdditionalApp("","",""));
+                }
             }
+            event.getTableView().getItems().get(event.getTablePosition().getRow()).setPath(new SimpleStringProperty(event.getNewValue().get()));
         });
         TableColumn2<AdditionalApp,String> argumentsColumn = new FilteredTableColumn<>("Arguments");
         argumentsColumn.setEditable(true);
@@ -638,7 +693,7 @@ public class EditPrepper {
         ObservableList<RelatedGame> relatedGames = FXCollections.observableList(editController.getGame().getRelatedGames());
         ObservableList<String> relationships = FXCollections.observableList(relationshipDAO.getRelationShips());
         editController.getRelatedGameTable().setItems(relatedGames);
-        editController.getRelatedGameTable().getItems().add(new RelatedGame("","","",""));
+        editController.getRelatedGameTable().getItems().add(new RelatedGame("","","","",""));
         TableColumn2<RelatedGame,StringProperty> relatedGameColumn = new FilteredTableColumn<>("Game");
         relatedGameColumn.setCellValueFactory(i-> {
             final StringProperty value = i.getValue().getRelatedGameEntry();
@@ -661,17 +716,15 @@ public class EditPrepper {
                     comboBox.valueProperty().bindBidirectional(newValue);
                 }
             }));
-            comboBox.valueProperty().addListener(new ChangeListener<String>() {
-                @Override
-                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
-                    if(comboBox.getValue()!=null&&!comboBox.getValue().isBlank()&&!"()".equals(comboBox.getValue().trim())) {
-                        c.getTableView().getItems().get(c.getIndex()).setRelatedGameEntry(new SimpleStringProperty(comboBox.getValue()));
-                        if(c.getTableView().getItems().size()-1==c.getIndex()){
-                            c.getTableView().getItems().add(new RelatedGame("","","",""));
-                        }
-                    } else {
-                        c.getTableView().getItems().get(c.getIndex()).setRelatedGameEntry(new SimpleStringProperty(comboBox.getValue()));
+            comboBox.valueProperty().addListener((observableValue, s, t1) -> {
+                if(comboBox.getValue()!=null&&!comboBox.getValue().isBlank()&&!"()".equals(comboBox.getValue().trim())) {
+                    c.getTableView().getItems().get(c.getIndex()).setRelatedGameEntry(new SimpleStringProperty(comboBox.getValue()));
+                    c.getTableView().getItems().get(c.getIndex()).setId(relatedGameMap.get(comboBox.getValue()).getId());
+                    if(c.getTableView().getItems().size()-1==c.getIndex()){
+                        c.getTableView().getItems().add(new RelatedGame("","","","",""));
                     }
+                } else {
+                    c.getTableView().getItems().get(c.getIndex()).setRelatedGameEntry(new SimpleStringProperty(comboBox.getValue()));
                 }
             });
             c.graphicProperty().bind(Bindings.when(c.emptyProperty()).then((Node)null).otherwise(hBox));
@@ -687,8 +740,9 @@ public class EditPrepper {
             TableCell<RelatedGame,StringProperty> c = new TableCell<>();
             final BorderPane borderPane = new BorderPane();
             final Button button = new Button("Edit");
-            //TODO make button open edit screen for the relationship in the cell
-            //button.setOnAction();
+            button.setOnAction(event -> {
+                editController.openGameRelationshipTypeScreen();
+            });
             final ComboBox<String> comboBox = new ComboBox<>(relationships);
             final HBox hBox = new HBox(5, comboBox,button);
             hBox.autosize();
@@ -709,7 +763,7 @@ public class EditPrepper {
                     if(comboBox.getValue()!=null&&!comboBox.getValue().isBlank()) {
                         c.getTableView().getItems().get(c.getIndex()).setRelationship(new SimpleStringProperty(comboBox.getValue()));
                         if(c.getTableView().getItems().size()-1==c.getIndex()){
-                            c.getTableView().getItems().add(new RelatedGame("","","",""));
+                            c.getTableView().getItems().add(new RelatedGame("","","","",""));
                         }
                     } else {
                         c.getTableView().getItems().get(c.getIndex()).setRelationship(new SimpleStringProperty(comboBox.getValue()));
@@ -720,20 +774,17 @@ public class EditPrepper {
             return c;
         });
         relationshipColumn.setEditable(true);
-        TableColumn2<RelatedGame,String> relationshipDescriptionColumn = new FilteredTableColumn<>();
+        TableColumn2<RelatedGame,String> relationshipDescriptionColumn = new FilteredTableColumn<>("Relationship Description");
         relationshipDescriptionColumn.setEditable(true);
         relationshipDescriptionColumn.setCellValueFactory(c->c.getValue().getDescription());
         relationshipDescriptionColumn.setCellFactory(TextAreaTableCell.forTableColumn());
-        relationshipDescriptionColumn.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<RelatedGame, String>>() {
-            @Override
-            public void handle(TableColumn.CellEditEvent<RelatedGame, String> event) {
-                if(!event.getNewValue().isBlank()){
-                    if(event.getTableView().getItems().size()-1==event.getTablePosition().getRow()){
-                        event.getTableView().getItems().add(new RelatedGame("","","",""));
-                    }
+        relationshipDescriptionColumn.setOnEditCommit(event -> {
+            if(!event.getNewValue().isBlank()){
+                if(event.getTableView().getItems().size()-1==event.getTablePosition().getRow()){
+                    event.getTableView().getItems().add(new RelatedGame("","","","",""));
                 }
-                event.getTableView().getItems().get(event.getTablePosition().getRow()).setDescription(new SimpleStringProperty(event.getNewValue()));
             }
+            event.getTableView().getItems().get(event.getTablePosition().getRow()).setDescription(new SimpleStringProperty(event.getNewValue()));
         });
         relationshipDescriptionColumn.setPrefWidth(400);
         editController.getRelatedGameTable().getColumns().setAll(relatedGameColumn,relationshipColumn,relationshipDescriptionColumn);
@@ -766,7 +817,7 @@ public class EditPrepper {
         });
         TableColumn2<AlternateName, StringProperty> reasonColumn = new FilteredTableColumn<>("Reason");
         reasonColumn.setCellValueFactory(i-> {
-            final StringProperty value = i.getValue().getRegion();
+            final StringProperty value = i.getValue().getReason();
             return Bindings.createObjectBinding(()->value);
         });
         reasonColumn.setCellFactory(col -> {
@@ -896,24 +947,9 @@ public class EditPrepper {
     }
 
     public void configureTitleTextField(EditController editController){
-        editController.getTitleTextField().setText(editController.getGame().getName());
-        //TODO add check that game doesnt already exist on selected console
-        editController.getTitleTextField().focusedProperty().addListener((arg0,oldValue, newValue)->{
-            if(!newValue){
-                if(gameExistsOnConsole()){
-                    editController.getWarningBorderpane().setVisible(true);
-                    editController.getSaveButton().setDisable(true);
-                } else{
-                    editController.getWarningBorderpane().setVisible(false);
-                    editController.getSaveButton().setDisable(false);
-                }
-            }
-        });
-    }
-
-    private boolean gameExistsOnConsole() {
-        return false;
-        //TODO implement
+        if(!"null".equals(editController.getGame().getName())){
+            editController.getTitleField().setText(editController.getGame().getName());
+        }
     }
 
     private void configureDescriptionTextArea(EditController editController) {
@@ -931,17 +967,6 @@ public class EditPrepper {
         editController.getPlatformComboBox().setItems(options);
         editController.getPlatformComboBox().setValue(editController.getGame().getPlatform());
         ComboBoxAutocompleteUtil.autoCompleteComboBoxPlus(editController.getPlatformComboBox(), (typedText, itemToCompare) -> itemToCompare.toLowerCase().contains(typedText.toLowerCase()));
-        editController.getPlatformComboBox().focusedProperty().addListener((arg0,oldValue, newValue)->{
-            if(!newValue){
-                if(gameExistsOnConsole()){
-                    editController.getPlatformComboBox().setVisible(true);
-                    editController.getSaveButton().setDisable(true);
-                } else{
-                    editController.getPlatformComboBox().setVisible(false);
-                    editController.getSaveButton().setDisable(false);
-                }
-            }
-        });
     }
 
     public void configureRatingComboCheckBox(EditController editController){

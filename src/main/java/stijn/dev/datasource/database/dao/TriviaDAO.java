@@ -10,8 +10,9 @@ public class TriviaDAO {
     private Neo4JDatabaseHelper neo4JDatabaseHelper = new Neo4JDatabaseHelper();
 
     public ArrayList<Trivia> getTrivia(HashMap<String, Object> parameters){
-        String triviaQuery = "MATCH (g:Game{GameName:$gameName})-[:ON_PLATFORM]-(p:Platform{PlatformName:$platformName}), " +
-                "(g)-[:TRIVIA_ABOUT]-(t:Trivia) RETURN t.TriviaID, t.Fact";
+        String triviaQuery = "MATCH (t:Trivia)-[:TRIVIA_ABOUT]-(g:Game) " +
+                "WHERE ID(g) = $id " +
+                "RETURN t.TriviaID, t.Fact";
         Result result = neo4JDatabaseHelper.runQuery(new Query(triviaQuery,parameters));
         ArrayList<Trivia> trivia = new ArrayList<>();
         while(result.hasNext()) {
@@ -31,4 +32,20 @@ public class TriviaDAO {
         }
         return trivia;
     }
+
+    public void createTriviaEdge(HashMap<String, Object> triviaParameters) {
+        String query = "MATCH (g:Game) " +
+                "WHERE ID(g) = $id " +
+                "WITH g " +
+                "MERGE (t:Trivia {TriviaID:$triviaId}) " +
+                "Set t.Fact = $fact " +
+                "WITH g, t " +
+                "MERGE (g)-[:TRIVIA_ABOUT]->(t)";
+        /*System.out.println("MATCH (g:Game {GameName: \""+parameters.get("gameName")+"\"})-[:ON_PLATFORM]-(p:Platform {PlatformName: \""+parameters.get("platformName")+"\"}) \n" +
+                "                WITH g \n" +
+                "                MATCH (e:Rating {Rating: \""+parameters.get("rating")+"\", Organization: \""+parameters.get("organization")+"\"}) \n" +
+                "                MERGE (g)-[:HAS_RATING]->(e)");*/
+        neo4JDatabaseHelper.runQuery(new Query(query, triviaParameters));
+    }
+
 }

@@ -11,8 +11,6 @@ module stijn.dev.frontendgui {
     requires org.jsoup;
     requires com.google.guice;
     requires org.neo4j.driver;
-    requires org.neo4j.community;
-    requires org.neo4j.graphdb;
 
     opens stijn.dev.resource to javafx.fxml;
     exports stijn.dev.resource;

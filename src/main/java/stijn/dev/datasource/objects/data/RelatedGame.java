@@ -1,23 +1,24 @@
 package stijn.dev.datasource.objects.data;
 
 import javafx.beans.property.*;
-import stijn.dev.datasource.objects.items.*;
 
 public class RelatedGame {
     private StringProperty relatedGameEntry;
-    private String game;
-    private String platform;
+    private StringProperty game;
+    private StringProperty id;
+    private StringProperty platform;
     private StringProperty relationship;
     private StringProperty description;
-    public RelatedGame(String game, String platform, String relationship, String description){
+    public RelatedGame(String id, String game, String platform, String relationship, String description){
+        this.id = new SimpleStringProperty(id);
         this.relatedGameEntry = new SimpleStringProperty("("+platform+") "+game);
-        this.game = game;
-        this.platform = platform;
+        this.game = new SimpleStringProperty(game);
+        this.platform = new SimpleStringProperty(platform);
         this.relationship =new SimpleStringProperty(relationship);
         this.description = new SimpleStringProperty(description);
     }
 
-    public String getGame() {
+    public StringProperty getGame() {
         return game;
     }
 
@@ -25,16 +26,24 @@ public class RelatedGame {
         return relatedGameEntry;
     }
 
+    public StringProperty getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id.set(id);
+    }
+
     public void setRelatedGameEntry(StringProperty relatedGameEntry) {
         this.relatedGameEntry = relatedGameEntry;
     }
 
-    public String getPlatform() {
+    public StringProperty getPlatform() {
         return platform;
     }
 
     public void setPlatform(String platform) {
-        this.platform = platform;
+        this.platform.set(platform);
     }
 
     public StringProperty relationshipProperty() {
@@ -54,7 +63,7 @@ public class RelatedGame {
     }
 
     public void setGame(String game) {
-        this.game = game;
+        this.game.set(game);
     }
 
     public StringProperty getRelationship() {
