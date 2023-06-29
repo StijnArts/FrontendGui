@@ -23,35 +23,45 @@ public class GameDAO {
     private PriorityDataDAO priorityDataDAO = new PriorityDataDAO();
     private PlaymodeDAO playmodeDAO = new PlaymodeDAO();
     private PlatformDAO platformDAO = new PlatformDAO();
-    public ArrayList<Game> getGames(){
-        String query = "Match (g:Game)-[:ON_PLATFORM]-(p:Platform) " +
-                "Return ID(g), g.GameName, g.GameId, g.Description, g.Theme, g.DefaultSummary, g.DefaultSortingTitle, " +
-                "g.LaunchParameters, g.GamePath, g.CommunityRating, g.CommunityRatingCount, g.MaxPlayers, g.HLTBStory, g.HLTBStoryAndExtra, g.HLTBCompletionist, p.PlatformName";
-        Result result = neo4JDatabaseHelper.runQuery(query);
+    public ArrayList<Game> getGames(int offset, String searchTerm){
+        HashMap<String, Object> parameters = new HashMap<>();
+        parameters.put("offset", offset);
+        String query = "Match (g:Game)-[:ON_PLATFORM]-(p:Platform) ";
+        if(!searchTerm.isEmpty()){
+            parameters.put("searchTerm", searchTerm.trim().toLowerCase());
+            query += "WHERE toLower(g.GameName) STARTS WITH $searchTerm OR toLower(g.GameName) ENDS WITH $searchTerm OR toLower(g.GameName) CONTAINS $searchTerm " +
+                    "OR toLower(g.DefaultSortingTitle) STARTS WITH $searchTerm OR toLower(g.DefaultSortingTitle) ENDS WITH $searchTerm OR toLower(g.DefaultSortingTitle) CONTAINS $searchTerm ";
+        }
+        query +="Return ID(g), g.GameName, g.GameId, g.Description, g.Theme, g.DefaultSummary, g.DefaultSortingTitle, " +
+                "g.LaunchParameters, g.GamePath, g.CommunityRating, g.CommunityRatingCount, g.MaxPlayers, g.HLTBStory, g.HLTBStoryAndExtra, g.HLTBCompletionist, p.PlatformName " +
+                "ORDER BY g.DefaultSortingTitle " +
+                "SKIP $offset " +
+                "LIMIT 21";
+        Result result = neo4JDatabaseHelper.runQuery(new Query(query, parameters));
         ArrayList<Game> gameItems = new ArrayList<>();
         while(result.hasNext()){
             Map<String, Object> row = result.next().asMap();
             Game game = createGameFromDatabase(row);
-            HashMap<String, Object> parameters = new HashMap<>();
-            parameters.put("gameName",game.getName());
-            parameters.put("id", Integer.valueOf(game.getDatabaseId()));
+            HashMap<String, Object> gameParameters = new HashMap<>();
+            gameParameters.put("gameName",game.getName());
+            gameParameters.put("id", Integer.valueOf(game.getDatabaseId()));
             gameItems.add(game);
             //Metadata tab
-            game.setPlaymodes(playmodeDAO.getPlayModes(parameters));
+            game.setPlaymodes(playmodeDAO.getPlayModes(gameParameters));
             game.setSortingTitle(String.valueOf(row.get("g.DefaultSortingTitle")));
-            game.setPriority(priorityDataDAO.getPriority(parameters));
+            game.setPriority(priorityDataDAO.getPriority(gameParameters));
             game.setSummary(String.valueOf(row.get("g.DefaultSummary")));
-            game.setTrivia(triviaDAO.getTrivia(parameters));
-            game.setPublisher(publisherDAO.getPublishers(parameters));
-            game.setDeveloper(developerDAO.getDevelopers(parameters));
-            game.setTags(tagDAO.getTags(parameters));
-            game.setReleaseDates(territoryDAO.getReleaseDates(parameters));
-            game.setStaff(staffDAO.getStaff(parameters));
-            game.setRatings(ratingDAO.getRatings(parameters));
-            game.setCharacters(characterDAO.getCharacters(parameters));
-            game.setAlternateNames(alternateNameDAO.getAlternateNames(parameters));
-            game.setRelatedGames(relatedGameDAO.getRelatedGames(parameters));
-            game.setAdditionalApps(additionalAppDAO.getAdditionalApps(parameters));
+            game.setTrivia(triviaDAO.getTrivia(gameParameters));
+            game.setPublisher(publisherDAO.getPublishers(gameParameters));
+            game.setDeveloper(developerDAO.getDevelopers(gameParameters));
+            game.setTags(tagDAO.getTags(gameParameters));
+            game.setReleaseDates(territoryDAO.getReleaseDates(gameParameters));
+            game.setStaff(staffDAO.getStaff(gameParameters));
+            game.setRatings(ratingDAO.getRatings(gameParameters));
+            game.setCharacters(characterDAO.getCharacters(gameParameters));
+            game.setAlternateNames(alternateNameDAO.getAlternateNames(gameParameters));
+            game.setRelatedGames(relatedGameDAO.getRelatedGames(gameParameters));
+            game.setAdditionalApps(additionalAppDAO.getAdditionalApps(gameParameters));
             //Collection Tab
             String seriesQuery;
             String franchiseQuery;
@@ -60,6 +70,24 @@ public class GameDAO {
             //System.out.println(game);
         }
         return gameItems;
+    }
+
+    public int getGameCount(String searchTerm) {
+        HashMap<String, Object> parameters = new HashMap<>();
+        String query = "Match (g:Game)-[:ON_PLATFORM]-(p:Platform) ";
+        if(!searchTerm.isEmpty()){
+            parameters.put("searchTerm", searchTerm.trim().toLowerCase());
+            query += "WHERE toLower(g.GameName) STARTS WITH $searchTerm OR toLower(g.GameName) ENDS WITH $searchTerm OR toLower(g.GameName) CONTAINS $searchTerm " +
+                    "OR toLower(g.DefaultSortingTitle) STARTS WITH $searchTerm OR toLower(g.DefaultSortingTitle) ENDS WITH $searchTerm OR toLower(g.DefaultSortingTitle) CONTAINS $searchTerm ";
+        }
+        query +="RETURN count(g) as count";
+        Result result = neo4JDatabaseHelper.runQuery(new Query(query, parameters));
+        int gameCount = 0;
+        while(result.hasNext()){
+            Map<String, Object> row = result.next().asMap();
+            gameCount = Integer.parseInt(row.get("count")+"");
+        }
+        return gameCount;
     }
 
     public ArrayList<RelatedGameEntry> getRelatedGamesOptions() {
@@ -79,4 +107,6 @@ public class GameDAO {
                 String.valueOf(row.get("g.Description")), String.valueOf(row.get("g.MaxPlayers")),
                 String.valueOf(row.get("p.PlatformName")), String.valueOf(row.get("g.CommunityRating")), String.valueOf(row.get("g.CommunityRatingCount")));
     }
+
+
 }

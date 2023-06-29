@@ -18,7 +18,10 @@ public class DeveloperDAO {
                 parameters.put("gameId", gameImportItem.getGameId());
                 parameters.put("gameName", gameImportItem.getName());
                 parameters.put("platformName", gameImportItem.getPlatform());
-                String queryString = "MATCH (d:Publisher {PublisherName:$developerName}), (game:Game {GameName:$gameName, GameId:$gameId})-[:ON_PLATFORM]-(p:Platform {PlatformName:$platformName}) " +
+                String queryString = "MATCH (d:Publisher {PublisherName:$developerName}) " +
+                        "With d" +
+                        "MATCH (game:Game {GameName:$gameName, GameId:$gameId})-[:ON_PLATFORM]-(p:Platform {PlatformName:$platformName}) " +
+                        "WITH d, game " +
                         "SET d:Developer, d.DeveloperName = $developerName " +
                         "MERGE (d)<-[:MADE_BY]-(game) Return d";
                 Result result = neo4JDatabaseHelper.runQuery(new Query(queryString, parameters));
