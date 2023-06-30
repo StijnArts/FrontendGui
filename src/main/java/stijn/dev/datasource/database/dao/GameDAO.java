@@ -33,7 +33,7 @@ public class GameDAO {
                     "OR toLower(g.DefaultSortingTitle) STARTS WITH $searchTerm OR toLower(g.DefaultSortingTitle) ENDS WITH $searchTerm OR toLower(g.DefaultSortingTitle) CONTAINS $searchTerm ";
         }
         query +="Return ID(g), g.GameName, g.GameId, g.Description, g.Theme, g.DefaultSummary, g.DefaultSortingTitle, " +
-                "g.LaunchParameters, g.GamePath, g.CommunityRating, g.CommunityRatingCount, g.MaxPlayers, g.HLTBStory, g.HLTBStoryAndExtra, g.HLTBCompletionist, p.PlatformName " +
+                "g.LaunchParameters, g.GamePath, g.CommunityRating, g.CommunityRatingCount, g.MaxPlayers, g.HLTBStory, g.HLTBStoryAndExtra, g.HLTBCompletionist, g.UnitsSold, p.PlatformName " +
                 "ORDER BY g.DefaultSortingTitle " +
                 "SKIP $offset " +
                 "LIMIT 21";
@@ -55,19 +55,19 @@ public class GameDAO {
             game.setPublisher(publisherDAO.getPublishers(gameParameters));
             game.setDeveloper(developerDAO.getDevelopers(gameParameters));
             game.setTags(tagDAO.getTags(gameParameters));
-            game.setReleaseDates(territoryDAO.getReleaseDates(gameParameters));
+            game.setReleaseDates(territoryDAO.getGameReleaseDates(gameParameters));
             game.setStaff(staffDAO.getStaff(gameParameters));
             game.setRatings(ratingDAO.getRatings(gameParameters));
             game.setCharacters(characterDAO.getCharacters(gameParameters));
             game.setAlternateNames(alternateNameDAO.getAlternateNames(gameParameters));
             game.setRelatedGames(relatedGameDAO.getRelatedGames(gameParameters));
             game.setAdditionalApps(additionalAppDAO.getAdditionalApps(gameParameters));
+            game.setUnitsSold(String.valueOf(row.get("g.UnitsSold")));
             //Collection Tab
             String seriesQuery;
             String franchiseQuery;
 
-            //TODO write queries to get all relationships for games
-            //System.out.println(game);
+            //TODO write queries to get all collections for games
         }
         return gameItems;
     }

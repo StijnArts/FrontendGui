@@ -66,7 +66,7 @@ public class ImportDAO {
 
     private void importPlatform(String platform) {
         Platform platformObject = platformXMLParser.parsePlatform(platform);
-        platformDAO.createPlatform(platformObject);
+        platformDAO.savePlatform(platformObject);
         if(platformObject.getPublisher()!=null){
             publisherDAO.createPublisher(platformObject);
         }

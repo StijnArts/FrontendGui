@@ -59,6 +59,7 @@ public class EditPrepper {
         configureRatingComboCheckBox(editController);
         configurePlaymodeComboCheckBox(editController);
         configureTitleTextField(editController);
+        configureUnitsSoldTextField(editController);
         configurePlatformComboBox(editController);
         configurePriorityComboBox(editController);
         configureMaxPlayersField(editController);
@@ -118,6 +119,7 @@ public class EditPrepper {
                     comboBox.valueProperty().bindBidirectional(newValue);
                 }
             }));
+ComboBoxAutocompleteUtil.autoCompleteComboBoxPlus(comboBox, (typedText, itemToCompare) -> itemToCompare.toLowerCase().contains(typedText.toLowerCase()));
             c.graphicProperty().bind(Bindings.when(c.emptyProperty()).then((Node)null).otherwise(hBox));
             return c;
         });
@@ -193,6 +195,7 @@ public class EditPrepper {
                     comboBox.valueProperty().bindBidirectional(newValue);
                 }
             }));
+ComboBoxAutocompleteUtil.autoCompleteComboBoxPlus(comboBox, (typedText, itemToCompare) -> itemToCompare.toLowerCase().contains(typedText.toLowerCase()));
             comboBox.valueProperty().addListener(new ChangeListener<String>() {
                 @Override
                 public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
@@ -234,6 +237,7 @@ public class EditPrepper {
                     comboBox.valueProperty().bindBidirectional(newValue);
                 }
             }));
+ComboBoxAutocompleteUtil.autoCompleteComboBoxPlus(comboBox, (typedText, itemToCompare) -> itemToCompare.toLowerCase().contains(typedText.toLowerCase()));
             comboBox.valueProperty().addListener(new ChangeListener<String>() {
                 @Override
                 public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
@@ -334,6 +338,7 @@ public class EditPrepper {
                     comboBox.valueProperty().bindBidirectional(newValue);
                 }
             }));
+ComboBoxAutocompleteUtil.autoCompleteComboBoxPlus(comboBox, (typedText, itemToCompare) -> itemToCompare.toLowerCase().contains(typedText.toLowerCase()));
             c.graphicProperty().bind(Bindings.when(c.emptyProperty()).then((Node)null).otherwise(hBox));
             return c;
         });
@@ -382,6 +387,7 @@ public class EditPrepper {
                     comboBox.valueProperty().bindBidirectional(newValue);
                 }
             }));
+ComboBoxAutocompleteUtil.autoCompleteComboBoxPlus(comboBox, (typedText, itemToCompare) -> itemToCompare.toLowerCase().contains(typedText.toLowerCase()));
             c.graphicProperty().bind(Bindings.when(c.emptyProperty()).then((Node)null).otherwise(hBox));
             return c;
         });
@@ -413,6 +419,7 @@ public class EditPrepper {
                     comboBox.valueProperty().bindBidirectional(newValue);
                 }
             }));
+ComboBoxAutocompleteUtil.autoCompleteComboBoxPlus(comboBox, (typedText, itemToCompare) -> itemToCompare.toLowerCase().contains(typedText.toLowerCase()));
             comboBox.valueProperty().addListener(new ChangeListener<String>() {
                 @Override
                 public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
@@ -473,6 +480,7 @@ public class EditPrepper {
                     comboBox.valueProperty().bindBidirectional(newValue);
                 }
             }));
+ComboBoxAutocompleteUtil.autoCompleteComboBoxPlus(comboBox, (typedText, itemToCompare) -> itemToCompare.toLowerCase().contains(typedText.toLowerCase()));
             comboBox.valueProperty().addListener(new ChangeListener<String>() {
                 @Override
                 public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
@@ -520,6 +528,7 @@ public class EditPrepper {
                     comboBox.valueProperty().bindBidirectional(newValue);
                 }
             }));
+ComboBoxAutocompleteUtil.autoCompleteComboBoxPlus(comboBox, (typedText, itemToCompare) -> itemToCompare.toLowerCase().contains(typedText.toLowerCase()));
             comboBox.valueProperty().addListener(new ChangeListener<String>() {
                 @Override
                 public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
@@ -716,6 +725,7 @@ public class EditPrepper {
                     comboBox.valueProperty().bindBidirectional(newValue);
                 }
             }));
+            ComboBoxAutocompleteUtil.autoCompleteComboBoxPlus(comboBox, (typedText, itemToCompare) -> itemToCompare.toLowerCase().contains(typedText.toLowerCase()));
             comboBox.valueProperty().addListener((observableValue, s, t1) -> {
                 if(comboBox.getValue()!=null&&!comboBox.getValue().isBlank()&&!"()".equals(comboBox.getValue().trim())) {
                     c.getTableView().getItems().get(c.getIndex()).setRelatedGameEntry(new SimpleStringProperty(comboBox.getValue()));
@@ -731,6 +741,7 @@ public class EditPrepper {
             return c;
         });
         relatedGameColumn.setEditable(true);
+        relatedGameColumn.setMaxWidth(200);
         TableColumn2<RelatedGame,StringProperty> relationshipColumn = new FilteredTableColumn<>("Relationship");
         relationshipColumn.setCellValueFactory(i-> {
             final StringProperty value = i.getValue().getRelationship();
@@ -757,6 +768,7 @@ public class EditPrepper {
                     comboBox.valueProperty().bindBidirectional(newValue);
                 }
             }));
+            ComboBoxAutocompleteUtil.autoCompleteComboBoxPlus(comboBox, (typedText, itemToCompare) -> itemToCompare.toLowerCase().contains(typedText.toLowerCase()));
             comboBox.valueProperty().addListener(new ChangeListener<String>() {
                 @Override
                 public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
@@ -834,6 +846,7 @@ public class EditPrepper {
                     comboBox.valueProperty().bindBidirectional(newValue);
                 }
             }));
+            ComboBoxAutocompleteUtil.autoCompleteComboBoxPlus(comboBox, (typedText, itemToCompare) -> itemToCompare.toLowerCase().contains(typedText.toLowerCase()));
             comboBox.valueProperty().addListener(new ChangeListener<String>() {
                 @Override
                 public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
@@ -952,6 +965,12 @@ public class EditPrepper {
         }
     }
 
+    public void configureUnitsSoldTextField(EditController editController){
+        if(!"null".equals(editController.getGame().getUnitsSold())){
+            editController.getUnitsSoldField().setText(editController.getGame().getUnitsSold());
+        }
+    }
+
     private void configureDescriptionTextArea(EditController editController) {
         if(!"null".equals(editController.getGame().getDescription())){
             editController.getDescriptionTextArea().setText(editController.getGame().getDescription());
@@ -963,10 +982,25 @@ public class EditPrepper {
         }
     }
     public void configurePlatformComboBox(EditController editController){
-        ObservableList<String> options = FXCollections.observableList(PlatformXMLParser.getPlatforms());
-        editController.getPlatformComboBox().setItems(options);
+        editController.setPlatformOptions(FXCollections.observableList(editController.queryPlatformOptions()));
+        editController.getPlatformComboBox().setItems(editController.getPlatformOptions());
         editController.getPlatformComboBox().setValue(editController.getGame().getPlatform());
         ComboBoxAutocompleteUtil.autoCompleteComboBoxPlus(editController.getPlatformComboBox(), (typedText, itemToCompare) -> itemToCompare.toLowerCase().contains(typedText.toLowerCase()));
+        editController.getPlatformComboBox().valueProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+                if(editController.getPlatformComboBox().getValue()!=null){
+                    if(editController.getPlatformComboBox().getValue().trim().isBlank()){
+                        editController.getSaveButton().setDisable(true);
+                    } else {
+                        editController.getSaveButton().setDisable(false);
+                    }
+                } else {
+                    editController.getSaveButton().setDisable(true);
+                }
+
+            }
+        });
     }
 
     public void configureRatingComboCheckBox(EditController editController){

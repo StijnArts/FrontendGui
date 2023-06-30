@@ -309,6 +309,7 @@ public class EditService {
         parameters.put("newSortingTitle", editController.getDefaultSortingTitleTextField().getText());
         parameters.put("newDefaultSummary", editController.getSummaryTextArea().getText());
         parameters.put("newDescription", editController.getDescriptionTextArea().getText());
+        parameters.put("unitsSold", editController.getUnitsSoldField().getText());
         String updateQuery = coreChangeQuery;
         updateQuery = updateQuery + "Set ";
         updateQuery = updateQuery +"g.GameName=$newGameName, ";
@@ -317,6 +318,7 @@ public class EditService {
             parameters.put("newPriority", editController.getPriorityComboBox().getValue().getName());
         }
         updateQuery = updateQuery +"g.MaxPlayers=$newMaxPlayers, ";
+        updateQuery = updateQuery +"g.UnitsSold=$unitsSold, ";
         updateQuery = updateQuery +"g.DefaultSortingTitle=$newSortingTitle, ";
         updateQuery = updateQuery +"g.DefaultSummary=$newDefaultSummary, ";
         updateQuery = updateQuery +"g.Description=$newDescription";

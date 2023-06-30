@@ -1,6 +1,5 @@
 package stijn.dev.resource.controllers.components;
 
-import javafx.beans.binding.*;
 import javafx.beans.property.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
@@ -53,7 +52,7 @@ public class TextAreaTableCell<S, T> extends TableCell<S, T> {
 
     private void startEdit(final Cell<T> cell, final StringConverter<T> converter) {
         textArea.setText(getItemText(cell, converter));
-
+        textArea.setWrapText(true);
         cell.setText(null);
         cell.setGraphic(textArea);
 
@@ -67,11 +66,11 @@ public class TextAreaTableCell<S, T> extends TableCell<S, T> {
         // This will make the text area the height of the text, plus some padding
         // of 20 pixels, as long as that height is between the text area's minHeight
         // and maxHeight. The max height will be the height of its parent (usually).
-        if(text!=null) {
+//        if(text!=null) {
 //            textArea.prefHeightProperty().bind(Bindings.createDoubleBinding(() ->
 //                    text.getBoundsInLocal().getHeight(), text.boundsInLocalProperty()).add(20)
 //            );
-        }
+//        }
 
 
         textArea.selectAll();

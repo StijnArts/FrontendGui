@@ -123,13 +123,11 @@ public class TagConfigurationScreenController {
             }
             event.getTableView().getItems().get(event.getTablePosition().getRow()).setSortingTitle(event.getNewValue());
         });
-        TableColumn2<DetailedTagItem,Integer> deleteColumn = new FilteredTableColumn<>("RemoveTag");
+        TableColumn2<DetailedTagItem,Integer> deleteColumn = new FilteredTableColumn<>("Remove Tag");
         deleteColumn.setCellValueFactory(p->new SimpleObjectProperty<>(p.getValue().getId()));
         deleteColumn.setCellFactory(col -> {
             TableCell<DetailedTagItem,Integer> c = new TableCell<>();
             final Button button = new Button("Delete");
-            //TODO make button open edit screen for the relationship in the cell
-            //button.setOnAction();
             final BorderPane borderPane = new BorderPane();
             final HBox hBox = new HBox(5, button);
             borderPane.centerProperty().setValue(hBox);

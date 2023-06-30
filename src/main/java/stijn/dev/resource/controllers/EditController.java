@@ -13,6 +13,8 @@ import stijn.dev.resource.controllers.components.*;
 import stijn.dev.resource.service.*;
 import stijn.dev.util.javafx.*;
 
+import java.util.*;
+
 public class EditController {
     @FXML
     ComboBox<ComboBoxItemWrap<String>> developerComboCheckBox;
@@ -53,6 +55,8 @@ public class EditController {
     @FXML
     TextArea summaryTextArea;
     @FXML
+    TextField unitsSoldField;
+    @FXML
     Button saveButton;
     @FXML
     Button exitButton;
@@ -63,6 +67,7 @@ public class EditController {
     private EditPrepper editPrepper = new EditPrepper();
     private TagDAO tagDAO = new TagDAO();
     private ObservableList<String> tagOptions;
+    private ObservableList<String> platformOptions;
     private static MainController mainController;
     public static EditController create(FXMLLoader loader, Game gameImportItem, Stage stage, MainController mainControllerIn){
         EditController ec = loader.getController();
@@ -77,8 +82,15 @@ public class EditController {
         stage.close();
     }
 
-    public void openPlatformEditScreen(){
-        //TODO open the platform edit screen
+    public void openPlatformConfigurationScreen(){
+        FXMLLoader loader = FXMLLoaderUtil.createFMXLLoader("platformConfigurationScreen.fxml");
+        Parent root = RootUtil.createRoot(loader);
+        Stage stage = new Stage();
+        Scene scene = new Scene(root);
+        stage.initOwner(this.stage);
+        PlatformConfigurationScreenController.create(loader, stage, this);
+        stage.setScene(scene);
+        stage.show();
     }
 
     public void openPriorityConfigScreen(){
@@ -109,6 +121,14 @@ public class EditController {
         //TODO open character role configuration screen
     }
 
+    public void openGameMediaTypeManagementScreen(){
+        //TODO open GameMediaTypeManagementScreen
+    }
+
+    public void openGameSupplementaryMaterialTypeManagementScreen(){
+        //TODO open GameSupplementaryMaterialTypeManagementScreen
+    }
+
     public void openTagConfigurationScreen(){
         FXMLLoader loader = FXMLLoaderUtil.createFMXLLoader("tagConfigurationScreen.fxml");
         Parent root = RootUtil.createRoot(loader);
@@ -135,6 +155,30 @@ public class EditController {
         tagTable.getItems().add(new Tag(""));
     }
 
+    public void updatePlatforms() {
+        platformOptions.removeAll();
+        platformOptions.setAll(FXCollections.observableList(queryPlatformOptions()));
+        PlatformDAO platformDAO = new PlatformDAO();
+        game.setPlatform(platformDAO.getPlatform(Integer.valueOf(game.getDatabaseId())));
+    }
+
+    public List<String> queryPlatformOptions() {
+        PlatformDAO platformDAO = new PlatformDAO();
+        List<String> options = new ArrayList<>();
+        for (Platform platform : platformDAO.getPlatforms()){
+            options.add(platform.getPlatformName());
+        }
+        return options;
+    }
+
+    public ObservableList<String> getPlatformOptions() {
+        return platformOptions;
+    }
+
+    public void setPlatformOptions(ObservableList<String> platformOptions) {
+        this.platformOptions = platformOptions;
+    }
+
     public TextArea getSummaryTextArea() {
         return summaryTextArea;
     }
@@ -154,6 +198,98 @@ public class EditController {
 
     public void setTagOptions(ObservableList<String> tagOptions) {
         this.tagOptions = tagOptions;
+    }
+
+    public void setDeveloperComboCheckBox(ComboBox<ComboBoxItemWrap<String>> developerComboCheckBox) {
+        this.developerComboCheckBox = developerComboCheckBox;
+    }
+
+    public void setPublisherComboCheckBox(ComboBox<ComboBoxItemWrap<String>> publisherComboCheckBox) {
+        this.publisherComboCheckBox = publisherComboCheckBox;
+    }
+
+    public void setPlayModesComboCheckbox(ComboBox<ComboBoxItemWrap<String>> playModesComboCheckbox) {
+        this.playModesComboCheckbox = playModesComboCheckbox;
+    }
+
+    public void setRatingComboCheckBox(ComboBox<ComboBoxItemWrap<String>> ratingComboCheckBox) {
+        this.ratingComboCheckBox = ratingComboCheckBox;
+    }
+
+    public void setPlatformComboBox(ComboBox<String> platformComboBox) {
+        this.platformComboBox = platformComboBox;
+    }
+
+    public void setPriorityComboBox(ComboBox<PriorityData> priorityComboBox) {
+        this.priorityComboBox = priorityComboBox;
+    }
+
+    public void setAlternateNamesTable(TableView2 alternateNamesTable) {
+        this.alternateNamesTable = alternateNamesTable;
+    }
+
+    public void setRelatedGameTable(TableView2 relatedGameTable) {
+        this.relatedGameTable = relatedGameTable;
+    }
+
+    public void setAdditionalAppsTable(TableView2 additionalAppsTable) {
+        this.additionalAppsTable = additionalAppsTable;
+    }
+
+    public void setTriviaTable(TableView2 triviaTable) {
+        this.triviaTable = triviaTable;
+    }
+
+    public void setReleaseDatesTable(TableView2 releaseDatesTable) {
+        this.releaseDatesTable = releaseDatesTable;
+    }
+
+    public void setStaffTable(TableView2 staffTable) {
+        this.staffTable = staffTable;
+    }
+
+    public void setCharacterTable(TableView2 characterTable) {
+        this.characterTable = characterTable;
+    }
+
+    public void setTagTable(TableView2<Tag> tagTable) {
+        this.tagTable = tagTable;
+    }
+
+    public void setMaxPlayersField(TextField maxPlayersField) {
+        this.maxPlayersField = maxPlayersField;
+    }
+
+    public void setTitleField(TextField titleField) {
+        this.titleField = titleField;
+    }
+
+    public void setDefaultSortingTitleTextField(TextField defaultSortingTitleTextField) {
+        this.defaultSortingTitleTextField = defaultSortingTitleTextField;
+    }
+
+    public void setDescriptionTextArea(TextArea descriptionTextArea) {
+        this.descriptionTextArea = descriptionTextArea;
+    }
+
+    public void setSummaryTextArea(TextArea summaryTextArea) {
+        this.summaryTextArea = summaryTextArea;
+    }
+
+    public TextField getUnitsSoldField() {
+        return unitsSoldField;
+    }
+
+    public void setUnitsSoldField(TextField unitsSoldField) {
+        this.unitsSoldField = unitsSoldField;
+    }
+
+    public void setSaveButton(Button saveButton) {
+        this.saveButton = saveButton;
+    }
+
+    public void setExitButton(Button exitButton) {
+        this.exitButton = exitButton;
     }
 
     public TableView2 getTriviaTable() {
@@ -229,4 +365,5 @@ public class EditController {
     public void exit() {
         stage.close();
     }
+
 }

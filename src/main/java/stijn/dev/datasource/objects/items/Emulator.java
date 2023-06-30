@@ -1,17 +1,21 @@
 package stijn.dev.datasource.objects.items;
 
+import javafx.beans.property.*;
+
 import java.io.*;
 
 public class Emulator {
-    private String name;
-    private String path;
-
-    private String args;
+    private StringProperty name;
+    private StringProperty path;
+    private StringProperty args;
+    private StringProperty description;
     private Process process;
 
-    public Emulator(String name, String path){
-        this.name = name;
-        this.path = path;
+    public Emulator(String name, String path, String description, String args){
+        this.name = new SimpleStringProperty(name);
+        this.path = new SimpleStringProperty(path);
+        this.description = new SimpleStringProperty(description);
+        this.args = new SimpleStringProperty(args);
     }
 
     public Process launchGame(GameImportItem gameImportItem){
@@ -43,5 +47,62 @@ public class Emulator {
                 process.destroyForcibly();
             }
         }
+    }
+
+
+    public String getName() {
+        return name.get();
+    }
+
+    public StringProperty nameProperty() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name.set(name);
+    }
+
+    public String getPath() {
+        return path.get();
+    }
+
+    public StringProperty pathProperty() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path.set(path);
+    }
+
+    public String getArgs() {
+        return args.get();
+    }
+
+    public StringProperty argsProperty() {
+        return args;
+    }
+
+    public void setArgs(String args) {
+        this.args.set(args);
+    }
+
+    public String getDescription() {
+        return description.get();
+    }
+
+    public StringProperty descriptionProperty() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description.set(description);
+    }
+
+    public Process getProcess() {
+        return process;
+    }
+
+    public void setProcess(Process process) {
+        this.process = process;
     }
 }

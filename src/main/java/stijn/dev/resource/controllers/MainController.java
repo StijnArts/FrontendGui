@@ -43,6 +43,7 @@ public class MainController extends SceneController implements Initializable{
     private Pagination gamesPaginator;
     @FXML
     private TextField searchBar;
+    //TODO add the ability to filter on other attributes
     public static double cellWidth = 200;
     public static double cellHeight = 200;
     private RomImportDragAndDroppable romImportDragAndDroppable = new RomImportDragAndDroppable();
@@ -81,7 +82,6 @@ public class MainController extends SceneController implements Initializable{
     public Node createPage(int pageNumber){
         this.tabNumber = pageNumber;
         gamesGridView.setItems(FXCollections.observableList(getGameGridDisplayItems()));
-        //gamesBorderPane.setCenter(gamesGridView);
         return gamesGridView;
     }
 
@@ -122,6 +122,10 @@ public class MainController extends SceneController implements Initializable{
 
     public void openEditTagsMenu(){
         TagConfigurationScreenController.openTagConfigurationScreen(stage);
+    }
+
+    public void openPlatformConfigurationScreen(){
+        PlatformConfigurationScreenController.openPlatformConfigurationScreen(stage);
     }
 
     public Scene getScene() {

@@ -91,6 +91,7 @@
                   <Menu mnemonicParsing="false" text="Configuration">
                     <items>
                       <MenuItem mnemonicParsing="false" onAction="#openEditTagsMenu" text="Configure Tags" />
+                        <MenuItem fx:id="configurePlatforms" mnemonicParsing="false" onAction="#openPlatformConfigurationScreen" text="Configure Platforms" />
                     </items>
                   </Menu>
                 <Menu mnemonicParsing="false" text="Help">

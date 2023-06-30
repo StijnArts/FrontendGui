@@ -27,7 +27,7 @@ public class Neo4JDatabaseHelper implements AutoCloseable{
             for (String platformName :
                     PlatformXMLParser.getPlatforms()) {
                 Platform platform = platformXMLParser.parsePlatform(platformName);
-                platformDAO.createPlatform(platform);
+                platformDAO.savePlatform(platform);
                 if(platform.getPublisher()!=null){
                     PublisherDAO publisherDAO = new PublisherDAO();
                     publisherDAO.createPublisher(platform);

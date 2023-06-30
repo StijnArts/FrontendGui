@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Pagination?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+<?import org.controlsfx.control.ListActionView?>
+<?import org.controlsfx.control.tableview2.TableView2?>
+
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="781.0" prefWidth="1058.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
+   <center>
+      <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+        <tabs>
+          <Tab closable="false" text="Metadata">
+               <content>
+                  <TabPane>
+                     <tabs>
+                        <Tab closable="false" text="General">
+                           <content>
+                              <HBox>
+                                 <children>
+                                    <VBox prefHeight="752.0" prefWidth="550.0">
+                                       <children>
+                                          <HBox prefHeight="753.0" prefWidth="518.0">
+                                             <children>
+                                                <VBox>
+                                                   <HBox.margin>
+                                                      <Insets top="5.0" />
+                                                   </HBox.margin>
+                                                   <children>
+                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Platform Name:" wrappingWidth="99.67578125" />
+                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Publisher:">
+                                                         <VBox.margin>
+                                                            <Insets top="18.0" />
+                                                         </VBox.margin>
+                                                      </Text>
+                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Manufacturer:">
+                                                         <VBox.margin>
+                                                            <Insets top="18.0" />
+                                                         </VBox.margin>
+                                                      </Text>
+                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Media:">
+                                                         <VBox.margin>
+                                                            <Insets top="18.0" />
+                                                         </VBox.margin>
+                                                      </Text>
+                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Media Type:">
+                                                         <VBox.margin>
+                                                            <Insets top="18.0" />
+                                                         </VBox.margin>
+                                                      </Text>
+                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Product Family:">
+                                                         <VBox.margin>
+                                                            <Insets top="18.0" />
+                                                         </VBox.margin>
+                                                      </Text>
+                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Generation:">
+                                                         <VBox.margin>
+                                                            <Insets top="18.0" />
+                                                         </VBox.margin>
+                                                      </Text>
+                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Units Sold:">
+                                                         <VBox.margin>
+                                                            <Insets top="18.0" />
+                                                         </VBox.margin>
+                                                      </Text>
+                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Discontinued on:">
+                                                         <VBox.margin>
+                                                            <Insets top="18.0" />
+                                                         </VBox.margin>
+                                                      </Text>
+                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Default Summary:">
+                                                         <VBox.margin>
+                                                            <Insets top="18.0" />
+                                                         </VBox.margin>
+                                                      </Text>
+                                                   </children>
+                                                </VBox>
+                                                <VBox>
+                                                   <HBox.margin>
+                                                      <Insets top="2.0" />
+                                                   </HBox.margin>
+                                                   <children>
+                                                      <TextField fx:id="platformNameField" prefHeight="25.0" prefWidth="420.0" />
+                                                      <HBox>
+                                                         <children>
+                                                            <ComboBox fx:id="publisherComboBox" editable="true" prefHeight="25.0" prefWidth="451.0">
+                                                               <HBox.margin>
+                                                                  <Insets top="9.0" />
+                                                               </HBox.margin>
+                                                            </ComboBox>
+                                                         </children>
+                                                      </HBox>
+                                                      <HBox>
+                                                         <children>
+                                                            <ComboBox fx:id="manufacturerComboBox" editable="true" prefHeight="25.0" prefWidth="451.0">
+                                                               <HBox.margin>
+                                                                  <Insets top="9.0" />
+                                                               </HBox.margin>
+                                                            </ComboBox>
+                                                         </children>
+                                                      </HBox>
+                                                      <TextField fx:id="mediaField" prefHeight="25.0" prefWidth="420.0">
+                                                         <VBox.margin>
+                                                            <Insets top="8.0" />
+                                                         </VBox.margin>
+                                                      </TextField>
+                                                      <HBox>
+                                                         <children>
+                                                            <ComboBox fx:id="mediaTypeComboBox" editable="true" prefHeight="25.0" prefWidth="451.0">
+                                                               <HBox.margin>
+                                                                  <Insets top="9.0" />
+                                                               </HBox.margin>
+                                                            </ComboBox>
+                                                         </children>
+                                                      </HBox>
+                                                      <HBox>
+                                                         <children>
+                                                            <ComboBox fx:id="productFamilyComboBox" editable="true" prefHeight="25.0" prefWidth="451.0">
+                                                               <HBox.margin>
+                                                                  <Insets top="10.0" />
+                                                               </HBox.margin>
+                                                            </ComboBox>
+                                                         </children>
+                                                      </HBox>
+                                                      <TextField fx:id="platformGenerationField" prefHeight="25.0" prefWidth="420.0">
+                                                         <VBox.margin>
+                                                            <Insets top="9.0" />
+                                                         </VBox.margin>
+                                                      </TextField>
+                                                      <TextField fx:id="unitsSoldField" prefHeight="25.0" prefWidth="420.0">
+                                                         <VBox.margin>
+                                                            <Insets top="8.0" />
+                                                         </VBox.margin>
+                                                      </TextField>
+                                                      <DatePicker fx:id="discontinuedDatePicker">
+                                                         <VBox.margin>
+                                                            <Insets top="11.0" />
+                                                         </VBox.margin>
+                                                      </DatePicker>
+                                                      <TextArea fx:id="defaultSummaryTextField" prefHeight="322.0" prefWidth="418.0">
+                                                         <VBox.margin>
+                                                            <Insets top="9.0" />
+                                                         </VBox.margin>
+                                                      </TextArea>
+                                                   </children>
+                                                </VBox>
+                                             </children>
+                                             <VBox.margin>
+                                                <Insets />
+                                             </VBox.margin>
+                                          </HBox>
+                                       </children>
+                                    </VBox>
+                                    <VBox prefHeight="752.0" prefWidth="524.0" />
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="12.0" left="24.0" right="24.0" top="12.0" />
+                                 </padding>
+                              </HBox>
+                           </content>
+                        </Tab>
+                        <Tab text="Description">
+                           <content>
+                              <BorderPane>
+                                 <center>
+                                    <TextArea fx:id="descriptionTextArea" prefHeight="353.0" prefWidth="626.0" wrapText="true" />
+                                 </center>
+                                 <left>
+                                    <AnchorPane prefHeight="171.0" prefWidth="12.0" BorderPane.alignment="CENTER" />
+                                 </left>
+                                 <right>
+                                    <AnchorPane prefHeight="171.0" prefWidth="12.0" BorderPane.alignment="CENTER" />
+                                 </right>
+                                 <bottom>
+                                    <AnchorPane prefHeight="6.0" prefWidth="650.0" BorderPane.alignment="CENTER" />
+                                 </bottom>
+                                 <top>
+                                    <BorderPane prefHeight="46.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                                       <center>
+                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" text="The platform's description, visible on the details screen." BorderPane.alignment="CENTER" />
+                                       </center>
+                                    </BorderPane>
+                                 </top>
+                              </BorderPane>
+                           </content>
+                        </Tab>
+                        <Tab text="Alternate Names">
+                           <content>
+                              <BorderPane>
+                                 <center>
+                                    <TableView2 fx:id="alternateNamesTable" editable="true" />
+                                 </center>
+                                 <top>
+                                    <BorderPane prefHeight="46.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                                       <center>
+                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Alternate names for the platform. This can be set to be per region, or to be a community-made alternate name for the platform." BorderPane.alignment="CENTER" />
+                                       </center>
+                                    </BorderPane>
+                                 </top>
+                              </BorderPane>
+                           </content>
+                        </Tab>
+                        <Tab text="Related Platforms">
+                           <content>
+                              <BorderPane>
+                                 <center>
+                                    <TableView2 fx:id="relatedPlatformTable" />
+                                 </center>
+                                 <top>
+                                    <BorderPane prefHeight="46.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                                       <center>
+                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Platforms that are related to this platform. Description typically lists the differences/improvements compared to the original version of the platform, or in the case of a different kind of relationship how it relates to said platform." textAlignment="CENTER" wrappingWidth="700.0" BorderPane.alignment="CENTER" />
+                                       </center>
+                                    </BorderPane>
+                                 </top>
+                              </BorderPane>
+                           </content>
+                        </Tab>
+                        <Tab text="Specifications">
+                           <content>
+                              <BorderPane>
+                                 <center>
+                                    <TableView2 fx:id="specificationTable" />
+                                 </center>
+                                 <top>
+                                    <BorderPane prefHeight="46.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                                       <center>
+                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" text="The platform's physical specifications." textAlignment="CENTER" wrappingWidth="700.0" BorderPane.alignment="CENTER" />
+                                       </center>
+                                    </BorderPane>
+                                 </top>
+                              </BorderPane>
+                           </content>
+                        </Tab>
+                        <Tab text="Trivia">
+                           <content>
+                              <BorderPane>
+                                 <center>
+                                    <TableView2 fx:id="triviaTable">
+                                       <columns>
+                                          <TableColumn maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" text="Trivia Name" />
+                                          <TableColumn maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" text="Trivia Body" />
+                                       </columns>
+                                    </TableView2>
+                                 </center>
+                                 <top>
+                                    <BorderPane prefHeight="46.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                                       <center>
+                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Trivia about the platform. The Trivia name needs to be unique per trivia fact, and it's recommended to use a prefix per item/collection. The trivia body is the actual fact that the trivia is about." textAlignment="CENTER" wrappingWidth="700.0" BorderPane.alignment="CENTER" />
+                                       </center>
+                                    </BorderPane>
+                                 </top>
+                              </BorderPane>
+                           </content>
+                        </Tab>
+                        <Tab text="Release Dates">
+                           <content>
+                              <BorderPane prefHeight="200.0" prefWidth="200.0">
+                                 <center>
+                                    <TableView2 fx:id="releaseDatesTable" BorderPane.alignment="CENTER" />
+                                 </center>
+                                 <top>
+                                    <BorderPane prefHeight="46.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                                       <center>
+                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" text="The release dates of the current platform per territory and its cost in the local currency." BorderPane.alignment="CENTER" />
+                                       </center>
+                                    </BorderPane>
+                                 </top>
+                              </BorderPane>
+                           </content>
+                        </Tab>
+                     </tabs>
+                  </TabPane>
+               </content>
+          </Tab>
+          <Tab closable="false" text="Media">
+               <content>
+                  <TabPane>
+                     <tabs>
+                        <Tab text="Media">
+                           <content>
+                              <BorderPane prefHeight="200.0" prefWidth="200.0">
+                                 <left>
+                                    <VBox prefHeight="702.0" prefWidth="224.0" BorderPane.alignment="CENTER">
+                                       <children>
+                                          <HBox nodeOrientation="LEFT_TO_RIGHT" prefHeight="72.0" prefWidth="224.0">
+                                             <children>
+                                                <Button fx:id="platformMediaTypeManagementButton" alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#openPlatformMediaTypeManagementScreen" text="Manage Platform Media Types" />
+                                             </children>
+                                             <opaqueInsets>
+                                                <Insets />
+                                             </opaqueInsets>
+                                             <padding>
+                                                <Insets left="20.0" top="18.0" />
+                                             </padding>
+                                             <VBox.margin>
+                                                <Insets bottom="18.0" />
+                                             </VBox.margin>
+                                          </HBox>
+                                          <ListActionView fx:id="platformMediaTypeList" prefHeight="713.0" prefWidth="224.0" />
+                                       </children>
+                                    </VBox>
+                                 </left>
+                                 <center>
+                                    <Pagination fx:id="mediaPaginator" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+                                 </center>
+                              </BorderPane>
+                           </content>
+                        </Tab>
+                        <Tab text="Supplementary Material">
+                           <content>
+                              <BorderPane prefHeight="200.0" prefWidth="200.0">
+                                 <left>
+                                    <VBox prefHeight="702.0" prefWidth="224.0" BorderPane.alignment="CENTER">
+                                       <children>
+                                          <HBox nodeOrientation="LEFT_TO_RIGHT" prefHeight="72.0" prefWidth="224.0">
+                                             <children>
+                                                <Button fx:id="platformSupplementaryMaterialTypeManagementButton" alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#openPlatformSupplementaryMaterialTypeManagementScreen" prefHeight="51.0" prefWidth="204.0" text="Manage Platform Supplementary Material Types" textAlignment="CENTER" wrapText="true">
+                                                   <HBox.margin>
+                                                      <Insets right="12.0" top="6.0" />
+                                                   </HBox.margin>
+                                                </Button>
+                                             </children>
+                                             <opaqueInsets>
+                                                <Insets />
+                                             </opaqueInsets>
+                                             <padding>
+                                                <Insets left="12.0" />
+                                             </padding>
+                                             <VBox.margin>
+                                                <Insets />
+                                             </VBox.margin>
+                                          </HBox>
+                                          <ListActionView fx:id="platformSupplementaryMaterialTypeList" prefHeight="618.0" prefWidth="224.0" />
+                                       </children>
+                                    </VBox>
+                                 </left>
+                                 <center>
+                                    <Pagination fx:id="supplementaryMaterialPagination" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+                                 </center>
+                              </BorderPane>
+                           </content>
+                        </Tab>
+                     </tabs>
+                  </TabPane>
+               </content>
+          </Tab>
+            <Tab text="Emulation">
+               <content>
+                  <BorderPane>
+                     <center>
+                        <TableView2 fx:id="emulatorTable" />
+                     </center>
+                     <top>
+                        <BorderPane prefHeight="46.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                           <center>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="The emulators that are used for this platform." textAlignment="CENTER" wrappingWidth="700.0" BorderPane.alignment="CENTER" />
+                           </center>
+                        </BorderPane>
+                     </top>
+                  </BorderPane>
+               </content>
+            </Tab>
+        </tabs>
+      </TabPane>
+   </center>
+   <bottom>
+      <BorderPane prefHeight="50.0" prefWidth="1058.0" BorderPane.alignment="CENTER">
+         <left>
+            <Button fx:id="saveButton" mnemonicParsing="false" onAction="#savePlatform" text="Save" BorderPane.alignment="CENTER">
+               <BorderPane.margin>
+                  <Insets left="10.0" />
+               </BorderPane.margin>
+            </Button>
+         </left>
+         <right>
+            <Button mnemonicParsing="false" onAction="#close" text="Exit" BorderPane.alignment="CENTER">
+               <BorderPane.margin>
+                  <Insets right="10.0" />
+               </BorderPane.margin>
+            </Button>
+         </right>
+      </BorderPane>
+   </bottom>
+</BorderPane>

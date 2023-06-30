@@ -10,6 +10,7 @@ public class Game extends Item{
     private final String id;
     private String name;
     private String path;
+    private String unitsSold;
     private String gameId;
     private String description;
     private ArrayList<ReleaseDate> releaseDates;
@@ -89,6 +90,18 @@ public class Game extends Item{
 
     public String getDatabaseId() {
         return id;
+    }
+
+    public String getUnitsSold() {
+        return unitsSold;
+    }
+
+    public void setUnitsSold(String unitsSold) {
+        this.unitsSold = unitsSold;
+    }
+
+    public ArrayList<String> getRating() {
+        return rating;
     }
 
     public String getLaunchParameters() {

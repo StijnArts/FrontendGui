@@ -19,7 +19,7 @@ public class DeveloperDAO {
                 parameters.put("gameName", gameImportItem.getName());
                 parameters.put("platformName", gameImportItem.getPlatform());
                 String queryString = "MATCH (d:Publisher {PublisherName:$developerName}) " +
-                        "With d" +
+                        "With d " +
                         "MATCH (game:Game {GameName:$gameName, GameId:$gameId})-[:ON_PLATFORM]-(p:Platform {PlatformName:$platformName}) " +
                         "WITH d, game " +
                         "SET d:Developer, d.DeveloperName = $developerName " +

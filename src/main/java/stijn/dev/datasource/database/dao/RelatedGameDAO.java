@@ -30,10 +30,6 @@ public class RelatedGameDAO {
                 "WHERE ID(relatedGame) = $relatedGameId " +
                 "WITH originalGame, relatedGame " +
                 "MERGE (relatedGame)-[:RELATED_TO {RelationType:$relationshipType, Description:$relationshipDescription}]->(originalGame)";
-        /*System.out.println("MATCH (g:Game {GameName: \""+parameters.get("gameName")+"\"})-[:ON_PLATFORM]-(p:Platform {PlatformName: \""+parameters.get("platformName")+"\"}) \n" +
-                "                WITH g \n" +
-                "                MATCH (e:Rating {Rating: \""+parameters.get("rating")+"\", Organization: \""+parameters.get("organization")+"\"}) \n" +
-                "                MERGE (g)-[:HAS_RATING]->(e)");*/
         neo4JDatabaseHelper.runQuery(new Query(query, relatedGameParameters));
     }
 }

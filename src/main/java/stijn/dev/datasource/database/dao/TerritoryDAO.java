@@ -26,12 +26,16 @@ public class TerritoryDAO {
     }
 
     public void createReleaseDates(Platform platformObject) {
-        for (String locale : platformObject.getReleaseDates().keySet()) {
-            if (platformObject.getReleaseDates().get(locale) != null) {
+        for (ReleaseDate releaseDate : platformObject.getReleaseDates()) {
+            if (releaseDate != null) {
                 HashMap<String, Object> releaseDateParameters = new HashMap<>();
                 releaseDateParameters.put("platformName", platformObject.getPlatformName());
-                releaseDateParameters.put("releaseDate", platformObject.getReleaseDates().get(locale).toString());
-                releaseDateParameters.put("locale", locale);
+                String date = "";
+                if(releaseDate.getDate().getValue()!=null){
+                    date = releaseDate.getDate().getValue().toString();
+                }
+                releaseDateParameters.put("releaseDate", date);
+                releaseDateParameters.put("locale", releaseDate.getTerritory().getValue());
                 neo4JDatabaseHelper.runQuery(new Query("MATCH (p:Platform {PlatformName:$platformName})" +
                         "MERGE (t:Territory {Name:$locale}) " +
                         "MERGE (p)-[:RELEASED_IN {ReleaseDate:$releaseDate}]->(t)", releaseDateParameters));
@@ -39,7 +43,7 @@ public class TerritoryDAO {
         }
     }
 
-    public ArrayList<ReleaseDate> getReleaseDates(HashMap<String, Object> parameters) {
+    public ArrayList<ReleaseDate> getGameReleaseDates(HashMap<String, Object> parameters) {
         String releaseDateQuery = "MATCH (t:Territory)-[r:RELEASED_IN]-(g:Game) " +
                 "WHERE ID(g) = $id " +
                 "RETURN t.Name, r.ReleaseDate";
@@ -75,5 +79,27 @@ public class TerritoryDAO {
                 "                MATCH (e:Rating {Rating: \""+parameters.get("rating")+"\", Organization: \""+parameters.get("organization")+"\"}) \n" +
                 "                MERGE (g)-[:HAS_RATING]->(e)");*/
         neo4JDatabaseHelper.runQuery(new Query(query, releaseDateParameters));
+    }
+
+    public List<ReleaseDate> getPlatformReleaseDates(int platformId) {
+        HashMap<String, Object> parameters = new HashMap<>();
+        parameters.put("id", platformId);
+        String releaseDateQuery = "MATCH (t:Territory)-[r:RELEASED_IN]-(p:Platform) " +
+                "WHERE ID(p) = $id " +
+                "RETURN t.Name, r.ReleaseDate";
+        Result result = neo4JDatabaseHelper.runQuery(new Query(releaseDateQuery,parameters));
+        ArrayList<ReleaseDate> releaseDates = new ArrayList<>();
+        while(result.hasNext()) {
+            Map<String, Object> row = result.next().asMap();
+            LocalDate date;
+            try{
+                date = LocalDate.parse(String.valueOf(row.get("r.ReleaseDate")));
+            } catch(Exception exception){
+                date = null;
+            }
+            releaseDates.add(new ReleaseDate(String.valueOf(row.get("t.Name")),
+                    date));
+        }
+        return releaseDates;
     }
 }
