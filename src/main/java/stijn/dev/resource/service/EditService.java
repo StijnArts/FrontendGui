@@ -43,6 +43,7 @@ public class EditService {
         saveRatings(parameters, editController);
         savePlayModes(parameters, editController);
 
+        //Metadata
         saveAlternateName(parameters, editController);
         saveRelatedGames(parameters, editController);
         saveAdditionalApps(parameters, editController);
@@ -51,10 +52,13 @@ public class EditService {
         saveCharacters(parameters, editController);
         saveTags(parameters, editController);
         saveReleaseDates(parameters, editController);
+
+        //TODO Media
+
+
         //Has to be done last
         saveGeneral(coreChangeQuery, parameters, editController);
         savePlatform(parameters, editController);
-        //TODO developer, publisher, ratings, playmodes, (preexisting changes), platform in that order
     }
 
     private void saveReleaseDates(HashMap<String, Object> parameters, EditController editController) {

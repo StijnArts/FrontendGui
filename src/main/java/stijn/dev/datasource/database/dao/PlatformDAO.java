@@ -3,6 +3,7 @@ package stijn.dev.datasource.database.dao;
 import org.neo4j.driver.*;
 import stijn.dev.datasource.database.*;
 import stijn.dev.datasource.importing.xml.*;
+import stijn.dev.datasource.objects.data.*;
 import stijn.dev.datasource.objects.items.*;
 
 import java.util.*;
@@ -14,6 +15,8 @@ public class PlatformDAO {
     private PublisherDAO publisherDAO = new PublisherDAO();
     private TerritoryDAO releaseDateDAO = new TerritoryDAO();
     private EmulatorDAO emulatorDAO = new EmulatorDAO();
+    private ManufacturerDAO manufacturerDAO = new ManufacturerDAO();
+    private MediaDAO mediaDAO = new MediaDAO();
     public void savePlatform(Platform platformObject) {
         HashMap<String, Object> parameters = new HashMap<>();
         parameters.put("platformName", platformObject.getPlatformName());
@@ -35,10 +38,11 @@ public class PlatformDAO {
             queryString+=", Category:$category";
         }
         queryString += "}) ";
-        for (String specType : platformObject.getSpecs().keySet()) {
-            queryString +=", (p)-[:Specification {SpecificationType:$specType"+specType+",Specification:$spec"+specType+"}]->(p)";
-            parameters.put("spec"+specType, platformObject.getSpecs().get(specType));
-            parameters.put("specType"+specType, specType);
+        for (PlatformSpecification specification : platformObject.getSpecs()) {
+            queryString +=", (p)-[:Specification {SpecificationType:$specType"+specification.getSpecificationType()+
+                    ",Specification:$spec"+specification.getSpecificationType()+"}]->(p)";
+            parameters.put("spec"+specification.getSpecificationType(), specification.getSpecification());
+            parameters.put("specType"+specification.getSpecificationType(), specification.getSpecificationType());
         }
         queryString += " Return r";
         Query query = new Query(queryString, parameters);
@@ -58,8 +62,12 @@ public class PlatformDAO {
         if(!platformExists(platformName)){
             Platform platform = platformXMLParser.parsePlatform(platformName);
             savePlatform(platform);
-            if(platform.getPublisher()!=null){
-                publisherDAO.createPublisher(platform);
+            if(platform.getPublishers()!=null){
+                publisherDAO.createPublisher(platform.getPlatformName(), platform.getPublishers());
+            }
+            if(platform.getManufacturers()!=null){
+                ManufacturerDAO manufacturerDAO = new ManufacturerDAO();
+                manufacturerDAO.createManufacturer(platform.getPlatformName(), platform.getManufacturers());
             }
         }
         String query = "MATCH (g:Game {GameName: $gameName}) " +
@@ -94,9 +102,7 @@ public class PlatformDAO {
 
     public List<Platform> getPlatforms() {
         String query = "MATCH (p:Platform) " +
-                "WITH p " +
-                "MATCH (p)-[:MADE_BY]-(m:Publisher) " +
-                "RETURN ID(p), p.PlatformName, p.SortingTitle, p.Category, p.Description, p.MaxPlayers, p.DefaultEmulator, m.PublisherName";
+                "RETURN ID(p), p.PlatformName, p.SortingTitle, p.Category, p.Description, p.MaxPlayers, p.DefaultEmulator";
         Result result = neo4JDatabaseHelper.runQuery(query);
         List<Platform> platforms = new ArrayList<>();
         while(result.hasNext()) {
@@ -106,11 +112,13 @@ public class PlatformDAO {
                     row.get("p.PlatformName")+"",
                     row.get("p.SortingTitle")+"",
                     releaseDateDAO.getPlatformReleaseDates(Integer.parseInt(row.get("ID(p)")+"")),
-                    row.get("m.PublisherName")+"",
+                    publisherDAO.getPlatformPublishers(Integer.parseInt(row.get("ID(p)")+"")),
+                    manufacturerDAO.getPlatformManufacturers(Integer.parseInt(row.get("ID(p)")+"")),
                     row.get("p.Description")+"",
                     getSpecs(Integer.parseInt(row.get("ID(p)")+"")),
                     row.get("p.MaxPlayers")+"",
                     row.get("p.Category")+"",
+                    mediaDAO.getPlatformMedia(Integer.parseInt(row.get("ID(p)")+"")),
                     emulatorDAO.getDefaultEmulatorForPlatform(Integer.parseInt(row.get("ID(p)")+"")),
                     emulatorDAO.getPlatformEmulators(Integer.parseInt(row.get("ID(p)")+""))
             ));
@@ -118,7 +126,7 @@ public class PlatformDAO {
         return platforms;
     }
 
-    private HashMap<String, String> getSpecs(int platformId) {
+    private List<PlatformSpecification> getSpecs(int platformId) {
         HashMap<String, Object> parameters = new HashMap<>();
         parameters.put("id",platformId);
         String query = "MATCH (p:Platform) " +
@@ -127,10 +135,10 @@ public class PlatformDAO {
                 "MATCH (p)-[s:Specification]-(p)" +
                 "RETURN s.Specification, s.SpecificationType";
         Result result = neo4JDatabaseHelper.runQuery(new Query(query, parameters));
-        HashMap<String, String> specs = new HashMap<>();
+        List<PlatformSpecification> specs = new ArrayList<>();
         while(result.hasNext()) {
             Map<String, Object> row = result.next().asMap();
-            specs.put(row.get("s.SpecificationType")+"",row.get("s.Specification")+"");
+            specs.add(new PlatformSpecification(row.get("s.SpecificationType")+"",row.get("s.Specification")+""));
         }
         return specs;
     }

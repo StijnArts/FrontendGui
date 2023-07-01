@@ -1,6 +1,7 @@
 package stijn.dev.resource.controllers;
 
 import javafx.collections.*;
+import javafx.event.*;
 import javafx.fxml.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
@@ -82,6 +83,8 @@ public class EditController {
         stage.close();
     }
 
+
+
     public void openPlatformConfigurationScreen(){
         FXMLLoader loader = FXMLLoaderUtil.createFMXLLoader("platformConfigurationScreen.fxml");
         Parent root = RootUtil.createRoot(loader);
@@ -127,6 +130,10 @@ public class EditController {
 
     public void openGameSupplementaryMaterialTypeManagementScreen(){
         //TODO open GameSupplementaryMaterialTypeManagementScreen
+    }
+
+    public void openCompanyEditScreen(ActionEvent actionEvent) {
+        //TODO open CompanyEditScreen
     }
 
     public void openTagConfigurationScreen(){
@@ -365,5 +372,6 @@ public class EditController {
     public void exit() {
         stage.close();
     }
+
 
 }

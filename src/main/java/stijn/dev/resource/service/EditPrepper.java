@@ -26,6 +26,8 @@ import java.io.*;
 import java.time.*;
 import java.util.*;
 
+import static stijn.dev.resource.controllers.components.ComboBoxItemWrap.generateComboBoxItemWrappers;
+
 public class EditPrepper {
     private GamesXMLParser gamesXMLParser = new GamesXMLParser();
     private DeveloperDAO developerDAO = new DeveloperDAO();
@@ -934,6 +936,23 @@ ComboBoxAutocompleteUtil.autoCompleteComboBoxPlus(comboBox, (typedText, itemToCo
             });
             return cell;
         });
+        editController.getPlayModesComboCheckbox().valueProperty().addListener((observableValue, stringComboBoxItemWrap, t1) -> {
+            editController.getPlayModesComboCheckbox().show();
+            List<String> selectedOptions = Arrays.stream(editController.getPlayModesComboCheckbox().getValue().getItem().split("; ")).toList();
+            options.forEach(option -> {
+                for (String selectedOption : selectedOptions) {
+                    if(selectedOption.trim().toLowerCase().contains(option.getItem().toLowerCase())){
+                        option.setCheck(true);
+                        return;
+                    }
+                }
+                option.setCheck(false);
+
+            });
+        });
+        editController.getPlayModesComboCheckbox().focusedProperty().addListener(((observableValue, aBoolean, t1) -> {
+            editController.getPlayModesComboCheckbox().setValue(new ComboBoxItemWrap<>(editController.getPlayModesComboCheckbox().getValue().itemProperty().getValue()));
+        }));
         editController.getPlayModesComboCheckbox().setItems(options);
     }
 
@@ -998,13 +1017,11 @@ ComboBoxAutocompleteUtil.autoCompleteComboBoxPlus(comboBox, (typedText, itemToCo
                 } else {
                     editController.getSaveButton().setDisable(true);
                 }
-
             }
         });
     }
 
     public void configureRatingComboCheckBox(EditController editController){
-        //TODO fix ratings disappearing in the combobox selected bar
         ObservableList<ComboBoxItemWrap<String>> options = FXCollections.observableList(generateComboBoxItemWrappers(ratingDAO.getRatings()));
         String ratingValue = "";
         for (String rating : editController.getGame().getRatings()) {
@@ -1054,6 +1071,23 @@ ComboBoxAutocompleteUtil.autoCompleteComboBoxPlus(comboBox, (typedText, itemToCo
             });
             return cell;
         });
+        editController.getRatingComboCheckBox().valueProperty().addListener((observableValue, stringComboBoxItemWrap, t1) -> {
+            editController.getRatingComboCheckBox().show();
+            List<String> selectedOptions = Arrays.stream(editController.getRatingComboCheckBox().getValue().getItem().split("; ")).toList();
+            options.forEach(option -> {
+                for (String selectedOption : selectedOptions) {
+                    if(selectedOption.trim().toLowerCase().contains(option.getItem().toLowerCase())){
+                        option.setCheck(true);
+                        return;
+                    }
+                }
+                option.setCheck(false);
+
+            });
+        });
+        editController.getRatingComboCheckBox().focusedProperty().addListener(((observableValue, aBoolean, t1) -> {
+            editController.getRatingComboCheckBox().setValue(new ComboBoxItemWrap<>(editController.getRatingComboCheckBox().getValue().itemProperty().getValue()));
+        }));
         editController.getRatingComboCheckBox().setItems(options);
     }
 
@@ -1092,6 +1126,7 @@ ComboBoxAutocompleteUtil.autoCompleteComboBoxPlus(comboBox, (typedText, itemToCo
                         }
                         setGraphic(checkBox);
                     }
+
                 }
             };
 
@@ -1106,6 +1141,20 @@ ComboBoxAutocompleteUtil.autoCompleteComboBoxPlus(comboBox, (typedText, itemToCo
                 editController.getPublisherComboCheckBox().tooltipProperty().setValue(new Tooltip(string.substring(Integer.min(2, string.length()))));
             });
             return cell;
+        });
+        editController.getPublisherComboCheckBox().valueProperty().addListener((observableValue, stringComboBoxItemWrap, t1) -> {
+            editController.getPublisherComboCheckBox().show();
+            List<String> selectedOptions = Arrays.stream(editController.getPublisherComboCheckBox().getValue().getItem().split("; ")).toList();
+            options.forEach(option -> {
+                for (String selectedOption : selectedOptions) {
+                    if(selectedOption.trim().toLowerCase().contains(option.getItem().toLowerCase())){
+                        option.setCheck(true);
+                        return;
+                    }
+                }
+                option.setCheck(false);
+
+            });
         });
         editController.getPublisherComboCheckBox().focusedProperty().addListener(((observableValue, aBoolean, t1) -> {
             editController.getPublisherComboCheckBox().setValue(new ComboBoxItemWrap<>(editController.getPublisherComboCheckBox().getValue().itemProperty().getValue()));
@@ -1165,15 +1214,22 @@ ComboBoxAutocompleteUtil.autoCompleteComboBoxPlus(comboBox, (typedText, itemToCo
             });
             return cell;
         });
+        editController.getDeveloperComboCheckBox().valueProperty().addListener((observableValue, stringComboBoxItemWrap, t1) -> {
+            editController.getDeveloperComboCheckBox().show();
+            List<String> selectedOptions = Arrays.stream(editController.getDeveloperComboCheckBox().getValue().getItem().split("; ")).toList();
+            options.forEach(option -> {
+                for (String selectedOption : selectedOptions) {
+                    if(selectedOption.trim().toLowerCase().contains(option.getItem().toLowerCase())){
+                        option.setCheck(true);
+                        return;
+                    }
+                }
+                option.setCheck(false);
+
+            });
+        });
         editController.getDeveloperComboCheckBox().setItems(options);
     }
 
-    public ArrayList<ComboBoxItemWrap<String>> generateComboBoxItemWrappers(List<String> strings){
-        ArrayList<ComboBoxItemWrap<String>> comboBoxItemWraps = new ArrayList<>();
-        for (String string :
-                strings) {
-            comboBoxItemWraps.add(new ComboBoxItemWrap<>(string));
-        }
-        return comboBoxItemWraps;
-    }
+
 }

@@ -67,8 +67,12 @@ public class ImportDAO {
     private void importPlatform(String platform) {
         Platform platformObject = platformXMLParser.parsePlatform(platform);
         platformDAO.savePlatform(platformObject);
-        if(platformObject.getPublisher()!=null){
-            publisherDAO.createPublisher(platformObject);
+        if(platformObject.getPublishers()!=null){
+            publisherDAO.createPublisher(platformObject.getPlatformName(), platformObject.getPublishers());
+        }
+        if(platformObject.getManufacturers()!=null){
+            ManufacturerDAO manufacturerDAO = new ManufacturerDAO();
+            manufacturerDAO.createManufacturer(platformObject.getPlatformName(), platformObject.getManufacturers());
         }
         System.out.println("Help Im looping");
     }

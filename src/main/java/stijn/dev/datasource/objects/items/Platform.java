@@ -9,40 +9,60 @@ public class Platform extends Item {
     private StringProperty platformName;
     private int id;
     private List<ReleaseDate> releaseDates;
-    private StringProperty publisher;
+    private List<String> publishers;
+    private List<String> manufacturers;
     private StringProperty description;
     private Emulator defaultEmulator;
-    private HashMap<String,String> specs;
+    private List<PlatformSpecification> specs;
     private StringProperty maxPlayers;
-    private String previousPublisher;
+    private List<String> previousPublishers;
+    private List<String> media;
     private StringProperty category;
     private List<Emulator> emulators;
     private StringProperty sortingTitle;
 
-    public Platform(String platformName, String sortingTitle, List<ReleaseDate> releaseDates, String developer, String description,
-                    HashMap<String,String> specs, String maxPlayers, String category){
-        this.previousPublisher = developer;
+    public Platform(String platformName, String sortingTitle, List<ReleaseDate> releaseDates, List<String> publishers, List<String> manufacturers,
+                    String description, List<PlatformSpecification> specs, String maxPlayers, String category){
+        this.previousPublishers = publishers;
         this.platformName = new SimpleStringProperty(platformName);
         this.sortingTitle = new SimpleStringProperty(sortingTitle);
         this.releaseDates = releaseDates;
-        this.publisher = new SimpleStringProperty(developer);
+        this.publishers = publishers;
         this.description = new SimpleStringProperty(description);
         this.specs = specs;
         this.maxPlayers = new SimpleStringProperty(maxPlayers);
         this.category = new SimpleStringProperty(category);
+        this.manufacturers = manufacturers;
     }
 
-    public Platform(int id, String platformName, String sortingTitle, List<ReleaseDate> releaseDates, String developer, String description,
-                    HashMap<String,String> specs, String maxPlayers, String category, Emulator defaultEmulator, List<Emulator> emulators){
-        this(platformName, sortingTitle, releaseDates, developer, description, specs, maxPlayers, category);
+    public Platform(int id, String platformName, String sortingTitle, List<ReleaseDate> releaseDates, List<String> publishers, List<String> manufacturers, String description,
+                    List<PlatformSpecification> specs, String maxPlayers, String category, List<String> media,Emulator defaultEmulator, List<Emulator> emulators){
+        this(platformName, sortingTitle, releaseDates, publishers, manufacturers, description, specs, maxPlayers, category);
         this.defaultEmulator = defaultEmulator;
         this.emulators = emulators;
         this.id = id;
+        this.media = media;
     }
 
     @Override
     public String getSortingTitle() {
         return sortingTitle.get();
+    }
+
+    public List<PlatformSpecification> getSpecs() {
+        return specs;
+    }
+
+    public List<String> getManufacturers() {
+        return manufacturers;
+    }
+
+    public void setManufacturers(List<String> manufacturers) {
+        this.manufacturers = manufacturers;
+    }
+
+    public void setSpecs(List<PlatformSpecification> specs) {
+        this.specs = specs;
     }
 
     public StringProperty sortingTitleProperty() {
@@ -61,12 +81,28 @@ public class Platform extends Item {
         return platformName.get();
     }
 
-    public String getPreviousPublisher() {
-        return previousPublisher;
+    public List<String> getPublishers() {
+        return publishers;
     }
 
-    public void setPreviousPublisher(String previousPublisher) {
-        this.previousPublisher = previousPublisher;
+    public void setPublishers(List<String> publishers) {
+        this.publishers = publishers;
+    }
+
+    public List<String> getMedia() {
+        return media;
+    }
+
+    public void setMedia(List<String> media) {
+        this.media = media;
+    }
+
+    public List<String> getPreviousPublishers() {
+        return previousPublishers;
+    }
+
+    public void setPreviousPublishers(List<String> previousPublishers) {
+        this.previousPublishers = previousPublishers;
     }
 
     public StringProperty platformNameProperty() {
@@ -89,18 +125,6 @@ public class Platform extends Item {
         this.releaseDates = releaseDates;
     }
 
-    public String getPublisher() {
-        return publisher.get();
-    }
-
-    public StringProperty publisherProperty() {
-        return publisher;
-    }
-
-    public void setPublisher(String publisher) {
-        this.publisher.set(publisher);
-    }
-
     public String getDescription() {
         return description.get();
     }
@@ -119,14 +143,6 @@ public class Platform extends Item {
 
     public void setDefaultEmulator(Emulator defaultEmulator) {
         this.defaultEmulator = defaultEmulator;
-    }
-
-    public HashMap<String, String> getSpecs() {
-        return specs;
-    }
-
-    public void setSpecs(HashMap<String, String> specs) {
-        this.specs = specs;
     }
 
     public String getMaxPlayers() {
@@ -169,10 +185,9 @@ public class Platform extends Item {
                 string += "\n" + releaseDate.getTerritory().getValue().toUpperCase() + ": " + releaseDate.getDate().getValue().toString();
             }
         }
-        string += "\nPublisher: "+ publisher +"\nDescription: "+description+"\n Specs: ";
-        for (String spec:
-             specs.keySet()) {
-            string += "\n"+spec+": "+specs.get(spec);
+        string += "\nPublisher: "+ publishers +"\nDescription: "+description+"\n Specs: ";
+        for (PlatformSpecification spec: specs) {
+            string += "\n"+spec.getSpecificationType()+": "+spec.getSpecification();
         }
         string += "\nMax Players: "+maxPlayers+"\nCategory: "+category;
         return string;

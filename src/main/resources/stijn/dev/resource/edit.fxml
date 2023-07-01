@@ -80,7 +80,12 @@
                                                                   <Insets top="8.0" />
                                                                </VBox.margin>
                                                                <children>
-                                                                  <ComboBox fx:id="developerComboCheckBox" editable="true" prefHeight="25.0" prefWidth="350.0" visibleRowCount="15" />
+                                                                  <ComboBox fx:id="developerComboCheckBox" editable="true" prefHeight="25.0" prefWidth="263.0" visibleRowCount="15" />
+                                                                  <Button fx:id="editPublishersButton" mnemonicParsing="false" onAction="#openCompanyEditScreen" prefHeight="25.0" prefWidth="37.0" text="Edit">
+                                                                     <HBox.margin>
+                                                                        <Insets left="3.0" />
+                                                                     </HBox.margin>
+                                                                  </Button>
                                                                </children>
                                                             </HBox>
                                                             <HBox prefHeight="25.0" prefWidth="211.0">
@@ -88,7 +93,12 @@
                                                                   <Insets top="8.0" />
                                                                </VBox.margin>
                                                                <children>
-                                                                  <ComboBox fx:id="publisherComboCheckBox" editable="true" prefHeight="25.0" prefWidth="336.0" visibleRowCount="15" />
+                                                                  <ComboBox fx:id="publisherComboCheckBox" editable="true" prefHeight="25.0" prefWidth="264.0" visibleRowCount="15" />
+                                                                  <Button fx:id="editPublishersButton" mnemonicParsing="false" onAction="#openCompanyEditScreen" prefHeight="25.0" prefWidth="37.0" text="Edit">
+                                                                     <HBox.margin>
+                                                                        <Insets left="3.0" />
+                                                                     </HBox.margin>
+                                                                  </Button>
                                                                </children>
                                                             </HBox>
                                                             <TextField fx:id="maxPlayersField">
@@ -200,7 +210,7 @@
                                                             </HBox>
                                                             <HBox>
                                                                <children>
-                                                                  <TextField prefHeight="25.0" prefWidth="273.0" fx:id="unitsSoldField" />
+                                                                  <TextField fx:id="unitsSoldField" prefHeight="25.0" prefWidth="273.0" />
                                                                </children>
                                                                <VBox.margin>
                                                                   <Insets top="8.0" />

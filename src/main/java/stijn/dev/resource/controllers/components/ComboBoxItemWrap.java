@@ -2,6 +2,8 @@ package stijn.dev.resource.controllers.components;
 
 import javafx.beans.property.*;
 
+import java.util.*;
+
 public class ComboBoxItemWrap<T> {
     private BooleanProperty check = new SimpleBooleanProperty(false);
     private ObjectProperty<T> item = new SimpleObjectProperty<>();
@@ -42,5 +44,14 @@ public class ComboBoxItemWrap<T> {
     @Override
     public String toString() {
         return item.getValue().toString();
+    }
+
+    public static ArrayList<ComboBoxItemWrap<String>> generateComboBoxItemWrappers(List<String> strings){
+        ArrayList<ComboBoxItemWrap<String>> comboBoxItemWraps = new ArrayList<>();
+        for (String string :
+                strings) {
+            comboBoxItemWraps.add(new ComboBoxItemWrap<>(string));
+        }
+        return comboBoxItemWraps;
     }
 }
