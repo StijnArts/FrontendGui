@@ -13,7 +13,7 @@ public class ManufacturerDAO {
         String triviaQuery = "MATCH (m:Company)-[:PRODUCED_BY]-(platform:Platform) " +
                 "WHERE ID(platform) = $id " +
                 "RETURN m.CompanyName " +
-                "ORDER BY p.CompanyName";
+                "ORDER BY m.CompanyName";
         Result result = neo4JDatabaseHelper.runQuery(new Query(triviaQuery,parameters));
         ArrayList<String> manufacturers = new ArrayList<>();
         while(result.hasNext()) {
@@ -26,7 +26,7 @@ public class ManufacturerDAO {
     public List<String> getManufacturers() {
         String triviaQuery = "MATCH (m:Company) " +
                 "RETURN m.CompanyName " +
-                "ORDER BY p.CompanyName";
+                "ORDER BY m.CompanyName";
         Result result = neo4JDatabaseHelper.runQuery(new Query(triviaQuery));
         ArrayList<String> manufacturers = new ArrayList<>();
         while(result.hasNext()) {

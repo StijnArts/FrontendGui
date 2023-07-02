@@ -50,7 +50,7 @@ public class DeveloperDAO {
         String query = "MATCH (d:Company)-[:MADE_BY]-(g:Game) " +
                 "WHERE ID(g) = $id " +
                 "RETURN d.CompanyName " +
-                "ORDER BY p.CompanyName";
+                "ORDER BY d.CompanyName";
         Result result = neo4JDatabaseHelper.runQuery(new Query(query,parameters));
         ArrayList<String> developers = new ArrayList<>();
         while(result.hasNext()) {
