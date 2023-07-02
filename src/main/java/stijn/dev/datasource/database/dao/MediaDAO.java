@@ -12,7 +12,7 @@ public class MediaDAO {
         parameters.put("id", id);
         String triviaQuery = "MATCH (m:Media)-[:USES]-(platform:Platform) " +
                 "WHERE ID(platform) = $id " +
-                "RETURN m.MediaSpecification";
+                "RETURN m.MediaSpecification ORDER BY m.MediaSpecification";
         Result result = neo4JDatabaseHelper.runQuery(new Query(triviaQuery,parameters));
         ArrayList<String> manufacturers = new ArrayList<>();
         while(result.hasNext()) {
@@ -24,7 +24,7 @@ public class MediaDAO {
 
     public List<String> getMedia() {
         String triviaQuery = "MATCH (m:Media) " +
-                "RETURN m.MediaSpecification";
+                "RETURN m.MediaSpecification ORDER BY m.MediaSpecification";
         Result result = neo4JDatabaseHelper.runQuery(new Query(triviaQuery));
         ArrayList<String> media = new ArrayList<>();
         while(result.hasNext()) {

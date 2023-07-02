@@ -13,7 +13,7 @@ public class AlternateNameDAO {
                 "WHERE ID(g) = $id " +
                 "WITH g " +
                 "MATCH (g)-[a:ALTERNATE_NAME]-(g) " +
-                "RETURN a.AlternateNameID, a.Name";
+                "RETURN a.AlternateNameID, a.Name ORDER BY a.AlternateNameID";
         Result communityAlternateNamesResult = neo4JDatabaseHelper.runQuery(new Query(communityAlternateNamesQuery,parameters));
         ArrayList<AlternateName> alternateNames = new ArrayList<>();
         while(communityAlternateNamesResult.hasNext()) {
@@ -25,7 +25,7 @@ public class AlternateNameDAO {
                 "WHERE ID(g) = $id " +
                 "WITH g " +
                 "MATCH (g)-[a:ALTERNATE_NAME]-(t:Territory) " +
-                "RETURN a.AlternateNameID, a.Name, t.Name";
+                "RETURN a.AlternateNameID, a.Name, t.Name ORDER BY a.AlternateNameID";
         Result regionAlternateNamesResult = neo4JDatabaseHelper.runQuery(new Query(regionAlternateNamesQuery,parameters));
         while(regionAlternateNamesResult.hasNext()) {
             Map<String, Object> row = regionAlternateNamesResult.next().asMap();

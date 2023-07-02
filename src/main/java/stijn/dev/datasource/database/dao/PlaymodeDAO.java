@@ -30,7 +30,7 @@ public class PlaymodeDAO {
     }
 
     public ArrayList<String> getPlayModes() {
-        String ESRBQuery = "MATCH (p:PlayMode) RETURN p.Name";
+        String ESRBQuery = "MATCH (p:PlayMode) RETURN p.Name ORDER BY p.Name";
         Result result = neo4JDatabaseHelper.runQuery(new Query(ESRBQuery));
         ArrayList<String> playmodes = new ArrayList<>();
         while(result.hasNext()) {
@@ -42,7 +42,7 @@ public class PlaymodeDAO {
 
     public ArrayList<String> getPlayModes(HashMap<String, Object> parameters) {
         String playmodeQuery = "MATCH (p:PlayMode)-[:HAS_MODE]-(g:Game) " +
-                "RETURN p.Name";
+                "RETURN p.Name ORDER BY p.Name";
         Result result = neo4JDatabaseHelper.runQuery(new Query(playmodeQuery,parameters));
         ArrayList<String> playmodes = new ArrayList<>();
         while(result.hasNext()) {

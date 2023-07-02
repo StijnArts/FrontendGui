@@ -12,7 +12,7 @@ public class TriviaDAO {
     public ArrayList<Trivia> getTrivia(HashMap<String, Object> parameters){
         String triviaQuery = "MATCH (t:Trivia)-[:TRIVIA_ABOUT]-(g:Game) " +
                 "WHERE ID(g) = $id " +
-                "RETURN t.TriviaID, t.Fact";
+                "RETURN t.TriviaID, t.Fact ORDER BY t.TriviaID";
         Result result = neo4JDatabaseHelper.runQuery(new Query(triviaQuery,parameters));
         ArrayList<Trivia> trivia = new ArrayList<>();
         while(result.hasNext()) {
@@ -23,7 +23,7 @@ public class TriviaDAO {
     }
 
     public HashMap<String, String> getTrivia(){
-        String triviaQuery = "MATCH (t:Trivia) RETURN t.TriviaID, t.Fact";
+        String triviaQuery = "MATCH (t:Trivia) RETURN t.TriviaID, t.Fact ORDER BY t.TriviaID";
         Result result = neo4JDatabaseHelper.runQuery(new Query(triviaQuery));
         HashMap<String, String> trivia = new HashMap<>();
         while(result.hasNext()) {

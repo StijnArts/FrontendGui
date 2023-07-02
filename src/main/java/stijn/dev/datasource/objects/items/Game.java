@@ -316,8 +316,8 @@ public class Game extends Item{
         return developer;
     }
 
-    public void setDeveloper(ArrayList<String> developer) {
-        this.developer = developer;
+    public void setDeveloper(List<String> developer) {
+        this.developer = new ArrayList<>(developer);
     }
 
     public ArrayList<String> getPublisher() {

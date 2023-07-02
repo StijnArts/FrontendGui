@@ -10,123 +10,82 @@ public class PublisherDAO {
     private Neo4JDatabaseHelper neo4JDatabaseHelper = new Neo4JDatabaseHelper();
     public void createPublisher(String platformName, List<String> publishers) {
         for (String publisher : publishers) {
-            boolean publisherExists = false;
-            while(!publisherExists) {
                 HashMap<String, Object> parameters = new HashMap<>();
-                parameters.put("publisherName", publisher.trim());
+                parameters.put("companyName", publisher.trim());
                 parameters.put("platformName", platformName);
-                String queryString = "MATCH (d:Developer {DeveloperName:$publisherName}) " +
-                        "SET d:Publisher, d.PublisherName = $publisherName " +
+                String queryString = "MATCH (platform:Platform {PlatformName:$platformName}) " +
+                        "WITH platform " +
+                        "MERGE (d:Company {CompanyName:$companyName}) " +
+                        "WITH platform, d " +
                         "MERGE (d)<-[:MADE_BY]-(platform) Return d";
-                Result result = neo4JDatabaseHelper.runQuery(new Query(queryString, parameters));
-                if (!result.hasNext()) {
-                    queryString = "Match (platform:Platform {PlatformName:$platformName}) " +
-                            "MERGE (n:Publisher {PublisherName:$publisherName})" +
-                            "MERGE r = (n)<-[:MADE_BY]-(platform) Return r";
-                    Query query = new Query(queryString, parameters);
-                    neo4JDatabaseHelper.runQuery(query);
-                }
-                String checkExistsQuery = "MATCH (pu:Publisher {PublisherName:$publisherName})<-[r:MADE_BY]-(platform:Platform {PlatformName:$platformName})" +
-                        "Return r";
-                Query checkExists = new Query(checkExistsQuery, parameters);
-                Result exists = neo4JDatabaseHelper.runQuery(checkExists);
-                publisherExists = exists.hasNext();
-
-            }
+                neo4JDatabaseHelper.runQuery(new Query(queryString, parameters));
         }
 
     }
 
     public void createPublisher(GameImportItem gameImportItem) {
         if(!gameImportItem.getPublisher().equals("N/A")) {
-            boolean publisherExists = false;
-            while(!publisherExists){
                 HashMap<String, Object> parameters = new HashMap<>();
-                parameters.put("publisherName", gameImportItem.getPublisher().trim());
+                parameters.put("companyName", gameImportItem.getPublisher().trim());
                 parameters.put("gameId", gameImportItem.getGameId());
                 parameters.put("gameName", gameImportItem.getName());
                 parameters.put("platformName", gameImportItem.getPlatform());
-                String queryString = "MATCH (d:Developer {DeveloperName:$publisherName}), (game:Game {GameName:$gameName, GameId:$gameId})-[:ON_PLATFORM]-(p:Platform {PlatformName:$platformName}) " +
-                        "SET d:Publisher, d.PublisherName = $publisherName " +
+                String queryString = "MATCH (game:Game {GameName:$gameName, GameId:$gameId})-[:ON_PLATFORM]-(p:Platform {PlatformName:$platformName}) " +
+                        "WITH game " +
+                        "MERGE (d:Company {CompanyName:$companyName}) " +
                         "MERGE (d)<-[:PUBLISHED_BY]-(game) Return d";
-                Result result = neo4JDatabaseHelper.runQuery(new Query(queryString, parameters));
-                if (!result.hasNext()) {
-                    queryString = "MATCH (game:Game {GameName:$gameName, GameId:$gameId})-[:ON_PLATFORM]-(p:Platform {PlatformName:$platformName}) " +
-                            "MERGE (n:Publisher {PublisherName:$publisherName}) " +
-                            "MERGE r = (n)<-[:PUBLISHED_BY]-(game) Return r";
-                    Query query = new Query(queryString, parameters);
-                    neo4JDatabaseHelper.runQuery(query);
-                }
-                String checkExistsQuery = "MATCH (pu:Publisher {PublisherName:$publisherName})<-[r:PUBLISHED_BY]-(game:Game {GameName:$gameName, GameId:$gameId})-[:ON_PLATFORM]-(p:Platform {PlatformName:$platformName})" +
-                        "Return r";
-                Query checkExists = new Query(checkExistsQuery, parameters);
-                Result exists = neo4JDatabaseHelper.runQuery(checkExists);
-                publisherExists = exists.hasNext();
-            }
+                neo4JDatabaseHelper.runQuery(new Query(queryString, parameters));
         }
     }
 
     public void createPublisher(HashMap<String, Object> parameters) {
-        boolean publisherExists = false;
-        while(!publisherExists){
-            String queryString = "MATCH (d:Developer {DeveloperName:$publisherName}), (game:Game {GameName:$gameName})-[:ON_PLATFORM]-(p:Platform {PlatformName:$platformName}) " +
-                    "WHERE ID(game) = $id " +
-                    "SET d:Publisher, d.PublisherName = $publisherName " +
-                    "MERGE (d)<-[:PUBLISHED_BY]-(game) Return d";
-            Result result = neo4JDatabaseHelper.runQuery(new Query(queryString, parameters));
-            if (!result.hasNext()) {
-                queryString = "MATCH (game:Game {GameName:$gameName})-[:ON_PLATFORM]-(p:Platform {PlatformName:$platformName}) " +
-                        "MERGE (n:Publisher {PublisherName:$publisherName}) " +
-                        "MERGE r = (n)<-[:PUBLISHED_BY]-(game) Return r";
-                Query query = new Query(queryString, parameters);
-                neo4JDatabaseHelper.runQuery(query);
-            }
-            String checkExistsQuery = "MATCH (pu:Publisher {PublisherName:$publisherName})<-[r:PUBLISHED_BY]-(game:Game {GameName:$gameName})-[:ON_PLATFORM]-(p:Platform {PlatformName:$platformName})" +
-                    "Return r";
-            Query checkExists = new Query(checkExistsQuery, parameters);
-            Result exists = neo4JDatabaseHelper.runQuery(checkExists);
-            publisherExists = exists.hasNext();
-        }
-
+        String queryString = "MATCH (game:Game {GameName:$gameName})-[:ON_PLATFORM]-(p:Platform {PlatformName:$platformName}) " +
+                "WHERE ID(game) = $id " +
+                "WITH game " +
+                "MERGE (d:Company {CompanyName:$companyName}) " +
+                "MERGE (d)<-[:PUBLISHED_BY]-(game) Return d";
+        neo4JDatabaseHelper.runQuery(new Query(queryString, parameters));
     }
 
     public ArrayList<String> getPublishers(){
-        String triviaQuery = "MATCH (p:Publisher) RETURN p.PublisherName " +
-                "ORDER BY p.PublisherName";
+        String triviaQuery = "MATCH (p:Company) RETURN p.CompanyName " +
+                "ORDER BY p.CompanyName";
         Result result = neo4JDatabaseHelper.runQuery(new Query(triviaQuery));
         ArrayList<String> publishers = new ArrayList<>();
         while(result.hasNext()) {
             Map<String, Object> row = result.next().asMap();
-            publishers.add(String.valueOf(row.get("p.PublisherName")));
+            publishers.add(String.valueOf(row.get("p.CompanyName")));
         }
-        return publishers;
+        return new ArrayList<>(publishers.stream().filter(developer -> !developer.isBlank()).toList());
     }
 
     public ArrayList<String> getPublishers(HashMap<String, Object> parameters){
-        String triviaQuery = "MATCH (p:Publisher)-[:PUBLISHED_BY]-(g:Game) " +
+        String triviaQuery = "MATCH (p:Company)-[:PUBLISHED_BY]-(g:Game) " +
                 "WHERE ID(g) = $id " +
-                "RETURN p.PublisherName";
+                "RETURN p.CompanyName " +
+                "ORDER BY p.CompanyName";
         Result result = neo4JDatabaseHelper.runQuery(new Query(triviaQuery,parameters));
         ArrayList<String> publishers = new ArrayList<>();
         while(result.hasNext()) {
             Map<String, Object> row = result.next().asMap();
-            publishers.add(String.valueOf(row.get("p.PublisherName")));
+            publishers.add(String.valueOf(row.get("p.CompanyName")));
         }
-        return publishers;
+        return new ArrayList<>(publishers.stream().filter(developer -> !developer.isBlank()).toList());
     }
 
     public ArrayList<String> getPlatformPublishers(int id) {
         HashMap<String, Object> parameters = new HashMap<>();
         parameters.put("id", id);
-        String triviaQuery = "MATCH (p:Publisher)-[:MADE_BY]-(platform:Platform) " +
+        String triviaQuery = "MATCH (p:Company)-[:MADE_BY]-(platform:Platform) " +
                 "WHERE ID(platform) = $id " +
-                "RETURN p.PublisherName";
+                "RETURN p.CompanyName " +
+                "ORDER BY p.CompanyName";
         Result result = neo4JDatabaseHelper.runQuery(new Query(triviaQuery,parameters));
         ArrayList<String> publishers = new ArrayList<>();
         while(result.hasNext()) {
             Map<String, Object> row = result.next().asMap();
-            publishers.add(String.valueOf(row.get("p.PublisherName")));
+            publishers.add(String.valueOf(row.get("p.CompanyName")));
         }
-        return publishers;
+        return new ArrayList<>(publishers.stream().filter(developer -> !developer.isBlank()).toList());
     }
 }

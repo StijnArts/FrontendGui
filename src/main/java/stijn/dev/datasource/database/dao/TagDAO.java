@@ -25,7 +25,7 @@ public class TagDAO {
                 "MATCH (t:Tag) " +
                         "WHERE ID(t) = $id " +
                         "SET t.Description = $description, t.SortingTitle = $sortingTitle, t.Name = $tag " +
-                        "RETURN t",
+                        "RETURN t ",
                 parameters));
         if(!result.hasNext()){
             neo4JDatabaseHelper.runQuery(new Query(
@@ -38,7 +38,8 @@ public class TagDAO {
     public ArrayList<Tag> getTags(HashMap<String, Object> parameters) {
         String tagQuery = "MATCH (t:Tag)-[:HAS_TAG]-(g:Game) " +
                 "WHERE ID(g) = $id " +
-                "RETURN t.Name";
+                "RETURN t.Name " +
+                "ORDER BY t.name";
         Result result = neo4JDatabaseHelper.runQuery(new Query(tagQuery,parameters));
         ArrayList<Tag> tags = new ArrayList<>();
         while(result.hasNext()) {
@@ -53,7 +54,8 @@ public class TagDAO {
         parameters.put("id", id);
         String tagQuery = "MATCH (t:Tag)-[:HAS_TAG]-(g:Game) " +
                 "WHERE ID(g) = $id " +
-                "RETURN t.Name";
+                "RETURN t.Name " +
+                "ORDER BY t.name";
         Result result = neo4JDatabaseHelper.runQuery(new Query(tagQuery,parameters));
         ArrayList<Tag> tags = new ArrayList<>();
         while(result.hasNext()) {
@@ -64,7 +66,7 @@ public class TagDAO {
     }
 
     public ArrayList<String> getTags() {
-        String tagQuery = "MATCH (t:Tag) RETURN t.Name";
+        String tagQuery = "MATCH (t:Tag) RETURN t.Name ORDER BY t.name";
         Result result = neo4JDatabaseHelper.runQuery(new Query(tagQuery));
         ArrayList<String> tags = new ArrayList<>();
         while(result.hasNext()) {
@@ -75,7 +77,7 @@ public class TagDAO {
     }
 
     public ArrayList<DetailedTagItem> getDetailedTags() {
-        String tagQuery = "MATCH (t:Tag) RETURN ID(t), t.Name, t.Description, t.SortingTitle";
+        String tagQuery = "MATCH (t:Tag) RETURN ID(t), t.Name, t.Description, t.SortingTitle ORDER BY t.name";
         Result result = neo4JDatabaseHelper.runQuery(new Query(tagQuery));
         ArrayList<DetailedTagItem> tags = new ArrayList<>();
         while(result.hasNext()) {

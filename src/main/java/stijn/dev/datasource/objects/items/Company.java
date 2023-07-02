@@ -3,19 +3,19 @@ package stijn.dev.datasource.objects.items;
 import java.util.*;
 
 public class Company {
-    private String publisherName;
+    private String companyName;
     private Optional<Date> foundingDate = null;
     private Optional<String> description = null;
     private OptionalInt numberOfEmployees;
     private Optional<String> CEO = null;
     private Optional<String> website = null;
 
-    public Company(String publisherName){
-        this.publisherName = publisherName;
+    public Company(String companyName){
+        this.companyName = companyName;
     }
 
-    public String getPublisherName() {
-        return publisherName;
+    public String getCompanyName() {
+        return companyName;
     }
 
     public Optional<Date> getFoundingDate() {
@@ -38,8 +38,8 @@ public class Company {
         return website;
     }
 
-    public void setPublisherName(String publisherName) {
-        this.publisherName = publisherName;
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
     }
 
     public void setFoundingDate(Optional<Date> foundingDate) {

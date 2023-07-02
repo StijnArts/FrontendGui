@@ -87,7 +87,7 @@ public class PlatformDAO {
         parameters.put("id", id);
         String platformQuery = "MATCH (p:Platform)-[:ON_PLATFORM]-(g:Game) " +
                 "WHERE ID(g) = $id " +
-                " RETURN p.PlatformName";
+                "RETURN p.PlatformName ORDER BY p.SortingTitle";
         Result result = neo4JDatabaseHelper.runQuery(new Query(platformQuery,parameters));
         ArrayList<String> platforms = new ArrayList<>();
         while(result.hasNext()) {
@@ -102,7 +102,7 @@ public class PlatformDAO {
 
     public List<Platform> getPlatforms() {
         String query = "MATCH (p:Platform) " +
-                "RETURN ID(p), p.PlatformName, p.SortingTitle, p.Category, p.Description, p.MaxPlayers, p.DefaultEmulator";
+                "RETURN ID(p), p.PlatformName, p.SortingTitle, p.Category, p.Description, p.MaxPlayers, p.DefaultEmulator ORDER BY p.SortingTitle";
         Result result = neo4JDatabaseHelper.runQuery(query);
         List<Platform> platforms = new ArrayList<>();
         while(result.hasNext()) {
@@ -133,7 +133,7 @@ public class PlatformDAO {
                 "WHERE ID(p) = $id " +
                 "WITH p " +
                 "MATCH (p)-[s:Specification]-(p)" +
-                "RETURN s.Specification, s.SpecificationType";
+                "RETURN s.Specification, s.SpecificationType ORDER BY s.SpecificationType";
         Result result = neo4JDatabaseHelper.runQuery(new Query(query, parameters));
         List<PlatformSpecification> specs = new ArrayList<>();
         while(result.hasNext()) {
@@ -154,7 +154,7 @@ public class PlatformDAO {
         }
         if(!platformParameters.get("publisher").equals("")) {
             query += "WITH p " +
-                    "MATCH (publisher:Publisher {PublisherName: $publisher}) " +
+                    "MATCH (publisher:Publisher {CompanyName: $publisher}) " +
                     "Merge (p)-[d:MADE_BY]-(publisher)";
         }
         query += "RETURN ID(p)";
@@ -169,7 +169,7 @@ public class PlatformDAO {
             }
             if(!platformParameters.get("publisher").equals("")) {
                 query += "WITH p " +
-                        "MATCH (publisher:Publisher {PublisherName: $publisher}) " +
+                        "MATCH (publisher:Publisher {CompanyName: $publisher}) " +
                         "Merge (p)-[d:MADE_BY]-(publisher)";
             }
             neo4JDatabaseHelper.runQuery(new Query(query, platformParameters));

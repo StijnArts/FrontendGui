@@ -279,13 +279,13 @@ public class EditService {
         String query = "MATCH (g:Game) " +
                 "WHERE ID(g) = $id " +
                 "WITH g " +
-                "MATCH (g)-[r:MADE_BY]-(:Developer) DELETE r";
+                "MATCH (g)-[r:MADE_BY]-(:Company) DELETE r";
         neo4JDatabaseHelper.runQuery(new Query(query,parameters));
         for (String developer : editController.getDeveloperComboCheckBox().getValue().itemProperty().getValue().split("; ")) {
             if(!developer.isBlank()&&!developer.trim().equals(";")){
                 HashMap<String, Object> developerParameters = new HashMap<>();
                 developerParameters.putAll(parameters);
-                developerParameters.put("developerName",developer.trim());
+                developerParameters.put("companyName",developer.trim());
                 developerDAO.createDeveloper(developerParameters);
             }
         }
@@ -295,13 +295,13 @@ public class EditService {
         String query = "MATCH (g:Game) " +
                 "WHERE ID(g) = $id " +
                 "WITH g " +
-                "MATCH (g)-[r:PUBLISHED_BY]-(:Publisher) DELETE r";
+                "MATCH (g)-[r:PUBLISHED_BY]-(:Company) DELETE r";
         neo4JDatabaseHelper.runQuery(new Query(query,parameters));
         for (String publisher : editController.getPublisherComboCheckBox().getValue().itemProperty().getValue().split("; ")) {
             if(!publisher.isBlank()&&!publisher.trim().equals(";")){
                 HashMap<String, Object> publisherParameters = new HashMap<>();
                 publisherParameters.putAll(parameters);
-                publisherParameters.put("publisherName",publisher.trim());
+                publisherParameters.put("companyName",publisher.trim());
                 publisherDAO.createPublisher(publisherParameters);
             }
         }

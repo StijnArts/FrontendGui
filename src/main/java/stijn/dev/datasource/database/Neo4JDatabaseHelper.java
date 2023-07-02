@@ -24,16 +24,16 @@ public class Neo4JDatabaseHelper implements AutoCloseable{
             System.out.println("Database Has Been Initialized.");
             PlatformDAO platformDAO = new PlatformDAO();
             PlatformXMLParser platformXMLParser = new PlatformXMLParser();
+            PublisherDAO publisherDAO = new PublisherDAO();
+            ManufacturerDAO manufacturerDAO = new ManufacturerDAO();
             for (String platformName :
                     PlatformXMLParser.getPlatforms()) {
                 Platform platform = platformXMLParser.parsePlatform(platformName);
                 platformDAO.savePlatform(platform);
                 if(platform.getPublishers()!=null){
-                    PublisherDAO publisherDAO = new PublisherDAO();
                     publisherDAO.createPublisher(platform.getPlatformName(), platform.getPublishers());
                 }
                 if(platform.getManufacturers()!=null){
-                    ManufacturerDAO manufacturerDAO = new ManufacturerDAO();
                     manufacturerDAO.createManufacturer(platform.getPlatformName(), platform.getManufacturers());
                 }
             }
@@ -172,8 +172,7 @@ public class Neo4JDatabaseHelper implements AutoCloseable{
     }
 
     private void createConstraints(){
-        runQuery("CREATE CONSTRAINT IF NOT EXISTS FOR (n:Developer)       REQUIRE n.DeveloperName   IS UNIQUE");
-        runQuery("CREATE CONSTRAINT IF NOT EXISTS FOR (n:Publisher)       REQUIRE n.PublisherName   IS UNIQUE");
+        runQuery("CREATE CONSTRAINT IF NOT EXISTS FOR (n:Company)         REQUIRE n.CompanyName   IS UNIQUE");
         runQuery("CREATE CONSTRAINT IF NOT EXISTS FOR (n:Territory)       REQUIRE n.TerritoryName   IS UNIQUE");
         runQuery("CREATE CONSTRAINT IF NOT EXISTS FOR (n:GalleryCategory) REQUIRE n.CategoryName    IS UNIQUE");
         runQuery("CREATE CONSTRAINT IF NOT EXISTS FOR (n:Franchise)       REQUIRE n.UniqueName      IS UNIQUE");
