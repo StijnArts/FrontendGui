@@ -58,7 +58,7 @@ public class TerritoryDAO {
     }
 
     public ArrayList<String> getTerritories(){
-        String releaseDateQuery = "MATCH (t:Territory) RETURN t.Name";
+        String releaseDateQuery = "MATCH (t:Territory) RETURN t.Name ORDER BY t.name";
         Result result = neo4JDatabaseHelper.runQuery(new Query(releaseDateQuery));
         ArrayList<String> territories = new ArrayList<>();
         while(result.hasNext()) {
@@ -86,7 +86,7 @@ public class TerritoryDAO {
         parameters.put("id", platformId);
         String releaseDateQuery = "MATCH (t:Territory)-[r:RELEASED_IN]-(p:Platform) " +
                 "WHERE ID(p) = $id " +
-                "RETURN t.Name, r.ReleaseDate";
+                "RETURN t.Name, r.ReleaseDate ORDER BY t.name";
         Result result = neo4JDatabaseHelper.runQuery(new Query(releaseDateQuery,parameters));
         ArrayList<ReleaseDate> releaseDates = new ArrayList<>();
         while(result.hasNext()) {

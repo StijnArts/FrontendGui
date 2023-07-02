@@ -13,7 +13,7 @@ public class StaffDAO {
     public ArrayList<Staff> getStaff(HashMap<String, Object> parameters) {
         String staffQuery = "MATCH (s:Staff)-[w:WORKED_ON]-(g:Game) " +
                 "WHERE ID(g) = $id " +
-                "RETURN s.StaffID, s.FirstName, s.LastName, w.Role";
+                "RETURN s.StaffID, s.FirstName, s.LastName, w.Role ORDER BY s.LastName";
         Result result = neo4JDatabaseHelper.runQuery(new Query(staffQuery,parameters));
         ArrayList<Staff> staff = new ArrayList<>();
         while(result.hasNext()) {
@@ -28,7 +28,7 @@ public class StaffDAO {
     }
 
     public ArrayList<Staff> getStaff() {
-        String staffQuery = "MATCH (s:Staff) RETURN s.StaffID, s.FirstName, s.LastName";
+        String staffQuery = "MATCH (s:Staff) RETURN s.StaffID, s.FirstName, s.LastName ORDER BY s.LastName";
         Result result = neo4JDatabaseHelper.runQuery(new Query(staffQuery));
         ArrayList<Staff> staff = new ArrayList<>();
         while(result.hasNext()) {
@@ -40,7 +40,7 @@ public class StaffDAO {
     }
 
     public ArrayList<String> getStaffIDs() {
-        String staffQuery = "MATCH (s:Staff) RETURN s.StaffID, s.FirstName, s.LastName";
+        String staffQuery = "MATCH (s:Staff) RETURN s.StaffID, s.FirstName, s.LastName ORDER BY s.LastName";
         Result result = neo4JDatabaseHelper.runQuery(new Query(staffQuery));
         ArrayList<String> staff = new ArrayList<>();
         while(result.hasNext()) {

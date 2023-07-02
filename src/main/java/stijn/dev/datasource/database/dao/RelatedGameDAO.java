@@ -11,7 +11,7 @@ public class RelatedGameDAO {
     public ArrayList<RelatedGame> getRelatedGames(HashMap<String, Object> parameters) {
         String characterQuery = "MATCH (p:Platform)-[:ON_PLATFORM]-(g:Game)-[r:RELATED_TO]-(o:Game) " +
                 "WHERE ID(o) = $id " +
-                "Return ID(g), g.GameName, p.PlatformName, r.RelationType, r.Description";
+                "Return ID(g), g.GameName, p.PlatformName, r.RelationType, r.Description ORDER BY g.GameName, p.PlatformName";
         Result result = neo4JDatabaseHelper.runQuery(new Query(characterQuery,parameters));
         ArrayList<RelatedGame> relatedGames = new ArrayList<>();
         while(result.hasNext()) {

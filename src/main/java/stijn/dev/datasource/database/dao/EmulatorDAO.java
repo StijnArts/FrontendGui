@@ -16,7 +16,7 @@ public class EmulatorDAO {
                 "WHERE ID(p) = $id " +
                 "WITH p " +
                 "MATCH (p)-[d:DefaultEmulator]-(e:Emulator)" +
-                "RETURN e.EmulatorName, e.Description, e.Path, e.DefaultLaunchParameters, d.LaunchParameters";
+                "RETURN e.EmulatorName, e.Description, e.Path, e.DefaultLaunchParameters, d.LaunchParameters ORDER BY e.EmulatorName";
         Result result = neo4JDatabaseHelper.runQuery(new Query(query, parameters));
         Emulator emulator = new Emulator("","","","");
         while(result.hasNext()) {
@@ -37,7 +37,7 @@ public class EmulatorDAO {
                 "WHERE ID(p) = $id " +
                 "WITH p " +
                 "MATCH (p)-[d:Emulates]-(e:Emulator)" +
-                "RETURN e.EmulatorName, e.Description, e.Path, e.DefaultLaunchParameters, d.LaunchParameters";
+                "RETURN e.EmulatorName, e.Description, e.Path, e.DefaultLaunchParameters, d.LaunchParameters ORDER BY e.EmulatorName";
         Result result = neo4JDatabaseHelper.runQuery(new Query(query, parameters));
         List<Emulator> emulators = new ArrayList<>();
         while(result.hasNext()) {
@@ -53,7 +53,7 @@ public class EmulatorDAO {
 
     public HashMap<String, Emulator> getEmulators() {
         String query = "MATCH (e:Platform) " +
-                "RETURN e.EmulatorName, e.Description, e.Path, e.DefaultLaunchParameters";
+                "RETURN e.EmulatorName, e.Description, e.Path, e.DefaultLaunchParameters ORDER BY e.EmulatorName";
         Result result = neo4JDatabaseHelper.runQuery(query);
         HashMap<String, Emulator> emulators = new HashMap<>();
         while(result.hasNext()) {

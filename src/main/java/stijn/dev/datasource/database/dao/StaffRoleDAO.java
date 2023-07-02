@@ -1,9 +1,7 @@
 package stijn.dev.datasource.database.dao;
 
-import javafx.beans.property.*;
 import org.neo4j.driver.*;
 import stijn.dev.datasource.database.*;
-import stijn.dev.datasource.objects.items.*;
 
 import java.util.*;
 
@@ -12,7 +10,7 @@ public class StaffRoleDAO {
     private Neo4JDatabaseHelper neo4JDatabaseHelper = new Neo4JDatabaseHelper();
 
     public ArrayList<String> getStaffRoles() {
-        String staffQuery = "MATCH (s:StaffRole) RETURN s.Name";
+        String staffQuery = "MATCH (s:StaffRole) RETURN s.Name ORDER BY s.Name";
         Result result = neo4JDatabaseHelper.runQuery(new Query(staffQuery));
         ArrayList<String> staff = new ArrayList<>();
         while(result.hasNext()) {
@@ -24,7 +22,7 @@ public class StaffRoleDAO {
 
     public ArrayList<String> getStaffRoles(HashMap<String, Object> parameters) {
         String staffQuery = "MATCH (s:Staff{StaffID:$staffID})-[w:WORKED_ON]-(g:Game{GameName:$gameName})-[:ON_PLATFORM]-(p:Platform{PlatformName:$platformName}) " +
-                "RETURN s.StaffID, s.FirstName, s.LastName, w.Role";
+                "RETURN s.StaffID, s.FirstName, s.LastName, w.Role ORDER BY s.LastName";
         Result result = neo4JDatabaseHelper.runQuery(new Query(staffQuery,parameters));
         ArrayList<String> roles = new ArrayList<>();
         while(result.hasNext()) {

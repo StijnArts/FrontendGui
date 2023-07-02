@@ -14,7 +14,7 @@ public class AdditionalAppDAO {
                 "WHERE ID(g) = $id " +
                 "WITH g " +
                 "MATCH (g)-[a:ADDITIONAL_APP]-(g) " +
-                "RETURN a.Path, a.Name, a.Arguments";
+                "RETURN a.Path, a.Name, a.Arguments ORDER BY a.Name";
         Result result = neo4JDatabaseHelper.runQuery(new Query(characterQuery,parameters));
         ArrayList<AdditionalApp> staff = new ArrayList<>();
         while(result.hasNext()) {

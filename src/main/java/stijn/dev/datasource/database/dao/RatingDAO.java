@@ -36,7 +36,8 @@ public class RatingDAO {
     public ArrayList<String> getRatings(HashMap<String, Object> parameters) {
         String ESRBQuery = "MATCH (e:Rating)-[:HAS_RATING]-(g:Game) " +
                 "WHERE ID(g) = $id " +
-                " RETURN e.Rating, e.Organization";
+                " RETURN e.Rating, e.Organization " +
+                "ORDER BY e.Organization";
         Result result = neo4JDatabaseHelper.runQuery(new Query(ESRBQuery,parameters));
         ArrayList<String> ratings = new ArrayList<>();
         while(result.hasNext()) {
@@ -47,7 +48,7 @@ public class RatingDAO {
     }
 
     public ArrayList<String> getRatings() {
-        String ESRBQuery = "MATCH (e:Rating) RETURN e.Rating, e.Organization";
+        String ESRBQuery = "MATCH (e:Rating) RETURN e.Rating, e.Organization ORDER BY e.Organization";
         Result result = neo4JDatabaseHelper.runQuery(new Query(ESRBQuery));
         ArrayList<String> ratings = new ArrayList<>();
         while(result.hasNext()) {

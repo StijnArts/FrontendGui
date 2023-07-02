@@ -12,7 +12,7 @@ public class PriorityDataDAO {
     public PriorityData getPriority(HashMap<String, Object> parameters) {
         String ESRBQuery = "MATCH (p:Priority)-[:HAS_PRIORITY]-(g:Game) " +
                 "WHERE ID(g) = $id " +
-                "RETURN p.UniqueName, p.Priority";
+                "RETURN p.UniqueName, p.Priority ORDER BY p.Priority";
         Result result = neo4JDatabaseHelper.runQuery(new Query(ESRBQuery,parameters));
         PriorityData priority = null;
         while(result.hasNext()) {
@@ -25,7 +25,7 @@ public class PriorityDataDAO {
 
     public ArrayList<PriorityData> getPriorities() {
         String ESRBQuery = "MATCH (p:Priority)" +
-                " RETURN p.UniqueName, p.Priority";
+                " RETURN p.UniqueName, p.Priority ORDER BY p.Priority";
         Result result = neo4JDatabaseHelper.runQuery(new Query(ESRBQuery));
         ArrayList<PriorityData> priorities = new ArrayList<>();
         while(result.hasNext()) {

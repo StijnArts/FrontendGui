@@ -13,7 +13,7 @@ public class CharacterDAO {
     public ArrayList<Character> getCharacters(HashMap<String, Object> parameters) {
         String characterQuery = "MATCH (c:Character)-[f:FEATURED_IN]-(g:Game) " +
                 "WHERE ID(g) = $id " +
-                "RETURN c.CharacterID, c.Name, f.VoiceActor, f.Role";
+                "RETURN c.CharacterID, c.Name, f.VoiceActor, f.Role ORDER BY c.Name";
         Result result = neo4JDatabaseHelper.runQuery(new Query(characterQuery,parameters));
         ArrayList<Character> characters = new ArrayList<>();
         ArrayList<String> addedCharacters = new ArrayList<>();
@@ -32,7 +32,7 @@ public class CharacterDAO {
     }
 
     public ArrayList<Character> getCharacters() {
-        String characterQuery = "MATCH (c:Character) RETURN c.CharacterID, c.Name";
+        String characterQuery = "MATCH (c:Character) RETURN c.CharacterID, c.Name ORDER BY c.Name";
         Result result = neo4JDatabaseHelper.runQuery(new Query(characterQuery));
         ArrayList<Character> staff = new ArrayList<>();
         while(result.hasNext()) {
