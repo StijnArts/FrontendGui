@@ -1,6 +1,7 @@
 package stijn.dev.datasource.importing.xml;
 
 import nu.xom.*;
+import org.apache.commons.lang3.text.*;
 import stijn.dev.datasource.objects.data.*;
 import stijn.dev.datasource.objects.items.*;
 
@@ -48,12 +49,13 @@ public class PlatformXMLParser extends XMLParser{
                     specs.add(new PlatformSpecification("Graphics",readElement(element.getFirstChildElement("Graphics"))));
                     specs.add(new PlatformSpecification("Sound",readElement(element.getFirstChildElement("Sound"))));
                     specs.add(new PlatformSpecification("Display",readElement(element.getFirstChildElement("Display"))));
-                    specs.add(new PlatformSpecification("MediaType",readElement(element.getFirstChildElement("Media"))));
-
+                    List<String> mediaTypes = new ArrayList<>();
+                    for (String mediaType :readElement(element.getFirstChildElement("Media")).split(",")) {
+                        mediaTypes.add(WordUtils.capitalize(mediaType.trim().toLowerCase()));
+                    }
                     platformObject = new Platform(readElement(element.getFirstChildElement("Name")),readElement(element.getFirstChildElement("Name")),List.of(releaseDate),
                             List.of(readElement(element.getFirstChildElement("Developer"))), List.of(readElement(element.getFirstChildElement("Manufacturer"))),readElement(element.getFirstChildElement("Notes")),
-                            specs, readElement(element.getFirstChildElement("MaxControllers")),readElement(element.getFirstChildElement("Category"))
-                    );
+                            specs, readElement(element.getFirstChildElement("MaxControllers")),readElement(element.getFirstChildElement("Category")), mediaTypes);
                     platformFound = true;
                 }
             }
@@ -68,8 +70,7 @@ public class PlatformXMLParser extends XMLParser{
             specs.add(new PlatformSpecification("Graphics",""));
             specs.add(new PlatformSpecification("Sound",""));
             specs.add(new PlatformSpecification("Display",""));
-            specs.add(new PlatformSpecification("MediaType",""));
-            platformObject = new Platform(platform, platform,List.of(new ReleaseDate("USA", null)),List.of(), List.of(),null,specs,null,null);
+            platformObject = new Platform(platform, platform,List.of(new ReleaseDate("USA", null)),List.of(), List.of(),null,specs,null,null, List.of());
         }
         return platformObject;
     }

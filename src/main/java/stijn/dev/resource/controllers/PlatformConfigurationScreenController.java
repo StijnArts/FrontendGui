@@ -283,8 +283,8 @@ public class PlatformConfigurationScreenController {
     }
 
     private Platform generateEmptyPlatform() {
-        return new Platform(generateNewPlatformID(),"","",List.of(new ReleaseDate("USA", null)),
-                List.of(),List.of(),"",List.of(),"","", List.of(), new Emulator("","","",""), List.of());
+        return new Platform(generateNewPlatformID(),"",List.of(),"",List.of(new ReleaseDate("USA", null)), null, "", "",
+                List.of(),List.of(),"",List.of(),"","", List.of(), List.of(), List.of(), List.of(), List.of(), new Emulator("","","",""), List.of());
     }
 
     public void closeDialog(ActionEvent actionEvent) {

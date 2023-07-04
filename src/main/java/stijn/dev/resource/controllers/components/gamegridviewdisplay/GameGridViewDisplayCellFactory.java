@@ -1,4 +1,4 @@
-package stijn.dev.resource.controllers.components.GameGridViewDisplay;
+package stijn.dev.resource.controllers.components.gamegridviewdisplay;
 
 import javafx.util.*;
 import org.controlsfx.control.*;

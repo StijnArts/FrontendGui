@@ -482,7 +482,7 @@ ComboBoxAutocompleteUtil.autoCompleteComboBoxPlus(comboBox, (typedText, itemToCo
                     comboBox.valueProperty().bindBidirectional(newValue);
                 }
             }));
-ComboBoxAutocompleteUtil.autoCompleteComboBoxPlus(comboBox, (typedText, itemToCompare) -> itemToCompare.toLowerCase().contains(typedText.toLowerCase()));
+            ComboBoxAutocompleteUtil.autoCompleteComboBoxPlus(comboBox, (typedText, itemToCompare) -> itemToCompare.toLowerCase().contains(typedText.toLowerCase()));
             comboBox.valueProperty().addListener(new ChangeListener<String>() {
                 @Override
                 public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
@@ -502,7 +502,6 @@ ComboBoxAutocompleteUtil.autoCompleteComboBoxPlus(comboBox, (typedText, itemToCo
         });
         triviaIdColumn.setEditable(true);
         editController.getTriviaTable().getColumns().setAll(triviaIdColumn,factColumn);
-
     }
 
     private void configureReleaseDatesTable(EditController editController) {
@@ -690,12 +689,8 @@ ComboBoxAutocompleteUtil.autoCompleteComboBoxPlus(comboBox, (typedText, itemToCo
     }
     private void configureRelatedGameTable(EditController editController) {
         editController.getRelatedGameTable().setEditable(true);
-        HashMap<String, Object> parameters = new HashMap<>();
-        parameters.put("gameName",editController.getGame().getName());
-        parameters.put("platformName",editController.getGame().getPlatform());
         ArrayList<String> options = new ArrayList<>();
-        for (RelatedGameEntry relatedGameEntry :
-                gameDAO.getRelatedGamesOptions()) {
+        for (RelatedGameEntry relatedGameEntry : gameDAO.getRelatedGamesOptions()) {
             String platformAndGame = "("+relatedGameEntry.getPlatform()+") "+relatedGameEntry.getGame();
             relatedGameMap.put(platformAndGame, relatedGameEntry);
             options.add(platformAndGame);
@@ -941,7 +936,7 @@ ComboBoxAutocompleteUtil.autoCompleteComboBoxPlus(comboBox, (typedText, itemToCo
             List<String> selectedOptions = Arrays.stream(editController.getPlayModesComboCheckbox().getValue().getItem().split("; ")).toList();
             options.forEach(option -> {
                 for (String selectedOption : selectedOptions) {
-                    if(selectedOption.trim().toLowerCase().contains(option.getItem().toLowerCase())){
+                    if(selectedOption.trim().toLowerCase().equals(option.getItem().toLowerCase())){
                         option.setCheck(true);
                         return;
                     }
@@ -1076,7 +1071,7 @@ ComboBoxAutocompleteUtil.autoCompleteComboBoxPlus(comboBox, (typedText, itemToCo
             List<String> selectedOptions = Arrays.stream(editController.getRatingComboCheckBox().getValue().getItem().split("; ")).toList();
             options.forEach(option -> {
                 for (String selectedOption : selectedOptions) {
-                    if(selectedOption.trim().toLowerCase().contains(option.getItem().toLowerCase())){
+                    if(selectedOption.trim().toLowerCase().equals(option.getItem().toLowerCase())){
                         option.setCheck(true);
                         return;
                     }
@@ -1147,7 +1142,7 @@ ComboBoxAutocompleteUtil.autoCompleteComboBoxPlus(comboBox, (typedText, itemToCo
             List<String> selectedOptions = Arrays.stream(editController.getPublisherComboCheckBox().getValue().getItem().split("; ")).toList();
             options.forEach(option -> {
                 for (String selectedOption : selectedOptions) {
-                    if(selectedOption.trim().toLowerCase().contains(option.getItem().toLowerCase())){
+                    if(selectedOption.trim().toLowerCase().equals(option.getItem().toLowerCase())){
                         option.setCheck(true);
                         return;
                     }
@@ -1219,7 +1214,7 @@ ComboBoxAutocompleteUtil.autoCompleteComboBoxPlus(comboBox, (typedText, itemToCo
             List<String> selectedOptions = Arrays.stream(editController.getDeveloperComboCheckBox().getValue().getItem().split("; ")).toList();
             options.forEach(option -> {
                 for (String selectedOption : selectedOptions) {
-                    if(selectedOption.trim().toLowerCase().contains(option.getItem().toLowerCase())){
+                    if(selectedOption.trim().toLowerCase().equals(option.getItem().toLowerCase())){
                         option.setCheck(true);
                         return;
                     }

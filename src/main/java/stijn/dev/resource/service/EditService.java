@@ -221,7 +221,7 @@ public class EditService {
                         alternateNameParameters.put("region",((AlternateName) alternateName).getReason().getValue());
                         alternateNameDAO.createAlternateNameWithRegion(alternateNameParameters);
                     } else {
-                        alternateNameDAO.createAlternateName(alternateNameParameters);
+                        alternateNameDAO.createGameAlternateName(alternateNameParameters);
                     }
                 }
             }

@@ -8,7 +8,7 @@ import java.util.*;
 
 public class AlternateNameDAO {
     private Neo4JDatabaseHelper neo4JDatabaseHelper = new Neo4JDatabaseHelper();
-    public ArrayList<AlternateName> getAlternateNames(HashMap<String, Object> parameters) {
+    public ArrayList<AlternateName> getGameAlternateNames(HashMap<String, Object> parameters) {
         String communityAlternateNamesQuery = "MATCH (g:Game) " +
                 "WHERE ID(g) = $id " +
                 "WITH g " +
@@ -35,7 +35,7 @@ public class AlternateNameDAO {
         return alternateNames;
     }
 
-    public void createAlternateName(HashMap<String, Object> alternateNameParameters) {
+    public void createGameAlternateName(HashMap<String, Object> alternateNameParameters) {
         String query = "MATCH (g:Game) " +
                 "WHERE ID(g) = $id " +
                 "CREATE (g)-[:ALTERNATE_NAME {AlternateNameID:$alternateNameId, Name:$alternateName}]->(g)";
@@ -57,5 +57,34 @@ public class AlternateNameDAO {
                 "                MATCH (e:Rating {Rating: \""+parameters.get("rating")+"\", Organization: \""+parameters.get("organization")+"\"}) \n" +
                 "                MERGE (g)-[:HAS_RATING]->(e)");*/
         neo4JDatabaseHelper.runQuery(new Query(query, alternateNameParameters));
+    }
+
+    public List<AlternateName> getAlternatePlatformNames(int id) {
+        HashMap<String, Object> parameters = new HashMap<>();
+        parameters.put("id", id);
+        String communityAlternateNamesQuery = "MATCH (g:Platform) " +
+                "WHERE ID(g) = $id " +
+                "WITH g " +
+                "MATCH (g)-[a:ALTERNATE_NAME]-(g) " +
+                "RETURN a.AlternateNameID, a.Name ORDER BY a.AlternateNameID";
+        Result communityAlternateNamesResult = neo4JDatabaseHelper.runQuery(new Query(communityAlternateNamesQuery,parameters));
+        ArrayList<AlternateName> alternateNames = new ArrayList<>();
+        while(communityAlternateNamesResult.hasNext()) {
+            Map<String, Object> row = communityAlternateNamesResult.next().asMap();
+            alternateNames.add(new AlternateName(String.valueOf(row.get("a.AlternateNameID")),String.valueOf(row.get("a.Name")),
+                    "Community"));
+        }
+        String regionAlternateNamesQuery = "MATCH (g:Platform) " +
+                "WHERE ID(g) = $id " +
+                "WITH g " +
+                "MATCH (g)-[a:ALTERNATE_NAME]-(t:Territory) " +
+                "RETURN a.AlternateNameID, a.Name, t.Name ORDER BY a.AlternateNameID";
+        Result regionAlternateNamesResult = neo4JDatabaseHelper.runQuery(new Query(regionAlternateNamesQuery,parameters));
+        while(regionAlternateNamesResult.hasNext()) {
+            Map<String, Object> row = regionAlternateNamesResult.next().asMap();
+            alternateNames.add(new AlternateName(String.valueOf(row.get("a.AlternateNameID")),String.valueOf(row.get("a.Name")),
+                    String.valueOf(row.get("t.Name"))));
+        }
+        return alternateNames;
     }
 }

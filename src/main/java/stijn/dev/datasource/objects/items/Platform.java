@@ -3,6 +3,7 @@ package stijn.dev.datasource.objects.items;
 import javafx.beans.property.*;
 import stijn.dev.datasource.objects.data.*;
 
+import java.time.*;
 import java.util.*;
 
 public class Platform extends Item {
@@ -20,9 +21,17 @@ public class Platform extends Item {
     private StringProperty category;
     private List<Emulator> emulators;
     private StringProperty sortingTitle;
+    private List<String> mediaTypes;
+    private List<String> productFamilies;
+    private String generation;
+    private String unitsSold;
+    private LocalDate dateDiscontinued;
+    private List<AlternateName> alternateNames;
+    private List<RelatedPlatform> relatedPlatforms;
+    private List<Trivia> trivia;
 
     public Platform(String platformName, String sortingTitle, List<ReleaseDate> releaseDates, List<String> publishers, List<String> manufacturers,
-                    String description, List<PlatformSpecification> specs, String maxPlayers, String category){
+                    String description, List<PlatformSpecification> specs, String maxPlayers, String category , List<String> mediaTypes){
         this.previousPublishers = publishers;
         this.platformName = new SimpleStringProperty(platformName);
         this.sortingTitle = new SimpleStringProperty(sortingTitle);
@@ -33,15 +42,26 @@ public class Platform extends Item {
         this.maxPlayers = new SimpleStringProperty(maxPlayers);
         this.category = new SimpleStringProperty(category);
         this.manufacturers = manufacturers;
+        this.mediaTypes = mediaTypes;
     }
 
-    public Platform(int id, String platformName, String sortingTitle, List<ReleaseDate> releaseDates, List<String> publishers, List<String> manufacturers, String description,
-                    List<PlatformSpecification> specs, String maxPlayers, String category, List<String> media,Emulator defaultEmulator, List<Emulator> emulators){
-        this(platformName, sortingTitle, releaseDates, publishers, manufacturers, description, specs, maxPlayers, category);
+    public Platform(int id, String platformName, List<AlternateName> alternateNames, String sortingTitle, List<ReleaseDate> releaseDates, LocalDate dateDiscontinued,
+                    String generation, String unitsSold, List<String> publishers, List<String> manufacturers, String description,
+                    List<PlatformSpecification> specs, String maxPlayers, String category, List<String> media, List<String> mediaTypes,
+                    List<String> productFamilies, List<RelatedPlatform> relatedPlatforms, List<Trivia> trivia,
+                    Emulator defaultEmulator, List<Emulator> emulators){
+        this(platformName, sortingTitle, releaseDates, publishers, manufacturers, description, specs, maxPlayers, category, mediaTypes);
         this.defaultEmulator = defaultEmulator;
         this.emulators = emulators;
         this.id = id;
         this.media = media;
+        this.productFamilies = productFamilies;
+        this.generation = generation;
+        this.unitsSold = unitsSold;
+        this.dateDiscontinued = dateDiscontinued;
+        this.alternateNames = alternateNames;
+        this.relatedPlatforms = relatedPlatforms;
+        this.trivia = trivia;
     }
 
     @Override
@@ -191,5 +211,69 @@ public class Platform extends Item {
         }
         string += "\nMax Players: "+maxPlayers+"\nCategory: "+category;
         return string;
+    }
+
+    public List<String> getMediaTypes() {
+        return mediaTypes;
+    }
+
+    public void setMediaTypes(List<String> mediaTypes) {
+        this.mediaTypes = mediaTypes;
+    }
+
+    public List<String> getProductFamilies() {
+        return productFamilies;
+    }
+
+    public void setProductFamilies(List<String> productFamilies) {
+        this.productFamilies = productFamilies;
+    }
+
+    public String getGeneration() {
+        return generation;
+    }
+
+    public void setGeneration(String generation) {
+        this.generation = generation;
+    }
+
+    public String getUnitsSold() {
+        return unitsSold;
+    }
+
+    public void setUnitsSold(String unitsSold) {
+        this.unitsSold = unitsSold;
+    }
+
+    public LocalDate getDateDiscontinued() {
+        return dateDiscontinued;
+    }
+
+    public void setDateDiscontinued(LocalDate dateDiscontinued) {
+        this.dateDiscontinued = dateDiscontinued;
+    }
+
+    public List<AlternateName> getAlternateNames() {
+        return alternateNames;
+    }
+
+    public void setAlternateNames(List<AlternateName> alternateNames) {
+        this.alternateNames = alternateNames;
+    }
+
+    public List<RelatedPlatform> getRelatedPlatforms() {
+        return relatedPlatforms;
+    }
+
+    public void setRelatedPlatforms(List<RelatedPlatform> relatedPlatforms) {
+        this.relatedPlatforms = relatedPlatforms;
+    }
+
+    public List<Trivia> getTrivia() {
+        return trivia;
+    }
+
+    public void setTrivia(List<Trivia> trivia) {
+        this.trivia = trivia;
     }
 }

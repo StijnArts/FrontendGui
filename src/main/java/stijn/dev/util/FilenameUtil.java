@@ -27,7 +27,22 @@ public class FilenameUtil {
                 didNotContainFileExtension=true;
             }
         }
-        //System.out.println("NEW WAY OF SPLITTING: "+fileExtension.substring(1));
+        return fileExtension.substring(1).toLowerCase();
+    }
+
+    public static String extractMediaFileTypeFromExtension(File file) {
+        String[] segments = file.getName().split("\\.");
+        String fileExtension= "."+segments[segments.length-1];
+        boolean didNotContainFileExtension = false;
+        int iterator = segments.length-2;
+        while(!didNotContainFileExtension){
+            if(FileExtensionUtil.getMediaFileExtensions().containsKey(segments[iterator])){
+                fileExtension = "."+segments[iterator]+fileExtension;
+                iterator--;
+            } else{
+                didNotContainFileExtension=true;
+            }
+        }
         return fileExtension.substring(1).toLowerCase();
     }
 

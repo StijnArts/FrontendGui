@@ -48,4 +48,18 @@ public class TriviaDAO {
         neo4JDatabaseHelper.runQuery(new Query(query, triviaParameters));
     }
 
+    public List<Trivia> getPlatformTrivia(int id) {
+        HashMap<String, Object> parameters = new HashMap<>();
+        parameters.put("id" , id);
+        String triviaQuery = "MATCH (t:Trivia)-[:TRIVIA_ABOUT]-(g:Platform) " +
+                "WHERE ID(g) = $id " +
+                "RETURN t.TriviaID, t.Fact ORDER BY t.TriviaID";
+        Result result = neo4JDatabaseHelper.runQuery(new Query(triviaQuery,parameters));
+        ArrayList<Trivia> trivia = new ArrayList<>();
+        while(result.hasNext()) {
+            Map<String, Object> row = result.next().asMap();
+            trivia.add(new Trivia(String.valueOf(row.get("t.TriviaID")),String.valueOf(row.get("t.Fact"))));
+        }
+        return trivia;
+    }
 }

@@ -49,6 +49,8 @@ public class Neo4JDatabaseHelper implements AutoCloseable{
         createRelationshipNodes();
         createStaffRoleNodes();
         createCharacterRolesNodes();
+        createSpecificationTypes();
+        createPlatformGalleryNodes();
     }
 
     private void createCharacterRolesNodes() {
@@ -79,96 +81,190 @@ public class Neo4JDatabaseHelper implements AutoCloseable{
     }
 
     private void createRelationshipNodes() {
-        runQuery("MERGE (r:Relationship {Name: 'Port'}) return r");
-        runQuery("MERGE (r:Relationship {Name: 'Spiritual Successor'}) return r");
-        runQuery("MERGE (r:Relationship {Name: 'Remaster'}) return r");
-        runQuery("MERGE (r:Relationship {Name: 'Sequel'}) return r");
-        runQuery("MERGE (r:Relationship {Name: 'Prequel'}) return r");
-        runQuery("MERGE (r:Relationship {Name: 'Counterpart'}) return r");
-        runQuery("MERGE (r:Relationship {Name: 'Remake'}) return r");
-        runQuery("MERGE (r:Relationship {Name: 'Port'}) return r");
+        runQuery("MERGE (r:GameRelationship {Name: 'Port'}) return r");
+        runQuery("MERGE (r:GameRelationship {Name: 'Spiritual Successor'}) return r");
+        runQuery("MERGE (r:GameRelationship {Name: 'Remaster'}) return r");
+        runQuery("MERGE (r:GameRelationship {Name: 'Sequel'}) return r");
+        runQuery("MERGE (r:GameRelationship {Name: 'Prequel'}) return r");
+        runQuery("MERGE (r:GameRelationship {Name: 'Counterpart'}) return r");
+        runQuery("MERGE (r:GameRelationship {Name: 'Remake'}) return r");
+
+        runQuery("MERGE (r:PlatformRelationship {Name: 'Rival'}) return r");
+        runQuery("MERGE (r:PlatformRelationship {Name: 'Spiritual Successor'}) return r");
+        runQuery("MERGE (r:PlatformRelationship {Name: 'Successor'}) return r");
+        runQuery("MERGE (r:PlatformRelationship {Name: 'Predecessor'}) return r");
+        runQuery("MERGE (r:PlatformRelationship {Name: 'Counterpart'}) return r");
+        runQuery("MERGE (r:PlatformRelationship {Name: 'Can Emulate'}) return r");
+
     }
 
     private void createMultiplayerTypeNodes() {
-        runQuery("MERGE (g:PlayMode {Name: 'Singleplayer'}) return g");
-        runQuery("MERGE (g:PlayMode {Name: 'Online Multiplayer'}) return g");
-        runQuery("MERGE (g:PlayMode {Name: 'Local Multiplayer'}) return g");
-        runQuery("MERGE (g:PlayMode {Name: 'Online Co-op'}) return g");
-        runQuery("MERGE (g:PlayMode {Name: 'Local Co-op'}) return g");
+        runQuery("MERGE (g:PlayMode {Name: 'Singleplayer'})");
+        runQuery("MERGE (g:PlayMode {Name: 'Online Multiplayer'})");
+        runQuery("MERGE (g:PlayMode {Name: 'Local Multiplayer'})");
+        runQuery("MERGE (g:PlayMode {Name: 'Online Co-op'})");
+        runQuery("MERGE (g:PlayMode {Name: 'Local Co-op'})");
     }
 
     private void createRatingNodes() {
-        runQuery("MERGE (g:Rating {Rating: 'RP - Rating Pending', Organization: 'ESRB'}) return g");
-        runQuery("MERGE (g:Rating {Rating: 'RP - Rating Pending – Likely Mature 17+', Organization: 'ESRB'}) return g");
-        runQuery("MERGE (g:Rating {Rating: 'E - Everyone', Organization: 'ESRB'}) return g");
-        runQuery("MERGE (g:Rating {Rating: 'E10+ - Everyone 10+', Organization: 'ESRB'}) return g");
-        runQuery("MERGE (g:Rating {Rating: 'T - Teen', Organization: 'ESRB'}) return g");
-        runQuery("MERGE (g:Rating {Rating: 'M - Mature 17+', Organization: 'ESRB'}) return g");
-        runQuery("MERGE (g:Rating {Rating: 'AO - Adults Only', Organization: 'ESRB'}) return g");
-        runQuery("MERGE (g:Rating {Rating: 'EC - Early Childhood', Organization: 'ESRB'}) return g");
-        runQuery("MERGE (g:Rating {Rating: '3', Organization: 'PEGI'}) return g");
-        runQuery("MERGE (g:Rating {Rating: '7', Organization: 'PEGI'}) return g");
-        runQuery("MERGE (g:Rating {Rating: '12', Organization: 'PEGI'}) return g");
-        runQuery("MERGE (g:Rating {Rating: '16', Organization: 'PEGI'}) return g");
-        runQuery("MERGE (g:Rating {Rating: '18', Organization: 'PEGI'}) return g");
-        runQuery("MERGE (g:Rating {Rating: 'Bad Language', Organization: 'PEGI'}) return g");
-        runQuery("MERGE (g:Rating {Rating: 'Discrimination', Organization: 'PEGI'}) return g");
-        runQuery("MERGE (g:Rating {Rating: 'Drugs', Organization: 'PEGI'}) return g");
-        runQuery("MERGE (g:Rating {Rating: 'Fear/Horror', Organization: 'PEGI'}) return g");
-        runQuery("MERGE (g:Rating {Rating: 'Gambling', Organization: 'PEGI'}) return g");
-        runQuery("MERGE (g:Rating {Rating: 'Sex', Organization: 'PEGI'}) return g");
-        runQuery("MERGE (g:Rating {Rating: 'Violence', Organization: 'PEGI'}) return g");
-        runQuery("MERGE (g:Rating {Rating: 'In-Game Purchases', Organization: 'PEGI'}) return g");
-        runQuery("MERGE (g:Rating {Rating: 'Exclamation', Organization: 'PEGI'}) return g");
-        runQuery("MERGE (g:Rating {Rating: 'Online', Organization: 'PEGI'}) return g");
-        runQuery("MERGE (g:Rating {Rating: 'All Ages', Organization: 'CERO'}) return g");
-        runQuery("MERGE (g:Rating {Rating: 'Ages 12 and up', Organization: 'CERO'}) return g");
-        runQuery("MERGE (g:Rating {Rating: 'Ages 15 and up', Organization: 'CERO'}) return g");
-        runQuery("MERGE (g:Rating {Rating: 'Ages 17 and up', Organization: 'CERO'}) return g");
-        runQuery("MERGE (g:Rating {Rating: 'Ages 18 and up only', Organization: 'CERO'}) return g");
-        runQuery("MERGE (g:Rating {Rating: 'Educational/Database', Organization: 'CERO'}) return g");
-        runQuery("MERGE (g:Rating {Rating: 'CERO Regulations-Compatible', Organization: 'CERO'}) return g");
-        runQuery("MERGE (g:Rating {Rating: 'Rating Scheduled', Organization: 'CERO'}) return g");
-        runQuery("MERGE (g:Rating {Rating: 'Bad Language', Organization: 'CERO'}) return g");
+        runQuery("MERGE (g:Rating {Rating: 'RP - Rating Pending', Organization: 'ESRB'})");
+        runQuery("MERGE (g:Rating {Rating: 'RP - Rating Pending – Likely Mature 17+', Organization: 'ESRB'})");
+        runQuery("MERGE (g:Rating {Rating: 'E - Everyone', Organization: 'ESRB'})");
+        runQuery("MERGE (g:Rating {Rating: 'E10+ - Everyone 10+', Organization: 'ESRB'})");
+        runQuery("MERGE (g:Rating {Rating: 'T - Teen', Organization: 'ESRB'})");
+        runQuery("MERGE (g:Rating {Rating: 'M - Mature 17+', Organization: 'ESRB'})");
+        runQuery("MERGE (g:Rating {Rating: 'AO - Adults Only', Organization: 'ESRB'})");
+        runQuery("MERGE (g:Rating {Rating: 'EC - Early Childhood', Organization: 'ESRB'})");
+        runQuery("MERGE (g:Rating {Rating: '3', Organization: 'PEGI'})");
+        runQuery("MERGE (g:Rating {Rating: '7', Organization: 'PEGI'})");
+        runQuery("MERGE (g:Rating {Rating: '12', Organization: 'PEGI'})");
+        runQuery("MERGE (g:Rating {Rating: '16', Organization: 'PEGI'})");
+        runQuery("MERGE (g:Rating {Rating: '18', Organization: 'PEGI'})");
+        runQuery("MERGE (g:Rating {Rating: 'Bad Language', Organization: 'PEGI'})");
+        runQuery("MERGE (g:Rating {Rating: 'Discrimination', Organization: 'PEGI'})");
+        runQuery("MERGE (g:Rating {Rating: 'Drugs', Organization: 'PEGI'})");
+        runQuery("MERGE (g:Rating {Rating: 'Fear/Horror', Organization: 'PEGI'})");
+        runQuery("MERGE (g:Rating {Rating: 'Gambling', Organization: 'PEGI'})");
+        runQuery("MERGE (g:Rating {Rating: 'Sex', Organization: 'PEGI'})");
+        runQuery("MERGE (g:Rating {Rating: 'Violence', Organization: 'PEGI'})");
+        runQuery("MERGE (g:Rating {Rating: 'In-Game Purchases', Organization: 'PEGI'})");
+        runQuery("MERGE (g:Rating {Rating: 'Exclamation', Organization: 'PEGI'})");
+        runQuery("MERGE (g:Rating {Rating: 'Online', Organization: 'PEGI'})");
+        runQuery("MERGE (g:Rating {Rating: 'All Ages', Organization: 'CERO'})");
+        runQuery("MERGE (g:Rating {Rating: 'Ages 12 and up', Organization: 'CERO'})");
+        runQuery("MERGE (g:Rating {Rating: 'Ages 15 and up', Organization: 'CERO'})");
+        runQuery("MERGE (g:Rating {Rating: 'Ages 17 and up', Organization: 'CERO'})");
+        runQuery("MERGE (g:Rating {Rating: 'Ages 18 and up only', Organization: 'CERO'})");
+        runQuery("MERGE (g:Rating {Rating: 'Educational/Database', Organization: 'CERO'})");
+        runQuery("MERGE (g:Rating {Rating: 'CERO Regulations-Compatible', Organization: 'CERO'})");
+        runQuery("MERGE (g:Rating {Rating: 'Rating Scheduled', Organization: 'CERO'})");
+        runQuery("MERGE (g:Rating {Rating: 'Bad Language', Organization: 'CERO'})");
     }
 
     private void createBasePriorityNodes() {
-        runQuery("MERGE (g:Priority {UniqueName: 'Filler', Priority: 3}) return g");
-        runQuery("MERGE (g:Priority {UniqueName: 'Classic', Priority: 2}) return g");
-        runQuery("MERGE (g:Priority {UniqueName: 'Staple', Priority: 1}) return g");
+        runQuery("MERGE (g:Priority {UniqueName: 'Filler', Priority: 3})");
+        runQuery("MERGE (g:Priority {UniqueName: 'Classic', Priority: 2})");
+        runQuery("MERGE (g:Priority {UniqueName: 'Staple', Priority: 1})");
+    }
+
+    private void createSpecificationTypes(){
+        runQuery("MERGE (g:SpecificationType {Name: 'Display'})");
+        runQuery("MERGE (g:SpecificationType {Name: 'Cpu'})");
+        runQuery("MERGE (g:SpecificationType {Name: 'Graphics'})");
+        runQuery("MERGE (g:SpecificationType {Name: 'Memory'})");
+        runQuery("MERGE (g:SpecificationType {Name: 'Sound'})");
     }
 
     private void createGalleryNodes() {
-        runQuery("MERGE (g:GalleryCategory {UniqueName: 'NTSCFrontCover', Name: 'Front Cover (NTSC)'}) return g");
-        runQuery("MERGE (g:GalleryCategory {UniqueName: 'JPFrontCover', Name: 'Front Cover (JP)'}) return g");
-        runQuery("MERGE (g:GalleryCategory {UniqueName: 'PALFrontCover', Name: 'Front Cover (PAL)'}) return g");
-        runQuery("MERGE (g:GalleryCategory {UniqueName: 'NTSCSpine', Name: 'Spine (NTSC)'}) return g");
-        runQuery("MERGE (g:GalleryCategory {UniqueName: 'JPSpine', Name: 'Spine (JP)'}) return g");
-        runQuery("MERGE (g:GalleryCategory {UniqueName: 'PALSpine', Name: 'Spine (PAL)'}) return g");
-        runQuery("MERGE (g:GalleryCategory {UniqueName: 'NTSCBackCover', Name: 'Back Cover (NTSC)'}) return g");
-        runQuery("MERGE (g:GalleryCategory {UniqueName: 'JPBackCover', Name: 'Back Cover (JP)'}) return g");
-        runQuery("MERGE (g:GalleryCategory {UniqueName: 'PALBackCover', Name: 'Back Cover (PAL)'}) return g");
-        runQuery("MERGE (g:GalleryCategory {UniqueName: 'NTSCMedia', Name: 'Media (NTSC)'}) return g");
-        runQuery("MERGE (g:GalleryCategory {UniqueName: 'JPMedia', Name: 'Media (JP)'}) return g");
-        runQuery("MERGE (g:GalleryCategory {UniqueName: 'PALMedia', Name: 'Media (PAL)'}) return g");
-        runQuery("MERGE (g:GalleryCategory {UniqueName: 'NTSCTrailer', Name: 'Trailer (NTSC)'}) return g");
-        runQuery("MERGE (g:GalleryCategory {UniqueName: 'JPTrailer', Name: 'Trailer (JP)'}) return g");
-        runQuery("MERGE (g:GalleryCategory {UniqueName: 'PALTrailer', Name: 'Trailer (PAL)'}) return g");
-        runQuery("MERGE (g:GalleryCategory {UniqueName: 'Soundtrack', Name: 'Soundtrack'}) return g");
-        runQuery("MERGE (g:GalleryCategory {UniqueName: 'OVA', Name: 'OVA'}) return g");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'NTSCFrontCover', Name: 'Front Cover (NTSC)'}) " +
+                "MERGE (g)-[:USED_BY_GAMES]-(g) " +
+                "MERGE (g)-[:USED_BY_PLATFORMS]-(g) ");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'JPFrontCover', Name: 'Front Cover (JP)'}) " +
+                "MERGE (g)-[:USED_BY_GAMES]-(g) " +
+                "MERGE (g)-[:USED_BY_PLATFORMS]-(g) ");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'PALFrontCover', Name: 'Front Cover (PAL)'})" +
+                "MERGE (g)-[:USED_BY_GAMES]-(g) " +
+                "MERGE (g)-[:USED_BY_PLATFORMS]-(g) ");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'NTSCSpine', Name: 'Spine (NTSC)'})" +
+                "MERGE (g)-[:USED_BY_GAMES]-(g) " +
+                "MERGE (g)-[:USED_BY_PLATFORMS]-(g) ");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'JPSpine', Name: 'Spine (JP)'})" +
+                "MERGE (g)-[:USED_BY_GAMES]-(g) " +
+                "MERGE (g)-[:USED_BY_PLATFORMS]-(g) ");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'PALSpine', Name: 'Spine (PAL)'})" +
+                "MERGE (g)-[:USED_BY_GAMES]-(g) " +
+                "MERGE (g)-[:USED_BY_PLATFORMS]-(g) ");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'NTSCBackCover', Name: 'Back Cover (NTSC)'})" +
+                "MERGE (g)-[:USED_BY_GAMES]-(g) " +
+                "MERGE (g)-[:USED_BY_PLATFORMS]-(g) ");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'JPBackCover', Name: 'Back Cover (JP)'})" +
+                "MERGE (g)-[:USED_BY_GAMES]-(g) " +
+                "MERGE (g)-[:USED_BY_PLATFORMS]-(g) ");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'PALBackCover', Name: 'Back Cover (PAL)'})" +
+                "MERGE (g)-[:USED_BY_GAMES]-(g) " +
+                "MERGE (g)-[:USED_BY_PLATFORMS]-(g) ");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'NTSCMedia', Name: 'Media (NTSC)'})" +
+                "MERGE (g)-[:USED_BY_GAMES]-(g) " +
+                "MERGE (g)-[:USED_BY_PLATFORMS]-(g) ");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'JPMedia', Name: 'Media (JP)'})" +
+                "MERGE (g)-[:USED_BY_GAMES]-(g) " +
+                "MERGE (g)-[:USED_BY_PLATFORMS]-(g) ");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'PALMedia', Name: 'Media (PAL)'})" +
+                "MERGE (g)-[:USED_BY_GAMES]-(g) " +
+                "MERGE (g)-[:USED_BY_PLATFORMS]-(g) ");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'NTSCTrailer', Name: 'Trailer (NTSC)'})" +
+                "MERGE (g)-[:USED_BY_GAMES]-(g) " +
+                "MERGE (g)-[:USED_BY_PLATFORMS]-(g) ");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'JPTrailer', Name: 'Trailer (JP)'})" +
+                "MERGE (g)-[:USED_BY_GAMES]-(g) " +
+                "MERGE (g)-[:USED_BY_PLATFORMS]-(g) ");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'PALTrailer', Name: 'Trailer (PAL)'})" +
+                "MERGE (g)-[:USED_BY_GAMES]-(g) " +
+                "MERGE (g)-[:USED_BY_PLATFORMS]-(g) ");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'Soundtrack', Name: 'Soundtrack'})" +
+                "MERGE (g)-[:USED_BY_GAMES]-(g) ");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'OVA', Name: 'OVA'})" +
+                "MERGE (g)-[:USED_BY_GAMES]-(g) ");
         //TODO When a series or anime is added a separate node should be created with each of the episodes that are a part
         //of that series connected to it
-        runQuery("MERGE (g:GalleryCategory {UniqueName: 'Movie', Name: 'Movie'}) return g");
-        runQuery("MERGE (g:GalleryCategory {UniqueName: 'Screenshot', Name: 'Screenshot'}) return g");
-        runQuery("MERGE (g:GalleryCategory {UniqueName: 'ConceptArt', Name: 'Concept Art'}) return g");
-        runQuery("MERGE (g:GalleryCategory {UniqueName: 'Render', Name: 'Render'}) return g");
-        runQuery("MERGE (g:GalleryCategory {UniqueName: 'PromotionalMaterial', Name: 'PromotionalMaterial'}) return g");
-        runQuery("MERGE (g:GalleryCategory {UniqueName: 'Book', Name: 'Book'}) return g");
-        runQuery("MERGE (g:GalleryCategory {UniqueName: 'Manga', Name: 'Manga'}) return g");
-        runQuery("MERGE (g:GalleryCategory {UniqueName: 'Comic', Name: 'Comic'}) return g");
-        runQuery("MERGE (g:GalleryCategory {UniqueName: 'ArtBook', Name: 'ArtBook'}) return g");
-        runQuery("MERGE (g:GalleryCategory {UniqueName: 'Manual', Name: 'Manual'}) return g");
-        runQuery("MERGE (g:GalleryCategory {UniqueName: 'Guide', Name: 'Guide'}) return g");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'Movie', Name: 'Movie'})" +
+                "MERGE (g)-[:USED_BY_GAMES]-(g) ");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'Screenshot', Name: 'Screenshot'})" +
+                "MERGE (g)-[:USED_BY_GAMES]-(g) ");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'ConceptArt', Name: 'Concept Art'})" +
+                "MERGE (g)-[:USED_BY_GAMES]-(g) " +
+                "MERGE (g)-[:USED_BY_PLATFORMS]-(g) ");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'Render', Name: 'Render'})" +
+                "MERGE (g)-[:USED_BY_GAMES]-(g) ");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'PromotionalMaterial', Name: 'PromotionalMaterial'})" +
+                "MERGE (g)-[:USED_BY_GAMES]-(g) " +
+                "MERGE (g)-[:USED_BY_PLATFORMS]-(g) ");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'Book', Name: 'Book'})" +
+                "MERGE (g)-[:USED_BY_GAMES]-(g) ");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'Manga', Name: 'Manga'})" +
+                "MERGE (g)-[:USED_BY_GAMES]-(g) ");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'Comic', Name: 'Comic'})" +
+                "MERGE (g)-[:USED_BY_GAMES]-(g) ");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'ArtBook', Name: 'ArtBook'})" +
+                "MERGE (g)-[:USED_BY_GAMES]-(g) ");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'Manual', Name: 'Manual'})" +
+                "MERGE (g)-[:USED_BY_GAMES]-(g) " +
+                "MERGE (g)-[:USED_BY_PLATFORMS]-(g) ");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'Guide', Name: 'Guide'})" +
+                "MERGE (g)-[:USED_BY_GAMES]-(g) ");
+    }
+
+    private void createPlatformGalleryNodes() {
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'NTSCFrontCover', Name: 'Front Cover (NTSC)'})");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'JPFrontCover', Name: 'Front Cover (JP)'})");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'PALFrontCover', Name: 'Front Cover (PAL)'})");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'NTSCSpine', Name: 'Spine (NTSC)'})");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'JPSpine', Name: 'Spine (JP)'})");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'PALSpine', Name: 'Spine (PAL)'})");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'NTSCBackCover', Name: 'Back Cover (NTSC)'})");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'JPBackCover', Name: 'Back Cover (JP)'})");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'PALBackCover', Name: 'Back Cover (PAL)'})");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'NTSCMedia', Name: 'Media (NTSC)'})");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'JPMedia', Name: 'Media (JP)'})");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'PALMedia', Name: 'Media (PAL)'})");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'NTSCTrailer', Name: 'Trailer (NTSC)'})");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'JPTrailer', Name: 'Trailer (JP)'})");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'PALTrailer', Name: 'Trailer (PAL)'})");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'Soundtrack', Name: 'Soundtrack'})");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'OVA', Name: 'OVA'})");
+        //TODO When a series or anime is added a separate node should be created with each of the episodes that are a part
+        //of that series connected to it
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'Movie', Name: 'Movie'})");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'Screenshot', Name: 'Screenshot'})");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'ConceptArt', Name: 'Concept Art'})");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'Render', Name: 'Render'})");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'PromotionalMaterial', Name: 'PromotionalMaterial'})");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'Book', Name: 'Book'})");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'Manga', Name: 'Manga'})");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'Comic', Name: 'Comic'})");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'ArtBook', Name: 'ArtBook'})");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'Manual', Name: 'Manual'})");
+        runQuery("MERGE (g:GalleryCategory {UniqueName: 'Guide', Name: 'Guide'})");
     }
 
     private void createConstraints(){

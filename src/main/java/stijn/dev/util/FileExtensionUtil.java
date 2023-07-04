@@ -1,5 +1,7 @@
 package stijn.dev.util;
 
+import stijn.dev.datasource.objects.data.enums.*;
+
 import java.util.*;
 
 public class FileExtensionUtil {
@@ -12,6 +14,8 @@ public class FileExtensionUtil {
 
     private static boolean hasBeenFilled = false;
     private static ArrayList<String> fileExtensions = new ArrayList<>();
+    private static HashMap<String, MediaTypes> mediaFileExtensions = new HashMap<>();
+    private static boolean mediaFileExtensionsHasBeenFilled = false;
 
     public static HashMap<String,String> getExtensionsForPlatforms() {
         if(!extensionsForPlatformsHasBeenFilled) {
@@ -195,5 +199,57 @@ public class FileExtensionUtil {
             hasBeenFilled =true;
         }
         return fileExtensions;
+    }
+
+    public static HashMap<String, MediaTypes> getMediaFileExtensions() {
+        if(!mediaFileExtensionsHasBeenFilled) {
+            mediaFileExtensions.put("png", MediaTypes.IMAGE);
+            mediaFileExtensions.put("jpeg", MediaTypes.IMAGE);
+            mediaFileExtensions.put("jpg", MediaTypes.IMAGE);
+            mediaFileExtensions.put("jpe", MediaTypes.IMAGE);
+            mediaFileExtensions.put("jif", MediaTypes.IMAGE);
+            mediaFileExtensions.put("jfif", MediaTypes.IMAGE);
+            mediaFileExtensions.put("jfi", MediaTypes.IMAGE);
+            mediaFileExtensions.put("jp2", MediaTypes.IMAGE);
+            mediaFileExtensions.put("j2k", MediaTypes.IMAGE);
+            mediaFileExtensions.put("jpf", MediaTypes.IMAGE);
+            mediaFileExtensions.put("jpm", MediaTypes.IMAGE);
+            mediaFileExtensions.put("jpg2", MediaTypes.IMAGE);
+            mediaFileExtensions.put("j2c", MediaTypes.IMAGE);
+            mediaFileExtensions.put("jpc", MediaTypes.IMAGE);
+            mediaFileExtensions.put("jpx", MediaTypes.IMAGE);
+            mediaFileExtensions.put("mj2", MediaTypes.IMAGE);
+            mediaFileExtensions.put("webp", MediaTypes.IMAGE);
+            mediaFileExtensions.put("hdr", MediaTypes.IMAGE);
+            mediaFileExtensions.put("heif", MediaTypes.IMAGE);
+            mediaFileExtensions.put("heifs", MediaTypes.IMAGE);
+            mediaFileExtensions.put("heic", MediaTypes.IMAGE);
+            mediaFileExtensions.put("heics", MediaTypes.IMAGE);
+            mediaFileExtensions.put("avci", MediaTypes.IMAGE);
+            mediaFileExtensions.put("avcs", MediaTypes.IMAGE);
+            mediaFileExtensions.put("avif", MediaTypes.IMAGE);
+            mediaFileExtensions.put("jxl", MediaTypes.IMAGE);
+            mediaFileExtensions.put("tiff", MediaTypes.IMAGE);
+            mediaFileExtensions.put("tif", MediaTypes.IMAGE);
+            mediaFileExtensions.put("bmp", MediaTypes.IMAGE);
+            mediaFileExtensions.put("dib", MediaTypes.IMAGE);
+            mediaFileExtensions.put("pbm", MediaTypes.IMAGE);
+            mediaFileExtensions.put("pgm", MediaTypes.IMAGE);
+            mediaFileExtensions.put("ppm", MediaTypes.IMAGE);
+            mediaFileExtensions.put("pnm", MediaTypes.IMAGE);
+            mediaFileExtensions.put("svg", MediaTypes.IMAGE);
+            mediaFileExtensions.put("svgz", MediaTypes.IMAGE);
+            mediaFileExtensions.put("gif", MediaTypes.IMAGE);
+            mediaFileExtensionsHasBeenFilled = true;
+        }
+        return mediaFileExtensions;
+    }
+
+    public static void setMediaFileExtensions(HashMap<String, MediaTypes> mediaFileExtensions) {
+        FileExtensionUtil.mediaFileExtensions = mediaFileExtensions;
+    }
+
+    public static MediaTypes getMediaType(String fileExtension) {
+        return getMediaFileExtensions().get(fileExtension.toLowerCase());
     }
 }

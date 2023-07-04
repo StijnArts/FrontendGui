@@ -6,6 +6,7 @@ import stijn.dev.datasource.importing.xml.*;
 import stijn.dev.datasource.objects.data.*;
 import stijn.dev.datasource.objects.items.*;
 
+import java.time.*;
 import java.util.*;
 
 public class PlatformDAO {
@@ -17,6 +18,8 @@ public class PlatformDAO {
     private EmulatorDAO emulatorDAO = new EmulatorDAO();
     private ManufacturerDAO manufacturerDAO = new ManufacturerDAO();
     private MediaDAO mediaDAO = new MediaDAO();
+    private AlternateNameDAO alternateNameDAO = new AlternateNameDAO();
+    private TriviaDAO triviaDAO = new TriviaDAO();
     public void savePlatform(Platform platformObject) {
         HashMap<String, Object> parameters = new HashMap<>();
         parameters.put("platformName", platformObject.getPlatformName());
@@ -37,14 +40,19 @@ public class PlatformDAO {
             parameters.put("category", platformObject.getCategory());
             queryString+=", Category:$category";
         }
-        queryString += "}) ";
+        queryString += "})";
         for (PlatformSpecification specification : platformObject.getSpecs()) {
             queryString +=", (p)-[:Specification {SpecificationType:$specType"+specification.getSpecificationType()+
-                    ",Specification:$spec"+specification.getSpecificationType()+"}]->(p)";
+                    ",Specification:$spec"+specification.getSpecificationType()+"}]->(p) ";
             parameters.put("spec"+specification.getSpecificationType(), specification.getSpecification());
             parameters.put("specType"+specification.getSpecificationType(), specification.getSpecificationType());
         }
-        queryString += " Return r";
+        for (String mediaType : platformObject.getMediaTypes()) {
+            queryString +=" WITH p " +
+                    "MERGE (m:MediaType {Name: $mediaType"+mediaType.replaceAll("[^a-zA-Z0-9]+","").trim()+"}) " +
+                    "MERGE (p)-[:USES]->(m) ";
+            parameters.put("mediaType"+mediaType.replaceAll("[^a-zA-Z0-9]+","").trim(), mediaType.trim());
+        }
         Query query = new Query(queryString, parameters);
         neo4JDatabaseHelper.runQuery(query);
         territoryDAO.createReleaseDates(platformObject);
@@ -102,16 +110,26 @@ public class PlatformDAO {
 
     public List<Platform> getPlatforms() {
         String query = "MATCH (p:Platform) " +
-                "RETURN ID(p), p.PlatformName, p.SortingTitle, p.Category, p.Description, p.MaxPlayers, p.DefaultEmulator ORDER BY p.SortingTitle";
+                "RETURN ID(p), p.PlatformName, p.SortingTitle, p.UnitsSold, p.Category, p.DateDiscontinued, p.Description, p.Generation, p.MaxPlayers, p.DefaultEmulator ORDER BY p.SortingTitle";
         Result result = neo4JDatabaseHelper.runQuery(query);
         List<Platform> platforms = new ArrayList<>();
         while(result.hasNext()) {
             Map<String, Object> row = result.next().asMap();
+            LocalDate dateDiscontinued;
+            try{
+                dateDiscontinued = LocalDate.parse(String.valueOf(row.get("p.DateDiscontinued")));
+            } catch(Exception exception){
+                dateDiscontinued = null;
+            }
             platforms.add(new Platform(
                     Integer.parseInt(row.get("ID(p)")+""),
                     row.get("p.PlatformName")+"",
+                    alternateNameDAO.getAlternatePlatformNames(Integer.parseInt(row.get("ID(p)")+"")),
                     row.get("p.SortingTitle")+"",
                     releaseDateDAO.getPlatformReleaseDates(Integer.parseInt(row.get("ID(p)")+"")),
+                    dateDiscontinued,
+                    row.get("p.Generation")+"",
+                    row.get("p.UnitsSold")+"",
                     publisherDAO.getPlatformPublishers(Integer.parseInt(row.get("ID(p)")+"")),
                     manufacturerDAO.getPlatformManufacturers(Integer.parseInt(row.get("ID(p)")+"")),
                     row.get("p.Description")+"",
@@ -119,11 +137,46 @@ public class PlatformDAO {
                     row.get("p.MaxPlayers")+"",
                     row.get("p.Category")+"",
                     mediaDAO.getPlatformMedia(Integer.parseInt(row.get("ID(p)")+"")),
+                    mediaDAO.getPlatformMediaTypes(Integer.parseInt(row.get("ID(p)")+"")),
+                    getPlatformProductFamilies(Integer.parseInt(row.get("ID(p)")+"")),
+                    getRelatedPlatforms(Integer.parseInt(row.get("ID(p)")+"")),
+                    triviaDAO.getPlatformTrivia(Integer.parseInt(row.get("ID(p)")+"")),
                     emulatorDAO.getDefaultEmulatorForPlatform(Integer.parseInt(row.get("ID(p)")+"")),
                     emulatorDAO.getPlatformEmulators(Integer.parseInt(row.get("ID(p)")+""))
             ));
         }
         return platforms;
+    }
+
+    private List<RelatedPlatform> getRelatedPlatforms(int id) {
+        HashMap<String, Object> parameters = new HashMap<>();
+        parameters.put("id", id);
+        String characterQuery = "MATCH (p:Platform)-[r:RELATED_TO]-(o:Platform) " +
+                "WHERE ID(o) = $id " +
+                "Return ID(p), p.PlatformName, r.RelationType, r.Description ORDER BY p.PlatformName";
+        Result result = neo4JDatabaseHelper.runQuery(new Query(characterQuery,parameters));
+        ArrayList<RelatedPlatform> relatedGames = new ArrayList<>();
+        while(result.hasNext()) {
+            Map<String, Object> row = result.next().asMap();
+            relatedGames.add(new RelatedPlatform(String.valueOf(row.get("ID(p)")),String.valueOf(row.get("p.PlatformName")),
+                    String.valueOf(row.get("r.RelationType")), String.valueOf(row.get("r.Description"))));
+        }
+        return relatedGames;
+    }
+
+    private List<String> getPlatformProductFamilies(int id) {
+        HashMap<String, Object> parameters = new HashMap<>();
+        parameters.put("id", id);
+        String triviaQuery = "MATCH (m:ProductFamily)-[:IS_PART_OF]-(platform:Platform) " +
+                "WHERE ID(platform) = $id " +
+                "RETURN m.Name ORDER BY m.Name";
+        Result result = neo4JDatabaseHelper.runQuery(new Query(triviaQuery,parameters));
+        ArrayList<String> manufacturers = new ArrayList<>();
+        while(result.hasNext()) {
+            Map<String, Object> row = result.next().asMap();
+            manufacturers.add(String.valueOf(row.get("m.Name")));
+        }
+        return manufacturers;
     }
 
     private List<PlatformSpecification> getSpecs(int platformId) {
@@ -183,5 +236,41 @@ public class PlatformDAO {
                     "WHERE ID(p) = $id " +
                     "DETACH Delete p";
             neo4JDatabaseHelper.runQuery(new Query(tagQuery,parameters));
+    }
+
+    public List<String> getProductFamilies() {
+        String triviaQuery = "MATCH (p:ProductFamily) " +
+                "RETURN p.Name ORDER BY p.Name";
+        Result result = neo4JDatabaseHelper.runQuery(new Query(triviaQuery));
+        ArrayList<String> productFamilies = new ArrayList<>();
+        while(result.hasNext()) {
+            Map<String, Object> row = result.next().asMap();
+            productFamilies.add(String.valueOf(row.get("p.Name")));
+        }
+        return productFamilies;
+    }
+
+    public List<RelatedPlatform> getRelatedPlatformOptions() {
+        String query = "Match (p:Platform) " +
+                "Return ID(p), p.PlatformName ORDER BY p.PlatformName";
+        Result result = neo4JDatabaseHelper.runQuery(query);
+        ArrayList<RelatedPlatform> gameItems = new ArrayList<>();
+        while (result.hasNext()) {
+            Map<String, Object> row = result.next().asMap();
+            gameItems.add(new RelatedPlatform(String.valueOf(row.get("ID(p)")), String.valueOf(row.get("p.PlatformName")), "",""));
+        }
+        return gameItems;
+    }
+
+    public List<String> getSpecificationTypes() {
+        String query = "Match (p:SpecificationType) " +
+                "Return p.Name ORDER BY p.Name";
+        Result result = neo4JDatabaseHelper.runQuery(query);
+        List<String> gameItems = new ArrayList<>();
+        while (result.hasNext()) {
+            Map<String, Object> row = result.next().asMap();
+            gameItems.add(row.get("p.Name")+"");
+        }
+        return gameItems;
     }
 }

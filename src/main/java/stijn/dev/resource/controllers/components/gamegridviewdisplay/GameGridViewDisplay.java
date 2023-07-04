@@ -1,4 +1,4 @@
-package stijn.dev.resource.controllers.components.GameGridViewDisplay;
+package stijn.dev.resource.controllers.components.gamegridviewdisplay;
 
 import javafx.event.*;
 import javafx.fxml.*;
@@ -25,12 +25,11 @@ public class GameGridViewDisplay extends AnchorPane {
 
     public GameGridViewDisplay(Game gameImportItem, String imageLocation, MainController mainController){
         this.game = gameImportItem;
-        //TODO make it take in the image location of the game
         File file = new File(imageLocation);
         if(file.exists()){
             this.imageLocation = imageLocation;
         } else{
-            this.imageLocation = "C:\\Users\\stijn\\Desktop\\Front End project\\game-boy-grey-square-red-box-variation-front-1553417605-61.jpg";
+            this.imageLocation = "C:\\Users\\stijn\\Desktop\\Front End project\\697b023b-64a5-49a0-8059-27b963453fb1.gif";
         }
         initGraphics();
         MenuItem edit = new MenuItem();

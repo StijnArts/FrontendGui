@@ -4,11 +4,13 @@ import javafx.fxml.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.stage.*;
+import org.controlsfx.control.*;
 import org.controlsfx.control.tableview2.*;
 import stijn.dev.datasource.database.dao.*;
 import stijn.dev.datasource.objects.data.*;
 import stijn.dev.datasource.objects.items.*;
 import stijn.dev.resource.controllers.components.*;
+import stijn.dev.resource.controllers.components.gallerygridviewdisplay.*;
 import stijn.dev.resource.service.*;
 import stijn.dev.util.javafx.*;
 
@@ -25,7 +27,7 @@ public class PlatformEditScreenController {
     @FXML
     private ComboBox<ComboBoxItemWrap<String>> mediaTypeComboBox;
     @FXML
-    private ComboBox<String> productFamilyComboBox;
+    private ComboBox<ComboBoxItemWrap<String>> productFamilyComboBox;
     @FXML
     private TextField platformGenerationField;
     @FXML
@@ -46,7 +48,16 @@ public class PlatformEditScreenController {
     private TableView2<Trivia> triviaTable;
     @FXML
     private TableView2<ReleaseDate> releaseDatesTable;
-
+    @FXML
+    private ListView<String> platformSupplementaryMaterialTypeList;
+    @FXML
+    private ListView<String> platformMediaTypeList;
+    @FXML
+    private Pagination mediaPaginator;
+    private GridView<GalleryGridViewDisplay> mediaGridView;
+    @FXML
+    private Pagination supplementaryMaterialPagination;
+    //private GridView<> supplementaryMaterialGridView;
     @FXML
     private TableView2<Emulator> emulatorTable;
     private static PlatformDAO platformDAO = new PlatformDAO();
@@ -115,6 +126,14 @@ public class PlatformEditScreenController {
         //TODO open CompanyEditScreen
     }
 
+    public void openPlatformRelationshipTypeScreen() {
+        //TODO open PlatformRelationshipTypeScreen
+    }
+
+    public void openSpecificationConfigurationScreen() {
+        //TODO open SpecificationConfigurationScreen
+    }
+
     public void close() {
         stage.close();
     }
@@ -143,6 +162,46 @@ public class PlatformEditScreenController {
         this.manufacturerComboBox = manufacturerComboBox;
     }
 
+    public ListView<String> getPlatformSupplementaryMaterialTypeList() {
+        return platformSupplementaryMaterialTypeList;
+    }
+
+    public void setPlatformSupplementaryMaterialTypeList(ListView<String> platformSupplementaryMaterialTypeList) {
+        this.platformSupplementaryMaterialTypeList = platformSupplementaryMaterialTypeList;
+    }
+
+    public ListView<String> getPlatformMediaTypeList() {
+        return platformMediaTypeList;
+    }
+
+    public void setPlatformMediaTypeList(ListView<String> platformMediaTypeList) {
+        this.platformMediaTypeList = platformMediaTypeList;
+    }
+
+    public Pagination getMediaPaginator() {
+        return mediaPaginator;
+    }
+
+    public void setMediaPaginator(Pagination mediaPaginator) {
+        this.mediaPaginator = mediaPaginator;
+    }
+
+    public GridView<GalleryGridViewDisplay> getMediaGridView() {
+        return mediaGridView;
+    }
+
+    public void setMediaGridView(GridView<GalleryGridViewDisplay> mediaGridView) {
+        this.mediaGridView = mediaGridView;
+    }
+
+    public Pagination getSupplementaryMaterialPagination() {
+        return supplementaryMaterialPagination;
+    }
+
+    public void setSupplementaryMaterialPagination(Pagination supplementaryMaterialPagination) {
+        this.supplementaryMaterialPagination = supplementaryMaterialPagination;
+    }
+
     public ComboBox<ComboBoxItemWrap<String>> getMediaComboBox() {
         return mediaComboBox;
     }
@@ -159,11 +218,11 @@ public class PlatformEditScreenController {
         this.mediaTypeComboBox = mediaTypeComboBox;
     }
 
-    public ComboBox<String> getProductFamilyComboBox() {
+    public ComboBox<ComboBoxItemWrap<String>> getProductFamilyComboBox() {
         return productFamilyComboBox;
     }
 
-    public void setProductFamilyComboBox(ComboBox<String> productFamilyComboBox) {
+    public void setProductFamilyComboBox(ComboBox<ComboBoxItemWrap<String>> productFamilyComboBox) {
         this.productFamilyComboBox = productFamilyComboBox;
     }
 

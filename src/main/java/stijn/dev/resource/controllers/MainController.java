@@ -8,10 +8,11 @@ import javafx.scene.control.*;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.stage.*;
+import org.apache.commons.lang3.*;
 import org.controlsfx.control.*;
 import stijn.dev.datasource.database.dao.*;
 import stijn.dev.datasource.objects.items.*;
-import stijn.dev.resource.controllers.components.GameGridViewDisplay.*;
+import stijn.dev.resource.controllers.components.gamegridviewdisplay.*;
 import stijn.dev.resource.controllers.components.*;
 import stijn.dev.resource.controllers.shortcut.*;
 import stijn.dev.threads.runnables.*;
@@ -93,7 +94,7 @@ public class MainController extends SceneController implements Initializable{
     private final int gamesPerPage = 21;
     public ArrayList<GameGridViewDisplay> getGameGridDisplayItems(){
         ArrayList<GameGridViewDisplay> gameGridViewDisplays = new ArrayList<>();
-        ArrayList<Game> games = gameDAO.getGames((tabNumber*gamesPerPage), searchBar.getText());
+        ArrayList<Game> games = gameDAO.getGames((tabNumber*gamesPerPage), StringUtils.stripAccents(searchBar.getText()));
         for (Game game : games) {
             gameGridViewDisplays.add(new GameGridViewDisplay(game,"image location", this));
         }
@@ -107,7 +108,6 @@ public class MainController extends SceneController implements Initializable{
         if(gameCount!=oldGameCount){
             gamesPaginator.setPageCount(gameCount/gamesPerPage+1);
         }
-
     }
 
     public void importGames(){

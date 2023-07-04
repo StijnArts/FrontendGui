@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Pagination?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
@@ -15,7 +16,6 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
-<?import org.controlsfx.control.ListActionView?>
 <?import org.controlsfx.control.tableview2.TableView2?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="781.0" prefWidth="1058.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stijn.dev.resource.controllers.PlatformEditScreenController">
@@ -109,11 +109,16 @@
                                                       </HBox>
                                                       <HBox>
                                                          <children>
-                                                            <ComboBox fx:id="manufacturerComboBox" editable="true" prefHeight="25.0" prefWidth="451.0">
+                                                            <ComboBox fx:id="manufacturerComboBox" editable="true" prefHeight="25.0" prefWidth="379.0">
                                                                <HBox.margin>
                                                                   <Insets top="9.0" />
                                                                </HBox.margin>
                                                             </ComboBox>
+                                                            <Button fx:id="editManufacturersButton" mnemonicParsing="false" onAction="#openCompanyEditScreen" prefHeight="25.0" prefWidth="37.0" text="Edit">
+                                                               <HBox.margin>
+                                                                  <Insets left="3.0" top="9.0" />
+                                                               </HBox.margin>
+                                                            </Button>
                                                          </children>
                                                       </HBox>
                                                       <HBox>
@@ -318,7 +323,7 @@
                                                 <Insets bottom="18.0" />
                                              </VBox.margin>
                                           </HBox>
-                                          <ListActionView fx:id="platformMediaTypeList" prefHeight="713.0" prefWidth="224.0" />
+                                          <ListView fx:id="platformMediaTypeList" prefHeight="663.0" prefWidth="224.0" />
                                        </children>
                                     </VBox>
                                  </left>
@@ -352,7 +357,7 @@
                                                 <Insets />
                                              </VBox.margin>
                                           </HBox>
-                                          <ListActionView fx:id="platformSupplementaryMaterialTypeList" prefHeight="618.0" prefWidth="224.0" />
+                                          <ListView fx:id="platformSupplementaryMaterialTypeList" prefHeight="615.0" prefWidth="224.0" />
                                        </children>
                                     </VBox>
                                  </left>

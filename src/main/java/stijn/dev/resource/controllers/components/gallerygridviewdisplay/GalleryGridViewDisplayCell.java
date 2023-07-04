@@ -1,28 +1,28 @@
-package stijn.dev.resource.controllers.components.GameGridViewDisplay;
+package stijn.dev.resource.controllers.components.gallerygridviewdisplay;
 
 import org.controlsfx.control.*;
 import stijn.dev.resource.controllers.*;
 
-public class GameGridViewDisplayCell extends GridCell<GameGridViewDisplay> {
-    public GameGridViewDisplayCell(){
+public class GalleryGridViewDisplayCell extends GridCell<GalleryGridViewDisplay> {
+    public GalleryGridViewDisplayCell(){
         super();
     }
 
     private int previousWidth = 0;
     private int previousHeight = 0;
     @Override
-    public void updateItem(GameGridViewDisplay gameGridViewDisplay, boolean empty){
+    public void updateItem(GalleryGridViewDisplay gameGridViewDisplay, boolean empty){
         super.updateItem(gameGridViewDisplay, empty);
         if(empty || gameGridViewDisplay == null){
             setGraphic(null);
 
         } else {
             if(checkHeightWidth()){
-                gameGridViewDisplay.setHeight(MainController.cellHeight);
-                gameGridViewDisplay.setWidth(MainController.cellWidth);
+                gameGridViewDisplay.setHeight(ImageDetailScreenController.getCellHeight());
+                gameGridViewDisplay.setWidth(ImageDetailScreenController.getCellWidth());
             }
             setItem(gameGridViewDisplay);
-            setText(gameGridViewDisplay.getGame().getName());
+            setText(gameGridViewDisplay.getMedia().getFile().getName());
             setGraphic(gameGridViewDisplay);
         }
     }

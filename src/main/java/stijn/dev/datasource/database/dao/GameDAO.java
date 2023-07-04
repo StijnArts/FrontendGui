@@ -59,7 +59,7 @@ public class GameDAO {
             game.setStaff(staffDAO.getStaff(gameParameters));
             game.setRatings(ratingDAO.getRatings(gameParameters));
             game.setCharacters(characterDAO.getCharacters(gameParameters));
-            game.setAlternateNames(alternateNameDAO.getAlternateNames(gameParameters));
+            game.setAlternateNames(alternateNameDAO.getGameAlternateNames(gameParameters));
             game.setRelatedGames(relatedGameDAO.getRelatedGames(gameParameters));
             game.setAdditionalApps(additionalAppDAO.getAdditionalApps(gameParameters));
             game.setUnitsSold(String.valueOf(row.get("g.UnitsSold")));
@@ -92,7 +92,7 @@ public class GameDAO {
 
     public ArrayList<RelatedGameEntry> getRelatedGamesOptions() {
         String query = "Match (g:Game)-[:ON_PLATFORM]-(p:Platform) " +
-                "Return ID(g), g.GameName, p.PlatformName";
+                "Return ID(g), g.GameName, p.PlatformName ORDER BY g.GameName";
         Result result = neo4JDatabaseHelper.runQuery(query);
         ArrayList<RelatedGameEntry> gameItems = new ArrayList<>();
         while (result.hasNext()) {
